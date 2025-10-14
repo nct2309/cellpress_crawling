@@ -12,20 +12,45 @@ This tool crawls **open-access** PDFs from Cell.com journals. You can select spe
 
 ## Installation
 
-1. Install dependencies with Poetry:
+### Option 1: Using pip (Recommended for most users)
+
+```bash
+# Create a virtual environment (recommended)
+python -m venv venv
+
+# Activate the virtual environment
+# On Linux/Mac:
+source venv/bin/activate
+# On Windows:
+# venv\Scripts\activate
+
+# Install dependencies from requirements.txt
+pip install -r requirements.txt
+
+# Install Firefox browser binaries (run once):
+playwright install firefox
+```
+
+### Option 2: Using Poetry
 
 ```bash
 # Playwright is recommended because it bundles browsers and works well in WSL
 poetry add playwright beautifulsoup4 requests streamlit
 
-# Install Chromium browser binaries (run once):
-poetry run playwright install chromium
+# Install Firefox browser binaries (run once):
+poetry run playwright install firefox
 ```
 
 ## Usage
 
 ### Streamlit Web UI (Recommended)
 
+**With pip:**
+```bash
+streamlit run scripts/run_crawler_streamlit.py
+```
+
+**With Poetry:**
 ```bash
 poetry run streamlit run scripts/run_crawler_streamlit.py
 ```
@@ -62,7 +87,8 @@ crawl(
 1. **Journal Discovery**: Parses Cell.com's navbar menu to extract journal slugs and names
 2. **Article Crawling**: For each selected journal, visits the `/newarticles` page
 3. **Open Access Filtering**: Only downloads articles marked as open access
-4. **PDF Download**: Uses Playwright's request API to maintain session and download PDFs
+4. **PDF Download**: Uses Firefox with Playwright to automatically download PDFs by clicking links
+5. **Cookie Consent**: Automatically handles and accepts cookie consent popups
 
 ## Troubleshooting
 
@@ -93,5 +119,6 @@ If you need to manually enter journals, here are some common slugs:
 - ⚠️ This tool only downloads **open-access** articles to respect copyright
 - 🤝 Uses polite delays (1 second between downloads) to avoid overloading the server
 - 💾 Journal lists are cached in `.cache/papers_crawler/journals.json`
-- 🔧 Built with Playwright for better cross-platform support (especially WSL/Linux)
+- 🦊 Uses Firefox with Playwright for better cross-platform support and reliable PDF downloads
+- 🍪 Automatically handles cookie consent popups
 - 🛡️ Includes fallback mechanisms for when Cell.com blocks automated requests

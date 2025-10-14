@@ -21,113 +21,6 @@ from playwright_stealth import Stealth, ALL_EVASIONS_DISABLED_KWARGS
 logging.basicConfig(level=logging.INFO)
 
 
-def _download_with_route_intercept(page, url: str, dest_folder: str, progress_callback=None) -> Optional[str]:
-    """Download PDF by intercepting the route after JavaScript loads it in embed element."""
-    os.makedirs(dest_folder, exist_ok=True)
-    
-    try:
-        logger.info(f"Opening PDF page: {url}")
-        
-        # Store intercepted PDF
-        pdf_data = None
-        pdf_captured = False
-        
-        def handle_route(route):
-            """Intercept PDF requests and capture them."""
-            nonlocal pdf_data, pdf_captured
-            try:
-                request_url = route.request.url
-                
-                # Only intercept PDF-related requests
-                if 'pdf' in request_url.lower():
-                    logger.info(f"Intercepting request: {request_url}")
-                    
-                    # Fetch using browser context
-                    response = page.context.request.get(request_url)
-                    
-                    if response.ok:
-                        content_type = response.headers.get('content-type', '')
-                        
-                        if 'application/pdf' in content_type:
-                            body = response.body()
-                            if body and len(body) > 1000 and body.startswith(b'%PDF'):
-                                logger.info(f"✓ Captured PDF: {len(body)} bytes ({len(body)/1024/1024:.2f} MB)")
-                                pdf_data = body
-                                pdf_captured = True
-                        
-                        # Fulfill with Content-Disposition: attachment
-                        headers = dict(response.headers)
-                        headers['Content-Disposition'] = 'attachment'
-                        
-                        route.fulfill(
-                            status=response.status,
-                            headers=headers,
-                            body=response.body()
-                        )
-                    else:
-                        route.continue_()
-                else:
-                    route.continue_()
-                    
-            except Exception as e:
-                logger.debug(f"Route handler error: {e}")
-                route.continue_()
-        
-        # Set up route interception
-        page.route("**/*", handle_route)
-        
-        # Navigate to PDF page
-        logger.info("Loading PDF page...")
-        page.goto(url, timeout=60000, wait_until="load")
-        
-        # Wait for network idle
-        logger.info("Waiting for network to be idle...")
-        page.wait_for_load_state("networkidle", timeout=60000)
-        
-        # Wait for the embed element to load the PDF
-        logger.info("Waiting for PDF to load in embed...")
-        page.wait_for_timeout(10000)  # Wait 10 seconds for JS to initialize
-        
-        # Poll until PDF is captured
-        max_wait = 60  # Wait up to 60 seconds total
-        for i in range(max_wait):
-            if pdf_captured:
-                logger.info(f"✓ PDF captured after {i+1} seconds")
-                break
-            logger.info(f"Waiting for PDF... ({i+1}s)")
-            page.wait_for_timeout(1000)
-        
-        # Clean up
-        page.unroute("**/*")
-        
-        if not pdf_data:
-            logger.error("Failed to capture PDF from page")
-            raise Exception("PDF was not loaded. The PDF may require authentication or manual download.")
-        
-        # Save PDF
-        pdf_size = len(pdf_data)
-        logger.info(f"Successfully captured PDF: {pdf_size} bytes ({pdf_size/1024/1024:.2f} MB)")
-        
-        fname = os.path.basename(url.split("?")[0]) or "download.pdf"
-        if not fname.lower().endswith(".pdf"):
-            fname += ".pdf"
-        dest = os.path.join(dest_folder, fname)
-        
-        with open(dest, "wb") as f:
-            f.write(pdf_data)
-        
-        logger.info(f"✓ Successfully saved: {fname} ({pdf_size/1024/1024:.2f} MB)")
-        
-        if progress_callback:
-            progress_callback(fname, dest)
-        
-        return dest
-        
-    except Exception as e:
-        logger.error(f"Failed to download {url}: {e}")
-        raise
-
-
 def _print_page_as_pdf(page, url: str, dest_folder: str, title: str, progress_callback=None) -> Optional[str]:
     """Load fulltext page and print it as PDF."""
     os.makedirs(dest_folder, exist_ok=True)
@@ -190,116 +83,6 @@ def _print_page_as_pdf(page, url: str, dest_folder: str, title: str, progress_ca
         logger.error(f"Failed to print page as PDF {url}: {e}")
         raise
 
-
-def _download_with_request(page, url: str, dest_folder: str, progress_callback=None) -> Optional[str]:
-    """Download PDF by waiting for page to fully load, then intercepting the PDF resource."""
-    os.makedirs(dest_folder, exist_ok=True)
-    
-    try:
-        logger.info(f"Opening PDF viewer page: {url}")
-        
-        # Store intercepted PDF
-        pdf_data = None
-        
-        # Navigate and wait for page to fully load first
-        logger.info("Loading page...")
-        page.goto(url, timeout=60000, wait_until="load")
-        
-        # Wait for network to be idle (all resources loaded)
-        logger.info("Waiting for network to be idle...")
-        page.wait_for_load_state("networkidle", timeout=30000)
-        
-        # Now try to fetch the PDF directly using browser context
-        logger.info("Attempting to fetch PDF using browser context...")
-        try:
-            api_request = page.context.request
-            response = api_request.get(url)
-            
-            if response.ok:
-                content_type = response.headers.get('content-type', '')
-                logger.info(f"Direct fetch - Status: {response.status}, Content-Type: {content_type}")
-                
-                if 'application/pdf' in content_type:
-                    body = response.body()
-                    if body and len(body) > 1000 and body.startswith(b'%PDF'):
-                        logger.info(f"✓ Successfully fetched PDF: {len(body)} bytes ({len(body)/1024/1024:.2f} MB)")
-                        pdf_data = body
-                    else:
-                        logger.warning(f"Invalid PDF from direct fetch: size={len(body)}, starts_with_pdf={body.startswith(b'%PDF') if body else False}")
-                else:
-                    logger.info(f"Direct fetch returned HTML, not PDF: {content_type}")
-            else:
-                logger.warning(f"Direct fetch failed: {response.status}")
-        except Exception as e:
-            logger.error(f"Direct fetch error: {e}")
-        
-        if not pdf_data:
-            logger.warning("Could not capture PDF from network traffic, trying direct download...")
-            
-            # Try direct download as fallback
-            try:
-                import requests
-                
-                # Use the same session cookies from the browser
-                cookies = {}
-                for cookie in page.context.cookies():
-                    cookies[cookie['name']] = cookie['value']
-                
-                headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0',
-                    'Accept': 'application/pdf,*/*',
-                    'Referer': 'https://www.cell.com/',
-                }
-                
-                logger.info(f"Attempting direct download of: {url}")
-                response = requests.get(url, cookies=cookies, headers=headers, timeout=30)
-                
-                if response.status_code == 200:
-                    body = response.content
-                    if body and len(body) > 1000 and body.startswith(b'%PDF'):
-                        logger.info(f"✓ Direct download successful!")
-                        pdf_data = body
-                    else:
-                        logger.error(f"Direct download failed - not a valid PDF (size: {len(body)})")
-                        logger.error(f"Content preview: {body[:200]}")
-                else:
-                    logger.error(f"Direct download failed - status: {response.status_code}")
-                    
-            except Exception as e:
-                logger.error(f"Direct download error: {e}")
-        
-        if not pdf_data:
-            logger.error("All PDF capture methods failed")
-            raise Exception("PDF was not loaded in the page. The PDF may require authentication or manual download.")
-        
-        pdf_size = len(pdf_data)
-        logger.info(f"Successfully captured PDF: {pdf_size} bytes ({pdf_size/1024/1024:.2f} MB)")
-        
-        # Verify PDF signature
-        if not pdf_data.startswith(b'%PDF'):
-            logger.error(f"Invalid PDF signature. First 100 bytes: {pdf_data[:100]}")
-            raise Exception("Captured file is not a valid PDF")
-        
-        fname = os.path.basename(url.split("?")[0]) or "download.pdf"
-        if not fname.lower().endswith(".pdf"):
-            fname += ".pdf"
-        dest = os.path.join(dest_folder, fname)
-        
-        with open(dest, "wb") as f:
-            f.write(pdf_data)
-        
-        logger.info(f"✓ Successfully saved: {fname} ({pdf_size/1024/1024:.2f} MB)")
-        
-        if progress_callback:
-            progress_callback(fname, dest)
-        
-        return dest
-        
-    except Exception as e:
-        logger.error(f"Failed to download {url}: {e}")
-        raise
-
-
 def crawl(
     keywords: str = "",
     year_from: int = 2020,
@@ -309,11 +92,16 @@ def crawl(
     limit: Optional[int] = None,
     journal_slugs: Optional[List[str]] = None,
     progress_callback=None,
+    total_progress_callback=None,
 ) -> Tuple[List[str], List[str]]:
     """Crawl Cell.com for articles matching keywords, year range, and optionally specific journals.
     
     If journal_slugs is provided, crawls from each journal's /newarticles page.
     Otherwise, uses keyword search across all journals.
+    
+    Args:
+        progress_callback: Called with (filename, filepath) after each file is downloaded
+        total_progress_callback: Called with (current, total, status_message) to update overall progress
     
     Returns:
         Tuple[List[str], List[str]]: (downloaded_file_paths, open_access_article_names)
@@ -323,6 +111,7 @@ def crawl(
     os.makedirs(out_folder, exist_ok=True)
     downloaded_files = []
     open_access_articles = []
+    total_articles_found = 0
 
     stealth = Stealth(
         navigator_languages_override=("en-US", "en"),
@@ -330,20 +119,24 @@ def crawl(
     )
 
     with sync_playwright() as p:
-        # Use Chromium for PDF generation support (Firefox doesn't support page.pdf())
-        logger.info("Launching Chromium browser...")
-        browser = p.chromium.launch(
+        # Use Firefox with PDF download preferences
+        logger.info("Launching Firefox browser...")
+        browser = p.firefox.launch(
             headless=headless,
-            args=[
-                '--disable-blink-features=AutomationControlled',
-                '--disable-dev-shm-usage',
-                '--no-sandbox'
-            ]
+            firefox_user_prefs={
+                "pdfjs.disabled": True,  # Disable the built-in PDF viewer
+                "browser.helperApps.neverAsk.saveToDisk": "application/pdf",  # Auto-download PDFs
+                "browser.download.folderList": 2,  # Use custom download location
+                "browser.download.manager.showWhenStarting": False,  # Don't show download manager
+                "browser.download.dir": os.path.abspath(out_folder),  # Set download directory
+                "plugin.disable_full_page_plugin_for_types": "application/pdf",  # Disable PDF plugin
+            }
         )
         
-        # Create context with realistic browser fingerprint
+        # Create context with realistic browser fingerprint and accept downloads
         context = browser.new_context(
-            user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            accept_downloads=True,  # Enable download handling
+            user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0',
             viewport={'width': 1920, 'height': 1080},
             locale='en-US',
             timezone_id='America/New_York',
@@ -356,10 +149,6 @@ def crawl(
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Connection': 'keep-alive',
                 'Upgrade-Insecure-Requests': '1',
-                'Sec-Fetch-Dest': 'document',
-                'Sec-Fetch-Mode': 'navigate',
-                'Sec-Fetch-Site': 'none',
-                'Sec-Fetch-User': '?1',
             }
         )
         
@@ -376,18 +165,69 @@ def crawl(
 
         found_count = 0
 
+        # Helper function to handle cookie consent popup
+        def handle_cookie_consent(page):
+            """Try to accept cookie consent if it appears."""
+            try:
+                # Common cookie consent button selectors
+                cookie_selectors = [
+                    'button:has-text("Accept")',
+                    'button:has-text("Accept all")',
+                    'button:has-text("Accept All")',
+                    'button:has-text("I Accept")',
+                    'button:has-text("I agree")',
+                    'button:has-text("Agree")',
+                    'button:has-text("OK")',
+                    'button[id*="accept"]',
+                    'button[class*="accept"]',
+                    'a:has-text("Accept")',
+                    '#onetrust-accept-btn-handler',  # OneTrust cookie consent
+                    '.optanon-alert-box-button-middle',
+                ]
+                
+                for selector in cookie_selectors:
+                    try:
+                        if page.locator(selector).is_visible(timeout=2000):
+                            logger.info(f"Found cookie consent button: {selector}")
+                            page.click(selector, timeout=3000)
+                            logger.info("✓ Accepted cookie consent")
+                            page.wait_for_timeout(1000)
+                            return True
+                    except Exception:
+                        continue
+                        
+            except Exception as e:
+                logger.debug(f"No cookie consent found or already accepted: {e}")
+            
+            return False
+
         # If journal slugs provided, crawl from each journal's newarticles page
         if journal_slugs:
+            # First pass: count total open access articles to download
+            if total_progress_callback:
+                total_progress_callback(0, 0, "Scanning journals for open access articles...", 0, 0, "scanning")
+            
             for slug in journal_slugs:
                 if limit and found_count >= limit:
                     break
+                
+                # Create subfolder for this journal
+                journal_folder = os.path.join(out_folder, slug.replace('/', '_'))
+                os.makedirs(journal_folder, exist_ok=True)
+                logger.info(f"Journal folder: {journal_folder}")
                 
                 # Go directly to newarticles page
                 url = f"https://www.cell.com/{slug}/newarticles"
                 logger.info(f"Crawling journal: {slug} at {url}")
                 
+                if total_progress_callback:
+                    total_progress_callback(found_count, total_articles_found, f"Loading journal: {slug}", 0, 0, "loading")
+                
                 page.goto(url, timeout=30000)
-                page.wait_for_timeout(3000)  # Wait longer for Cloudflare
+                page.wait_for_timeout(3000)  # Wait for page to load
+                
+                # Handle cookie consent popup if it appears
+                handle_cookie_consent(page)
                 
                 # Check if we got a Cloudflare challenge page
                 page_title = page.title()
@@ -405,6 +245,14 @@ def crawl(
                     all_divs = soup.find_all("div")
                     logger.info(f"Found {len(all_divs)} div elements on page")
                     continue
+                
+                # Count open access articles in this journal
+                oa_count = sum(1 for art in articles if art.find(class_="OALabel"))
+                total_articles_found += min(oa_count, limit - found_count) if limit else oa_count
+                logger.info(f"Found {oa_count} open access articles in {slug}")
+                
+                if total_progress_callback:
+                    total_progress_callback(found_count, total_articles_found, f"Found {total_articles_found} open access articles", 0, 0, "found")
                 
                 for art in articles:
                     if limit and found_count >= limit:
@@ -448,14 +296,76 @@ def crawl(
                     title_elem = art.find(class_="toc__item__title")
                     article_title = title_elem.get_text(strip=True) if title_elem else f"Article {found_count + 1}"
                     
-                    pdf_url = urljoin(url, pdf_link)
-                    logger.info(f"Found open-access PDF: {pdf_url}")
+                    logger.info(f"Found open-access article: {article_title}")
                     
-                    # Download PDF by waiting for JS to load it
-                    downloaded_file = _download_with_route_intercept(page, pdf_url, out_folder, progress_callback)
-                    downloaded_files.append(downloaded_file)
-                    open_access_articles.append(article_title)
-                    found_count += 1
+                    # Download PDF by clicking the link (Firefox will auto-download)
+                    try:
+                        # Generate safe filename from article title
+                        safe_title = "".join(c for c in article_title if c.isalnum() or c in (' ', '-', '_')).strip()
+                        safe_title = safe_title[:100]  # Limit length
+                        filename = f"{safe_title}.pdf"
+                        dest_path = os.path.join(journal_folder, filename)
+                        
+                        # Update progress: starting download
+                        if total_progress_callback:
+                            total_progress_callback(found_count, total_articles_found, f"Downloading: {article_title[:50]}...", 0, 0, "starting")
+                        
+                        logger.info(f"Clicking PDF link for: {article_title}")
+                        
+                        # Track download start time
+                        download_start_time = time.time()
+                        
+                        # Wait for download to start when clicking the link
+                        with page.expect_download(timeout=30000) as download_info:
+                            # Find and click the PDF link using the href attribute
+                            pdf_selector = f'a.pdfLink[href="{pdf_link}"]'
+                            page.click(pdf_selector, timeout=10000)
+                        
+                        download = download_info.value
+                        
+                        # Update: download in progress
+                        if total_progress_callback:
+                            total_progress_callback(found_count, total_articles_found, f"Saving: {article_title[:50]}...", 0, 0, "downloading")
+                        
+                        # Save the download to the specified location with custom filename
+                        download.save_as(dest_path)
+                        
+                        # Calculate download time and speed
+                        download_time = time.time() - download_start_time
+                        
+                        # Verify the PDF was saved
+                        if os.path.exists(dest_path) and os.path.getsize(dest_path) > 1000:
+                            file_size = os.path.getsize(dest_path)
+                            file_size_kb = file_size / 1024
+                            file_size_mb = file_size / (1024 * 1024)
+                            
+                            # Calculate download speed
+                            if download_time > 0:
+                                speed_kbps = file_size_kb / download_time
+                                speed_mbps = speed_kbps / 1024
+                            else:
+                                speed_kbps = 0
+                                speed_mbps = 0
+                            
+                            logger.info(f"✓ Successfully downloaded PDF: {filename} ({file_size_kb:.1f} KB) in {download_time:.1f}s @ {speed_kbps:.1f} KB/s")
+                            
+                            downloaded_files.append(dest_path)
+                            open_access_articles.append(article_title)
+                            found_count += 1
+                            
+                            # Update progress callbacks
+                            if progress_callback:
+                                progress_callback(filename, dest_path)
+                            
+                            if total_progress_callback:
+                                total_progress_callback(found_count, total_articles_found, f"Downloaded: {filename[:40]}...", file_size, speed_kbps, "completed")
+                        else:
+                            logger.error(f"Downloaded file is too small or doesn't exist: {dest_path}")
+                            
+                    except Exception as e:
+                        logger.error(f"Failed to download PDF for '{article_title}': {e}")
+                        continue
+                    
                     time.sleep(1)
         
         else:
@@ -471,6 +381,9 @@ def crawl(
             logger.info(f"Searching: {url}")
             page.goto(url)
             page.wait_for_timeout(2000)
+            
+            # Handle cookie consent popup if it appears
+            handle_cookie_consent(page)
 
             # Parse results
             html = page.content()
@@ -506,14 +419,47 @@ def crawl(
                 title_elem = art.find("h3") or art.find("h2") or art.find("h1") or art.find(class_=lambda x: x and "title" in x.lower())
                 article_title = title_elem.get_text(strip=True) if title_elem else f"Article {found_count + 1}"
 
-                pdf_url = urljoin(url, pdf_link)
-                logger.info(f"Found PDF: {pdf_url}")
+                logger.info(f"Found article: {article_title}")
 
-                # Download
-                downloaded_file = _download_with_request(page, pdf_url, out_folder, progress_callback)
-                downloaded_files.append(downloaded_file)
-                open_access_articles.append(article_title)
-                found_count += 1
+                # Download PDF by clicking the link (Firefox will auto-download)
+                try:
+                    # Generate safe filename from article title
+                    safe_title = "".join(c for c in article_title if c.isalnum() or c in (' ', '-', '_')).strip()
+                    safe_title = safe_title[:100]  # Limit length
+                    filename = f"{safe_title}.pdf"
+                    dest_path = os.path.join(out_folder, filename)
+                    
+                    logger.info(f"Clicking PDF link for: {article_title}")
+                    
+                    # Wait for download to start when clicking the link
+                    with page.expect_download(timeout=30000) as download_info:
+                        # Find and click the PDF link
+                        pdf_selector = f'a[href="{pdf_link}"]'
+                        page.click(pdf_selector, timeout=10000)
+                    
+                    download = download_info.value
+                    
+                    # Save the download to the specified location with custom filename
+                    download.save_as(dest_path)
+                    
+                    # Verify the PDF was saved
+                    if os.path.exists(dest_path) and os.path.getsize(dest_path) > 1000:
+                        file_size = os.path.getsize(dest_path)
+                        logger.info(f"✓ Successfully downloaded PDF: {filename} ({file_size/1024:.1f} KB)")
+                        
+                        if progress_callback:
+                            progress_callback(filename, dest_path)
+                        
+                        downloaded_files.append(dest_path)
+                        open_access_articles.append(article_title)
+                        found_count += 1
+                    else:
+                        logger.error(f"Downloaded file is too small or doesn't exist: {dest_path}")
+                        
+                except Exception as e:
+                    logger.error(f"Failed to download PDF for '{article_title}': {e}")
+                    continue
+                
                 time.sleep(1)
 
         context.close()
@@ -604,23 +550,61 @@ def discover_journals(force_refresh: bool = False) -> List[Tuple[str, str]]:
             # Parse the HTML
             soup = BeautifulSoup(html, "html.parser")
             
-            # Find all links with href pattern matching journal home pages
-            all_links = soup.find_all("a", href=True)
-            logger.info(f"Found {len(all_links)} total links on page")
+            # Find the "Journals" menu section specifically (first mega-menu item)
+            # Look for the menu panel that contains "Life & medical sciences", "Physical sciences & engineering", "Multidisciplinary"
+            journals_panel = soup.find('div', id='main-menu-panel-1')
+            
+            if not journals_panel:
+                logger.warning("Could not find Journals menu panel (main-menu-panel-1)")
+                # Try alternative: find all links but filter more strictly
+                journals_panel = soup
+            
+            # Find all links within the Journals section
+            all_links = journals_panel.find_all("a", href=True)
+            logger.info(f"Found {len(all_links)} total links in Journals section")
             
             seen = set()
             for a in all_links:
                 href = a.get("href", "")
                 text = a.get_text(strip=True)
                 
-                # Extract slug from href like "/immunity/home" -> "immunity"
-                # Also match patterns like "/cell/home", "/neuron/home", etc.
-                match = re.match(r'^/([^/]+)/home$', href)
+                # Skip empty text or non-journal links
+                if not text or len(text) < 2:
+                    continue
+                
+                # Only process links within the journal sub-menu
+                if 'sub-menu__item-link' not in a.get('class', []):
+                    continue
+                
+                # Match various journal URL patterns:
+                # 1. /immunity/home -> "immunity"
+                # 2. /cell-chemical-biology -> "cell-chemical-biology" (add /home for actual URL)
+                # 3. /molecular-therapy-family/methods/home -> "molecular-therapy-family/methods"
+                
+                slug = None
+                
+                # Pattern 1: Single-level with /home (e.g., /immunity/home)
+                match = re.match(r'^/([a-z0-9\-]+)/home$', href)
                 if match:
                     slug = match.group(1)
+                
+                # Pattern 2: Multi-level with /home (e.g., /molecular-therapy-family/methods/home)
+                elif re.match(r'^/([a-z0-9\-]+/[a-z0-9\-]+)/home$', href):
+                    match = re.match(r'^/([a-z0-9\-]+/[a-z0-9\-]+)/home$', href)
+                    if match:
+                        slug = match.group(1)
+                
+                # Pattern 3: Journal links WITHOUT /home (e.g., /cell-chemical-biology)
+                # These are still valid, the actual URL has /home added
+                elif re.match(r'^/([a-z0-9\-]+)$', href):
+                    slug = href.strip('/')
+                
+                if slug:
                     # Clean up text (remove "(partner)" suffixes, "partner", and extra whitespace)
                     clean_text = re.sub(r'\s*\([^)]*\)\s*$', '', text).strip()
                     clean_text = re.sub(r'\s+partner\s*$', '', clean_text, flags=re.IGNORECASE).strip()
+                    # Remove HTML tags like <em>
+                    clean_text = re.sub(r'<[^>]+>', '', clean_text).strip()
                     
                     if slug and clean_text and slug not in seen:
                         seen.add(slug)

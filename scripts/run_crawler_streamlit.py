@@ -92,11 +92,14 @@ with st.form("crawl_form"):
     if journals:
         st.info(f"{len(journals)} journals available. Select one or more to crawl.")
         
+        # Add "Select All" checkbox
+        select_all = st.checkbox("✅ Select All Journals", key="select_all_journals")
+        
         # Create 3 columns for better layout
         cols = st.columns(3)
         for idx, (slug, name) in enumerate(journals):
             with cols[idx % 3]:
-                if st.checkbox(f"{name}", key=f"journal_{slug}"):
+                if st.checkbox(f"{name}", key=f"journal_{slug}", value=select_all):
                     selected_journals.append(slug)
     else:
         st.warning("⚠️ Click 'Load journals from Cell.com' above to see available journals.")
@@ -122,59 +125,95 @@ if submit:
         st.info(f"📥 Crawling {len(selected_journals)} journal(s): {', '.join(selected_journals)}")
         
         # Progress tracking
-        progress_bar = st.progress(0)
-        progress_text = st.empty()
-        downloaded_files_display = st.empty()
-        open_access_articles_display = st.empty()
+        overall_progress_bar = st.progress(0, text="Initializing...")
+        status_text = st.empty()
+        speed_text = st.empty()
         
-        downloaded_files = []
-        open_access_articles = []
+        # Container for downloaded files list
+        downloaded_files_container = st.container()
+        
+        downloaded_files_list = []
+        open_access_articles_list = []
         
         def progress_callback(filename, filepath):
-            """Callback function to track download progress"""
-            downloaded_files.append(filename)
-            progress_text.text(f"Downloaded: {filename}")
-            downloaded_files_display.write(f"📁 Downloaded files ({len(downloaded_files)}):")
-            for i, fname in enumerate(downloaded_files, 1):
-                downloaded_files_display.write(f"{i}. {fname}")
+            """Callback function to track individual file downloads"""
+            downloaded_files_list.append(filename)
+        
+        def total_progress_callback(current, total, status_message, file_size=0, speed_kbps=0, stage=""):
+            """Callback function to track overall progress with speed metrics and stage indicators"""
+            if total > 0:
+                progress = current / total
+                percentage = progress * 100
+                overall_progress_bar.progress(progress, text=f"{current}/{total} files ({percentage:.1f}%)")
+                
+                # Show different indicators based on stage
+                if stage == "starting":
+                    status_text.text(f"� Initiating download: {status_message}")
+                    speed_text.text("🔄 Connecting to server...")
+                elif stage == "downloading":
+                    status_text.text(f"⬇️ Downloading in progress: {status_message}")
+                    speed_text.text("📡 Receiving data...")
+                elif stage == "completed":
+                    status_text.text(f"✅ {status_message}")
+                    # Show download speed if available
+                    if speed_kbps > 0:
+                        if speed_kbps > 1024:
+                            speed_mbps = speed_kbps / 1024
+                            speed_text.text(f"⚡ Average speed: {speed_mbps:.2f} MB/s | File size: {file_size/1024:.1f} KB")
+                        else:
+                            speed_text.text(f"⚡ Average speed: {speed_kbps:.1f} KB/s | File size: {file_size/1024:.1f} KB")
+                    else:
+                        speed_text.text("")
+                else:
+                    status_text.text(f"📊 {status_message}")
+                    speed_text.text("")
+            else:
+                # Still discovering articles
+                overall_progress_bar.progress(0, text="Scanning journals...")
+                status_text.text(f"🔍 {status_message}")
+                speed_text.text("")
         
         # Run synchronously in Streamlit's script context to avoid NoSessionContext errors.
         try:
-            with st.spinner("Crawling open-access articles..."):
-                downloaded_files, open_access_articles = crawl(
-                    keywords="",  # Not used when journal_slugs provided
-                    year_from=int(year_from),
-                    year_to=int(year_to),
-                    out_folder=out_folder,
-                    headless=headless,
-                    limit=(None if int(limit) == 0 else int(limit)),
-                    journal_slugs=selected_journals,
-                    progress_callback=progress_callback,
-                )
-                
-                progress_bar.progress(1.0)
-                progress_text.text("✅ Crawl complete!")
-                
-                # Display results
-                st.success(f"🎉 Crawl complete! Downloaded {len(downloaded_files)} files to {os.path.abspath(out_folder)}")
-                
-                # Show open access articles found
-                if open_access_articles:
-                    st.subheader("📚 Open Access Articles Found")
-                    for i, title in enumerate(open_access_articles, 1):
-                        st.write(f"{i}. {title}")
-                
-                # Show downloaded files
-                if downloaded_files:
-                    st.subheader("📁 Downloaded Files")
-                    for i, filepath in enumerate(downloaded_files, 1):
-                        filename = os.path.basename(filepath)
-                        st.write(f"{i}. {filename}")
-                else:
-                    st.warning("⚠️ No files were downloaded. This could mean:")
-                    st.write("- No open access articles found in the specified year range")
-                    st.write("- Network connectivity issues")
-                    st.write("- Changes in the website structure")
+            downloaded_files_list, open_access_articles_list = crawl(
+                keywords="",  # Not used when journal_slugs provided
+                year_from=int(year_from),
+                year_to=int(year_to),
+                out_folder=out_folder,
+                headless=headless,
+                limit=(None if int(limit) == 0 else int(limit)),
+                journal_slugs=selected_journals,
+                progress_callback=progress_callback,
+                total_progress_callback=total_progress_callback,
+            )
+            
+            # Complete progress
+            overall_progress_bar.progress(1.0, text=f"{len(downloaded_files_list)}/{len(downloaded_files_list)} files (100%)")
+            status_text.text("✅ Crawl complete!")
+            speed_text.text("")
+            
+            # Display results
+            st.success(f"🎉 Crawl complete! Downloaded {len(downloaded_files_list)} files to {os.path.abspath(out_folder)}")
+            
+            # Show open access articles found
+            if open_access_articles_list:
+                st.subheader("📚 Open Access Articles Found")
+                for i, title in enumerate(open_access_articles_list, 1):
+                    st.write(f"{i}. {title}")
+            
+            # Show downloaded files
+            if downloaded_files_list:
+                st.subheader("📁 Downloaded Files")
+                for i, filepath in enumerate(downloaded_files_list, 1):
+                    filename = os.path.basename(filepath)
+                    # Extract journal folder from path
+                    journal_folder = os.path.basename(os.path.dirname(filepath))
+                    st.write(f"{i}. [{journal_folder}] {filename}")
+            else:
+                st.warning("⚠️ No files were downloaded. This could mean:")
+                st.write("- No open access articles found in the specified year range")
+                st.write("- Network connectivity issues")
+                st.write("- Changes in the website structure")
                     
         except Exception as e:
             error_msg = str(e)
