@@ -355,6 +355,8 @@ async def crawl_async(
                             cli_progress.update(found_count, total_articles_found, f"⬇️  {article_title[:30]}...", 0, 0, "starting", force=True)
                         else:
                             print(f"⬇️  Start downloading file: {article_title[:50]}...", flush=True)
+                            if IN_COLAB:
+                                await asyncio.sleep(0)
                         
                         download_start_time = time.time()
                         
@@ -388,6 +390,8 @@ async def crawl_async(
                                     print(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps/1024:.1f} MB/s", flush=True)
                                 else:
                                     print(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps:.1f} KB/s", flush=True)
+                                if IN_COLAB:
+                                    await asyncio.sleep(0)
                             
                             downloaded_files.append(dest_path)
                             open_access_articles.append(article_title)
