@@ -60,13 +60,13 @@ class CLIProgressTracker:
         elif total > 0:
             print(f"\n📥 Starting download: 0/{total} files (0%)", flush=True)
     
-    def update(self, current: int, total: int, status: str = "", file_size: int = 0, speed_kbps: float = 0, stage: str = ""):
+    def update(self, current: int, total: int, status: str = "", file_size: int = 0, speed_kbps: float = 0, stage: str = "", force: bool = False):
         """Update progress display with throttling to prevent too frequent updates."""
         current_time = time.time()
         time_since_last_update = current_time - self.last_update_time
         
-        # Skip update if too soon (unless it's the final update)
-        if time_since_last_update < self.min_refresh_interval and current < total:
+        # Skip update if too soon (unless forced, final update, or stage change)
+        if not force and time_since_last_update < self.min_refresh_interval and current < total:
             return
         
         self.current = current
@@ -77,7 +77,7 @@ class CLIProgressTracker:
             # Update progress bar
             if current > self.pbar.n:
                 self.pbar.n = current
-                #self.pbar.refresh()
+                self.pbar.refresh()  # Always refresh to show updates
                 
             # Show status in postfix
             postfix = {}
@@ -287,7 +287,7 @@ async def crawl_async(
                 for art in articles:
                     # Check if we've reached the limit for THIS journal
                     if limit and journal_download_count >= limit:
-                        print(f"✋ Reached limit of {limit} downloads for journal {slug}", flush=True)
+                        print(f"✋ Reached limit of {limit} downloads for journal {slug}")
                         break
                     
                     year_tag = art.find(class_="toc__item__date")
@@ -323,7 +323,7 @@ async def crawl_async(
                     title_elem = art.find(class_="toc__item__title")
                     article_title = title_elem.get_text(strip=True) if title_elem else f"Article {found_count + 1}"
                     
-                    print(f"📄 Found open-access article: {article_title[:60]}...", flush=True)
+                    print(f"📄 Found open-access article: {article_title[:60]}...")
                     
                     try:
                         safe_title = "".join(c for c in article_title if c.isalnum() or c in (' ', '-', '_')).strip()
@@ -333,7 +333,10 @@ async def crawl_async(
                         
                         if total_progress_callback:
                             total_progress_callback(found_count, total_articles_found, f"Downloading: {article_title[:50]}...", 0, 0, "starting")
-                        elif cli_progress is None:
+                        elif cli_progress:
+                            # Update progress bar to show we're starting this download (force update)
+                            cli_progress.update(found_count, total_articles_found, f"⬇️  {article_title[:30]}...", 0, 0, "starting", force=True)
+                        else:
                             print(f"⬇️  Downloading: {article_title[:50]}...", flush=True)
                         
                         download_start_time = time.time()
@@ -346,6 +349,9 @@ async def crawl_async(
                         
                         if total_progress_callback:
                             total_progress_callback(found_count, total_articles_found, f"Saving: {article_title[:50]}...", 0, 0, "downloading")
+                        elif cli_progress:
+                            # Update progress bar to show we're saving (force update)
+                            cli_progress.update(found_count, total_articles_found, f"💾 {article_title[:30]}...", 0, 0, "saving", force=True)
                         
                         await download.save_as(dest_path)
                         
@@ -377,7 +383,8 @@ async def crawl_async(
                             if total_progress_callback:
                                 total_progress_callback(found_count, total_articles_found, f"Downloaded: {filename[:40]}...", file_size, speed_kbps, "completed")
                             elif cli_progress:
-                                cli_progress.update(found_count, total_articles_found, f"[{slug}] {filename[:30]}...", file_size, speed_kbps, "completed")
+                                # Force update to show completion immediately
+                                cli_progress.update(found_count, total_articles_found, f"✅ {filename[:25]}...", file_size, speed_kbps, "completed", force=True)
                         else:
                             print(f"❌ Downloaded file is too small or doesn't exist: {dest_path}", flush=True)
                             
