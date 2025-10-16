@@ -150,7 +150,10 @@ async def crawl_async(
     # Initialize CLI progress tracker (only if no callbacks provided)
     cli_progress = None
     if not progress_callback and not total_progress_callback:
-        cli_progress = CLIProgressTracker(use_tqdm=True)
+        if IN_COLAB:
+            print("📝 Using simple progress logging in Colab (tqdm disabled).", flush=True)
+        else:
+            cli_progress = CLIProgressTracker(use_tqdm=True)
 
     # Initialize stealth mode for playwright
     stealth = Stealth(
@@ -351,7 +354,7 @@ async def crawl_async(
                             # Update progress bar to show we're starting this download (force update)
                             cli_progress.update(found_count, total_articles_found, f"⬇️  {article_title[:30]}...", 0, 0, "starting", force=True)
                         else:
-                            print(f"⬇️  Downloading: {article_title[:50]}...", flush=True)
+                            print(f"⬇️  Start downloading file: {article_title[:50]}...", flush=True)
                         
                         download_start_time = time.time()
                         
@@ -382,9 +385,9 @@ async def crawl_async(
                             
                             if cli_progress is None:
                                 if speed_kbps > 1024:
-                                    print(f"✅ Downloaded: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps/1024:.1f} MB/s", flush=True)
+                                    print(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps/1024:.1f} MB/s", flush=True)
                                 else:
-                                    print(f"✅ Downloaded: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps:.1f} KB/s", flush=True)
+                                    print(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps:.1f} KB/s", flush=True)
                             
                             downloaded_files.append(dest_path)
                             open_access_articles.append(article_title)
