@@ -34,31 +34,44 @@ logging.basicConfig(level=logging.INFO)
 class CLIProgressTracker:
     """CLI progress tracker with optional tqdm support."""
     
-    def __init__(self, use_tqdm: bool = True):
+    def __init__(self, use_tqdm: bool = True, min_refresh_interval: float = 0.5):
         self.use_tqdm = use_tqdm and TQDM_AVAILABLE
         self.pbar = None
         self.total = 0
         self.current = 0
+        self.min_refresh_interval = min_refresh_interval  # Minimum seconds between updates
+        self.last_update_time = 0
         
     def start(self, total: int):
         """Initialize progress tracking."""
         self.total = total
         self.current = 0
+        self.last_update_time = time.time()
         if self.use_tqdm and total > 0:
             self.pbar = tqdm(
                 total=total,
                 desc="Downloading PDFs",
                 unit="file",
                 bar_format="{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
-                file=sys.stdout
+                file=sys.stdout,
+                mininterval=0.5,  # Minimum 0.5 seconds between updates
+                maxinterval=2.0,  # Maximum 2 seconds between updates
             )
         elif total > 0:
             print(f"\n📥 Starting download: 0/{total} files (0%)", flush=True)
     
     def update(self, current: int, total: int, status: str = "", file_size: int = 0, speed_kbps: float = 0, stage: str = ""):
-        """Update progress display."""
+        """Update progress display with throttling to prevent too frequent updates."""
+        current_time = time.time()
+        time_since_last_update = current_time - self.last_update_time
+        
+        # Skip update if too soon (unless it's the final update)
+        if time_since_last_update < self.min_refresh_interval and current < total:
+            return
+        
         self.current = current
         self.total = total
+        self.last_update_time = current_time
         
         if self.use_tqdm and self.pbar:
             # Update progress bar
@@ -78,7 +91,7 @@ class CLIProgressTracker:
             if postfix:
                 self.pbar.set_postfix(postfix, refresh=False)
         else:
-            # Simple text progress
+            # Simple text progress (throttled)
             if total > 0:
                 percentage = (current / total) * 100
                 status_text = f"\r📥 Progress: {current}/{total} files ({percentage:.1f}%)"
