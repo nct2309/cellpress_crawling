@@ -15,6 +15,8 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
+from playwright_stealth import Stealth, ALL_EVASIONS_DISABLED_KWARGS
+
 import sys
 IN_COLAB = 'google.colab' in sys.modules
 
@@ -150,6 +152,12 @@ async def crawl_async(
     if not progress_callback and not total_progress_callback:
         cli_progress = CLIProgressTracker(use_tqdm=True)
 
+    # Initialize stealth mode for playwright
+    stealth = Stealth(
+        navigator_languages_override=("en-US", "en"),
+        init_scripts_only=True
+    )
+
     async with async_playwright() as p:
         # Use Firefox with PDF download preferences
         print("🚀 Launching Firefox browser...", flush=True)
@@ -232,6 +240,9 @@ async def crawl_async(
                 print(f"\n📄 Creating new page for journal: {slug}", flush=True)
                 page = await context.new_page()
                 
+                # Apply stealth mode to hide automation
+                await stealth.apply_stealth_async(page)
+                
                 await page.add_init_script("""
                     Object.defineProperty(navigator, 'webdriver', {
                         get: () => undefined
@@ -254,8 +265,8 @@ async def crawl_async(
                 await handle_cookie_consent(page)
                 
                 page_title = await page.title()
-                if "Just a moment" in page_title or "Cloudflare" in page_title:
-                    raise Exception(f"Cloudflare challenge detected on {url}. The website is blocking automated requests. Please try again later or use a VPN.")
+                # if "Just a moment" in page_title or "Cloudflare" in page_title:
+                #     raise Exception(f"Cloudflare challenge detected on {url}. The website is blocking automated requests. Please try again later or use a VPN.")
                 
                 html = await page.content()
                 soup = BeautifulSoup(html, "html.parser")
@@ -437,6 +448,13 @@ async def discover_journals_async(force_refresh: bool = False) -> List[Tuple[str
     results: List[Tuple[str, str]] = []
     
     print("🌐 Fetching journals from Cell.com with Playwright...", flush=True)
+    
+    # Initialize stealth mode
+    stealth = Stealth(
+        navigator_languages_override=("en-US", "en"),
+        init_scripts_only=True
+    )
+    
     try:
         async with async_playwright() as p:
             browser = await p.firefox.launch(
@@ -453,6 +471,9 @@ async def discover_journals_async(force_refresh: bool = False) -> List[Tuple[str
                 timezone_id='America/New_York'
             )
             page = await context.new_page()
+            
+            # Apply stealth mode to hide automation
+            await stealth.apply_stealth_async(page)
             
             await page.add_init_script("""
                 Object.defineProperty(navigator, 'webdriver', {
