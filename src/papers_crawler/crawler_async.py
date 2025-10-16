@@ -60,7 +60,7 @@ class CLIProgressTracker:
                 maxinterval=2.0,  # Maximum 2 seconds between updates
             )
         elif total > 0:
-            print(f"\n📥 Starting download: 0/{total} files (0%)", flush=True)
+            print(f"\n📥 Starting download: 0/{total} files (0%)")
     
     def update(self, current: int, total: int, status: str = "", file_size: int = 0, speed_kbps: float = 0, stage: str = "", force: bool = False):
         """Update progress display with throttling to prevent too frequent updates."""
@@ -107,7 +107,7 @@ class CLIProgressTracker:
                 if status:
                     status_text += f" | {status[:40]}"
                 
-                print(status_text, end='', flush=True)
+                print(status_text, end='')
     
     def close(self):
         """Finalize progress display."""
@@ -150,10 +150,7 @@ async def crawl_async(
     # Initialize CLI progress tracker (only if no callbacks provided)
     cli_progress = None
     if not progress_callback and not total_progress_callback:
-        if IN_COLAB:
-            print("📝 Using simple progress logging in Colab (tqdm disabled).", flush=True)
-        else:
-            cli_progress = CLIProgressTracker(use_tqdm=True)
+        cli_progress = CLIProgressTracker(use_tqdm=True)
 
     # Initialize stealth mode for playwright
     stealth = Stealth(
@@ -163,7 +160,7 @@ async def crawl_async(
 
     async with async_playwright() as p:
         # Use Firefox with PDF download preferences
-        print("🚀 Launching Firefox browser...", flush=True)
+        print("🚀 Launching Firefox browser...")
         browser = await p.firefox.launch(
             headless=headless,
             firefox_user_prefs={
@@ -194,7 +191,7 @@ async def crawl_async(
             }
         )
         
-        print("✅ Firefox browser ready", flush=True)
+        print("✅ Firefox browser ready")
 
         found_count = 0
 
@@ -236,11 +233,11 @@ async def crawl_async(
             if total_progress_callback:
                 total_progress_callback(0, 0, "Scanning journals for open access articles...", 0, 0, "scanning")
             elif cli_progress:
-                print(f"🔍 Scanning {len(journal_slugs)} journal(s) for open access articles...", flush=True)
+                print(f"🔍 Scanning {len(journal_slugs)} journal(s) for open access articles...")
             
             for slug in journal_slugs:
                 # Create a fresh page for each journal to avoid state issues
-                print(f"\n📄 Creating new page for journal: {slug}", flush=True)
+                print(f"\n📄 Creating new page for journal: {slug}")
                 page = await context.new_page()
                 
                 # Apply stealth mode to hide automation
@@ -254,10 +251,10 @@ async def crawl_async(
                 
                 journal_folder = os.path.join(out_folder, slug.replace('/', '_'))
                 os.makedirs(journal_folder, exist_ok=True)
-                print(f"📂 Journal folder: {journal_folder}", flush=True)
+                print(f"📂 Journal folder: {journal_folder}")
                 
                 url = f"https://www.cell.com/{slug}/newarticles"
-                print(f"🔎 Crawling journal: {slug} at {url}", flush=True)
+                print(f"🔎 Crawling journal: {slug} at {url}")
                 
                 if total_progress_callback:
                     total_progress_callback(found_count, total_articles_found, f"Loading journal: {slug}", 0, 0, "loading")
@@ -276,9 +273,9 @@ async def crawl_async(
                 articles = soup.select(".articleCitation")
                 
                 if not articles:
-                    print(f"⚠️ No articles found on {url}. Page title: {page_title}", flush=True)
+                    print(f"⚠️ No articles found on {url}. Page title: {page_title}")
                     all_divs = soup.find_all("div")
-                    print(f"Found {len(all_divs)} div elements on page", flush=True)
+                    print(f"Found {len(all_divs)} div elements on page")
                     continue
                 
                 oa_count = sum(1 for art in articles if art.find(class_="OALabel"))
@@ -286,7 +283,7 @@ async def crawl_async(
                 journal_download_count = 0
                 journal_target = min(oa_count, limit) if limit else oa_count
                 total_articles_found += journal_target
-                print(f"📚 Found {oa_count} open access articles in {slug} (will download up to {journal_target})", flush=True)
+                print(f"📚 Found {oa_count} open access articles in {slug} (will download up to {journal_target})")
                 
                 if total_progress_callback:
                     total_progress_callback(found_count, total_articles_found, f"Found {total_articles_found} open access articles", 0, 0, "found")
@@ -354,9 +351,7 @@ async def crawl_async(
                             # Update progress bar to show we're starting this download (force update)
                             cli_progress.update(found_count, total_articles_found, f"⬇️  {article_title[:30]}...", 0, 0, "starting", force=True)
                         else:
-                            print(f"⬇️  Start downloading file: {article_title[:50]}...", flush=True)
-                            if IN_COLAB:
-                                await asyncio.sleep(5)
+                            print(f"⬇️  Start downloading file: {article_title[:50]}...")
                         
                         download_start_time = time.time()
                         
@@ -387,11 +382,9 @@ async def crawl_async(
                             
                             if cli_progress is None:
                                 if speed_kbps > 1024:
-                                    print(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps/1024:.1f} MB/s", flush=True)
+                                    print(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps/1024:.1f} MB/s")
                                 else:
-                                    print(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps:.1f} KB/s", flush=True)
-                                if IN_COLAB:
-                                    await asyncio.sleep(5)
+                                    print(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps:.1f} KB/s")
                             
                             downloaded_files.append(dest_path)
                             open_access_articles.append(article_title)
@@ -407,16 +400,16 @@ async def crawl_async(
                                 # Force update to show completion immediately
                                 cli_progress.update(found_count, total_articles_found, f"✅ {filename[:25]}...", file_size, speed_kbps, "completed", force=True)
                         else:
-                            print(f"❌ Downloaded file is too small or doesn't exist: {dest_path}", flush=True)
+                            print(f"❌ Downloaded file is too small or doesn't exist: {dest_path}")
                             
                     except Exception as e:
-                        print(f"❌ Failed to download PDF for '{article_title[:50]}': {e}", flush=True)
+                        print(f"❌ Failed to download PDF for '{article_title[:50]}': {e}")
                         continue
                     
                     await asyncio.sleep(1)
                 
                 # Close the page after finishing this journal
-                print(f"🔒 Closing page for journal: {slug}", flush=True)
+                print(f"🔒 Closing page for journal: {slug}")
                 await page.close()
 
         await context.close()
@@ -426,7 +419,7 @@ async def crawl_async(
     if cli_progress:
         cli_progress.close()
     
-    print(f"\n🎉 Downloaded {found_count} PDFs to {out_folder}", flush=True)
+    print(f"\n🎉 Downloaded {found_count} PDFs to {out_folder}")
     return downloaded_files, open_access_articles
 
 
@@ -454,7 +447,7 @@ async def discover_journals_async(force_refresh: bool = False) -> List[Tuple[str
 
     results: List[Tuple[str, str]] = []
     
-    print("🌐 Fetching journals from Cell.com with Playwright...", flush=True)
+    print("🌐 Fetching journals from Cell.com with Playwright...")
     
     # Initialize stealth mode
     stealth = Stealth(
@@ -488,19 +481,19 @@ async def discover_journals_async(force_refresh: bool = False) -> List[Tuple[str
                 });
             """)
             
-            print("🔗 Loading Cell.com homepage...", flush=True)
+            print("🔗 Loading Cell.com homepage...")
             await page.goto("https://www.cell.com", timeout=60000, wait_until="domcontentloaded")
             
             try:
                 await page.wait_for_selector("ul.mega-menu, nav, header", timeout=10000)
-                print("✅ Navigation menu loaded", flush=True)
+                print("✅ Navigation menu loaded")
             except Exception as e:
-                print(f"⚠️ Could not find navigation menu: {e}", flush=True)
+                print(f"⚠️ Could not find navigation menu: {e}")
             
             await page.wait_for_timeout(3000)
             
             html = await page.content()
-            print(f"📄 Retrieved page content: {len(html)} bytes", flush=True)
+            print(f"📄 Retrieved page content: {len(html)} bytes")
             
             await context.close()
             await browser.close()
@@ -509,11 +502,11 @@ async def discover_journals_async(force_refresh: bool = False) -> List[Tuple[str
             journals_panel = soup.find('div', id='main-menu-panel-1')
             
             if not journals_panel:
-                print("⚠️ Could not find Journals menu panel (main-menu-panel-1)", flush=True)
+                print("⚠️ Could not find Journals menu panel (main-menu-panel-1)")
                 journals_panel = soup
             
             all_links = journals_panel.find_all("a", href=True)
-            print(f"🔗 Found {len(all_links)} total links in Journals section", flush=True)
+            print(f"🔗 Found {len(all_links)} total links in Journals section")
             
             seen = set()
             for a in all_links:
@@ -551,17 +544,17 @@ async def discover_journals_async(force_refresh: bool = False) -> List[Tuple[str
                         logger.debug(f"Found journal: {slug} -> {clean_text}")
             
             if results:
-                print(f"✅ Successfully discovered {len(results)} journals from Cell.com", flush=True)
+                print(f"✅ Successfully discovered {len(results)} journals from Cell.com")
                 try:
                     with open(cache_file, "w", encoding="utf8") as f:
                         json.dump(results, f, ensure_ascii=False, indent=2)
-                    print(f"💾 Cached {len(results)} journals to {cache_file}", flush=True)
+                    print(f"💾 Cached {len(results)} journals to {cache_file}")
                 except Exception as e:
-                    print(f"⚠️ Failed to cache journals: {e}", flush=True)
+                    print(f"⚠️ Failed to cache journals: {e}")
                 return results
             else:
                 raise Exception("No journals found on Cell.com - page structure may have changed")
                 
     except Exception as e:
-        print(f"❌ Failed to discover journals from Cell.com: {e}", flush=True)
+        print(f"❌ Failed to discover journals from Cell.com: {e}")
         raise Exception(f"Could not load journals from Cell.com. Error: {str(e)}. Please check your internet connection and try again.")
