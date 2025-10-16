@@ -273,8 +273,9 @@ async def crawl_async(
                 
                 if not articles:
                     print(f"⚠️ No articles found on {url}. Page title: {page_title}")
-                    all_divs = soup.find_all("div")
-                    print(f"Found {len(all_divs)} div elements on page")
+                    await page.close()
+                    await context.close()
+                    await browser.close()  # ← ADD THIS!
                     continue
                 
                 oa_count = sum(1 for art in articles if art.find(class_="OALabel"))
