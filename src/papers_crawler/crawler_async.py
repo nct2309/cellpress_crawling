@@ -6,6 +6,7 @@ environments with asyncio event loops (like Jupyter/Colab).
 from __future__ import annotations
 
 import os
+import sys
 import time
 import logging
 from typing import List, Optional, Tuple
@@ -14,8 +15,85 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
+try:
+    from tqdm import tqdm
+    TQDM_AVAILABLE = True
+except ImportError:
+    TQDM_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
+
+class CLIProgressTracker:
+    """CLI progress tracker with optional tqdm support."""
+    
+    def __init__(self, use_tqdm: bool = True):
+        self.use_tqdm = use_tqdm and TQDM_AVAILABLE
+        self.pbar = None
+        self.total = 0
+        self.current = 0
+        
+    def start(self, total: int):
+        """Initialize progress tracking."""
+        self.total = total
+        self.current = 0
+        if self.use_tqdm and total > 0:
+            self.pbar = tqdm(
+                total=total,
+                desc="Downloading PDFs",
+                unit="file",
+                bar_format="{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
+                file=sys.stdout
+            )
+        elif total > 0:
+            print(f"\n📥 Starting download: 0/{total} files (0%)", flush=True)
+    
+    def update(self, current: int, total: int, status: str = "", file_size: int = 0, speed_kbps: float = 0, stage: str = ""):
+        """Update progress display."""
+        self.current = current
+        self.total = total
+        
+        if self.use_tqdm and self.pbar:
+            # Update progress bar
+            if current > self.pbar.n:
+                self.pbar.n = current
+                self.pbar.refresh()
+                
+            # Show status in postfix
+            postfix = {}
+            if speed_kbps > 0:
+                if speed_kbps > 1024:
+                    postfix['speed'] = f"{speed_kbps/1024:.1f} MB/s"
+                else:
+                    postfix['speed'] = f"{speed_kbps:.1f} KB/s"
+            if status:
+                postfix['status'] = status[:30]
+            if postfix:
+                self.pbar.set_postfix(postfix, refresh=False)
+        else:
+            # Simple text progress
+            if total > 0:
+                percentage = (current / total) * 100
+                status_text = f"\r📥 Progress: {current}/{total} files ({percentage:.1f}%)"
+                
+                if speed_kbps > 0:
+                    if speed_kbps > 1024:
+                        status_text += f" | {speed_kbps/1024:.1f} MB/s"
+                    else:
+                        status_text += f" | {speed_kbps:.1f} KB/s"
+                
+                if status:
+                    status_text += f" | {status[:40]}"
+                
+                print(status_text, end='', flush=True)
+    
+    def close(self):
+        """Finalize progress display."""
+        if self.use_tqdm and self.pbar:
+            self.pbar.close()
+        else:
+            print()  # New line after progress
 
 
 async def crawl_async(
@@ -47,6 +125,11 @@ async def crawl_async(
     downloaded_files = []
     open_access_articles = []
     total_articles_found = 0
+    
+    # Initialize CLI progress tracker (only if no callbacks provided)
+    cli_progress = None
+    if not progress_callback and not total_progress_callback:
+        cli_progress = CLIProgressTracker(use_tqdm=True)
 
     async with async_playwright() as p:
         # Use Firefox with PDF download preferences
@@ -170,6 +253,9 @@ async def crawl_async(
                 
                 if total_progress_callback:
                     total_progress_callback(found_count, total_articles_found, f"Found {total_articles_found} open access articles", 0, 0, "found")
+                elif cli_progress and total_articles_found > 0 and cli_progress.total == 0:
+                    # Start CLI progress bar once we know the total
+                    cli_progress.start(total_articles_found)
                 
                 for art in articles:
                     if limit and found_count >= limit:
@@ -256,6 +342,8 @@ async def crawl_async(
                             
                             if total_progress_callback:
                                 total_progress_callback(found_count, total_articles_found, f"Downloaded: {filename[:40]}...", file_size, speed_kbps, "completed")
+                            elif cli_progress:
+                                cli_progress.update(found_count, total_articles_found, f"Downloaded: {filename[:40]}...", file_size, speed_kbps, "completed")
                         else:
                             logger.error(f"Downloaded file is too small or doesn't exist: {dest_path}")
                             
@@ -268,6 +356,10 @@ async def crawl_async(
         await context.close()
         await browser.close()
 
+    # Close CLI progress tracker
+    if cli_progress:
+        cli_progress.close()
+    
     logger.info(f"Downloaded {found_count} PDFs to {out_folder}")
     return downloaded_files, open_access_articles
 
