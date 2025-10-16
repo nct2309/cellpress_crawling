@@ -133,7 +133,7 @@ async def crawl_async(
 
     async with async_playwright() as p:
         # Use Firefox with PDF download preferences
-        logger.info("Launching Firefox browser...")
+        print("🚀 Launching Firefox browser...", flush=True)
         browser = await p.firefox.launch(
             headless=headless,
             firefox_user_prefs={
@@ -172,7 +172,7 @@ async def crawl_async(
             });
         """)
         
-        logger.info("Firefox browser ready")
+        print("✅ Firefox browser ready", flush=True)
 
         found_count = 0
 
@@ -219,10 +219,10 @@ async def crawl_async(
             for slug in journal_slugs:
                 journal_folder = os.path.join(out_folder, slug.replace('/', '_'))
                 os.makedirs(journal_folder, exist_ok=True)
-                logger.info(f"Journal folder: {journal_folder}")
+                print(f"📂 Journal folder: {journal_folder}", flush=True)
                 
                 url = f"https://www.cell.com/{slug}/newarticles"
-                logger.info(f"Crawling journal: {slug} at {url}")
+                print(f"🔎 Crawling journal: {slug} at {url}", flush=True)
                 
                 if total_progress_callback:
                     total_progress_callback(found_count, total_articles_found, f"Loading journal: {slug}", 0, 0, "loading")
@@ -241,9 +241,9 @@ async def crawl_async(
                 articles = soup.select(".articleCitation")
                 
                 if not articles:
-                    logger.warning(f"No articles found on {url}. Page title: {page_title}")
+                    print(f"⚠️ No articles found on {url}. Page title: {page_title}", flush=True)
                     all_divs = soup.find_all("div")
-                    logger.info(f"Found {len(all_divs)} div elements on page")
+                    print(f"Found {len(all_divs)} div elements on page", flush=True)
                     continue
                 
                 oa_count = sum(1 for art in articles if art.find(class_="OALabel"))
@@ -251,7 +251,7 @@ async def crawl_async(
                 journal_download_count = 0
                 journal_target = min(oa_count, limit) if limit else oa_count
                 total_articles_found += journal_target
-                logger.info(f"Found {oa_count} open access articles in {slug} (will download up to {journal_target})")
+                print(f"📚 Found {oa_count} open access articles in {slug} (will download up to {journal_target})", flush=True)
                 
                 if total_progress_callback:
                     total_progress_callback(found_count, total_articles_found, f"Found {total_articles_found} open access articles", 0, 0, "found")
@@ -268,7 +268,7 @@ async def crawl_async(
                 for art in articles:
                     # Check if we've reached the limit for THIS journal
                     if limit and journal_download_count >= limit:
-                        logger.info(f"Reached limit of {limit} downloads for journal {slug}")
+                        print(f"✋ Reached limit of {limit} downloads for journal {slug}", flush=True)
                         break
                     
                     year_tag = art.find(class_="toc__item__date")
@@ -304,7 +304,7 @@ async def crawl_async(
                     title_elem = art.find(class_="toc__item__title")
                     article_title = title_elem.get_text(strip=True) if title_elem else f"Article {found_count + 1}"
                     
-                    logger.info(f"Found open-access article: {article_title}")
+                    print(f"📄 Found open-access article: {article_title[:60]}...", flush=True)
                     
                     try:
                         safe_title = "".join(c for c in article_title if c.isalnum() or c in (' ', '-', '_')).strip()
@@ -314,8 +314,8 @@ async def crawl_async(
                         
                         if total_progress_callback:
                             total_progress_callback(found_count, total_articles_found, f"Downloading: {article_title[:50]}...", 0, 0, "starting")
-                        
-                        logger.info(f"Clicking PDF link for: {article_title}")
+                        elif cli_progress is None:
+                            print(f"⬇️  Downloading: {article_title[:50]}...", flush=True)
                         
                         download_start_time = time.time()
                         
@@ -341,7 +341,11 @@ async def crawl_async(
                             else:
                                 speed_kbps = 0
                             
-                            logger.info(f"✓ Successfully downloaded PDF: {filename} ({file_size_kb:.1f} KB) in {download_time:.1f}s @ {speed_kbps:.1f} KB/s")
+                            if cli_progress is None:
+                                if speed_kbps > 1024:
+                                    print(f"✅ Downloaded: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps/1024:.1f} MB/s", flush=True)
+                                else:
+                                    print(f"✅ Downloaded: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps:.1f} KB/s", flush=True)
                             
                             downloaded_files.append(dest_path)
                             open_access_articles.append(article_title)
@@ -356,10 +360,10 @@ async def crawl_async(
                             elif cli_progress:
                                 cli_progress.update(found_count, total_articles_found, f"[{slug}] {filename[:30]}...", file_size, speed_kbps, "completed")
                         else:
-                            logger.error(f"Downloaded file is too small or doesn't exist: {dest_path}")
+                            print(f"❌ Downloaded file is too small or doesn't exist: {dest_path}", flush=True)
                             
                     except Exception as e:
-                        logger.error(f"Failed to download PDF for '{article_title}': {e}")
+                        print(f"❌ Failed to download PDF for '{article_title[:50]}': {e}", flush=True)
                         continue
                     
                     await asyncio.sleep(1)
@@ -371,7 +375,7 @@ async def crawl_async(
     if cli_progress:
         cli_progress.close()
     
-    logger.info(f"Downloaded {found_count} PDFs to {out_folder}")
+    print(f"\n🎉 Downloaded {found_count} PDFs to {out_folder}", flush=True)
     return downloaded_files, open_access_articles
 
 
@@ -399,7 +403,7 @@ async def discover_journals_async(force_refresh: bool = False) -> List[Tuple[str
 
     results: List[Tuple[str, str]] = []
     
-    logger.info("Fetching journals from Cell.com with Playwright...")
+    print("🌐 Fetching journals from Cell.com with Playwright...", flush=True)
     try:
         async with async_playwright() as p:
             browser = await p.firefox.launch(
@@ -423,19 +427,19 @@ async def discover_journals_async(force_refresh: bool = False) -> List[Tuple[str
                 });
             """)
             
-            logger.info("Loading Cell.com homepage...")
+            print("🔗 Loading Cell.com homepage...", flush=True)
             await page.goto("https://www.cell.com", timeout=60000, wait_until="domcontentloaded")
             
             try:
                 await page.wait_for_selector("ul.mega-menu, nav, header", timeout=10000)
-                logger.info("Navigation menu loaded")
+                print("✅ Navigation menu loaded", flush=True)
             except Exception as e:
-                logger.warning(f"Could not find navigation menu: {e}")
+                print(f"⚠️ Could not find navigation menu: {e}", flush=True)
             
             await page.wait_for_timeout(3000)
             
             html = await page.content()
-            logger.info(f"Retrieved page content: {len(html)} bytes")
+            print(f"📄 Retrieved page content: {len(html)} bytes", flush=True)
             
             await context.close()
             await browser.close()
@@ -444,11 +448,11 @@ async def discover_journals_async(force_refresh: bool = False) -> List[Tuple[str
             journals_panel = soup.find('div', id='main-menu-panel-1')
             
             if not journals_panel:
-                logger.warning("Could not find Journals menu panel (main-menu-panel-1)")
+                print("⚠️ Could not find Journals menu panel (main-menu-panel-1)", flush=True)
                 journals_panel = soup
             
             all_links = journals_panel.find_all("a", href=True)
-            logger.info(f"Found {len(all_links)} total links in Journals section")
+            print(f"🔗 Found {len(all_links)} total links in Journals section", flush=True)
             
             seen = set()
             for a in all_links:
@@ -486,17 +490,17 @@ async def discover_journals_async(force_refresh: bool = False) -> List[Tuple[str
                         logger.debug(f"Found journal: {slug} -> {clean_text}")
             
             if results:
-                logger.info(f"Successfully discovered {len(results)} journals from Cell.com")
+                print(f"✅ Successfully discovered {len(results)} journals from Cell.com", flush=True)
                 try:
                     with open(cache_file, "w", encoding="utf8") as f:
                         json.dump(results, f, ensure_ascii=False, indent=2)
-                    logger.info(f"Cached {len(results)} journals to {cache_file}")
+                    print(f"💾 Cached {len(results)} journals to {cache_file}", flush=True)
                 except Exception as e:
-                    logger.warning(f"Failed to cache journals: {e}")
+                    print(f"⚠️ Failed to cache journals: {e}", flush=True)
                 return results
             else:
                 raise Exception("No journals found on Cell.com - page structure may have changed")
                 
     except Exception as e:
-        logger.error(f"Failed to discover journals from Cell.com: {e}")
+        print(f"❌ Failed to discover journals from Cell.com: {e}", flush=True)
         raise Exception(f"Could not load journals from Cell.com. Error: {str(e)}. Please check your internet connection and try again.")
