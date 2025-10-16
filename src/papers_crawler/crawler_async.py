@@ -15,8 +15,14 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
+import sys
+IN_COLAB = 'google.colab' in sys.modules
+
 try:
-    from tqdm import tqdm
+    if IN_COLAB:
+        from tqdm.notebook import tqdm
+    else:
+        from tqdm import tqdm
     TQDM_AVAILABLE = True
 except ImportError:
     TQDM_AVAILABLE = False
