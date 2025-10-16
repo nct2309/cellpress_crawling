@@ -107,10 +107,10 @@ for slug, name in journals[:5]:
 # Crawl specific journals (use await)
 downloaded_files, articles = await crawl_async(
     year_from=2020,
-    year_to=2024,
+    year_to=2025,
     out_folder="./papers",
     headless=True,
-    limit=10,  # limit per journal
+    limit=12,  # limit per journal, limit = 0 is unlimited/ crawl all
     journal_slugs=["cell", "immunity", "neuron"],
 )
 
