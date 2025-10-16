@@ -460,37 +460,31 @@ async def crawl_async(
         except Exception as e:
             logger.error(f"❌ Failed to create CSV summary: {e}")
     
-    # Zip all journal subfolders
+    # Zip all journal subfolders into one archive
     if downloaded_files:
-        print(f"\n📦 Creating ZIP archives for each journal...")
+        print(f"\n📦 Creating ZIP archive with all downloaded PDFs...")
         
-        # Get unique journal folders
-        journal_folders = set()
-        for file_path in downloaded_files:
-            journal_folder = os.path.dirname(file_path)
-            if os.path.exists(journal_folder):
-                journal_folders.add(journal_folder)
+        zip_filename = f"all_journals_{timestamp}.zip"
+        zip_path = os.path.join(out_folder, zip_filename)
         
-        for journal_folder in journal_folders:
-            journal_name = os.path.basename(journal_folder)
-            zip_filename = f"{journal_name}_{timestamp}.zip"
-            zip_path = os.path.join(out_folder, zip_filename)
-            
-            try:
-                with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-                    for root, dirs, files in os.walk(journal_folder):
-                        for file in files:
-                            if file.endswith('.pdf'):
-                                file_path = os.path.join(root, file)
-                                arcname = os.path.join(journal_name, file)
-                                zipf.write(file_path, arcname)
+        try:
+            with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                # Add all PDF files maintaining journal folder structure
+                for file_path in downloaded_files:
+                    if os.path.exists(file_path):
+                        # Get relative path from out_folder to maintain folder structure in ZIP
+                        arcname = os.path.relpath(file_path, out_folder)
+                        zipf.write(file_path, arcname)
                 
-                zip_size_mb = os.path.getsize(zip_path) / (1024 * 1024)
-                logger.info(f"✅ Created ZIP: {zip_filename} ({zip_size_mb:.1f} MB)")
-            except Exception as e:
-                logger.error(f"❌ Failed to create ZIP for {journal_name}: {e}")
-        
-        print(f"✅ All archives created in: {out_folder}")
+                # Also add the CSV summary if it exists
+                if os.path.exists(csv_path):
+                    zipf.write(csv_path, os.path.basename(csv_path))
+            
+            zip_size_mb = os.path.getsize(zip_path) / (1024 * 1024)
+            logger.info(f"✅ Created ZIP archive: {zip_filename} ({zip_size_mb:.1f} MB)")
+            logger.info(f"📦 Archive contains {len(downloaded_files)} PDFs from {len(set(os.path.dirname(f) for f in downloaded_files))} journals")
+        except Exception as e:
+            logger.error(f"❌ Failed to create ZIP archive: {e}")
     
     return downloaded_files, open_access_articles
 
