@@ -183,14 +183,6 @@ async def crawl_async(
             }
         )
         
-        page = await context.new_page()
-        
-        await page.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver', {
-                get: () => undefined
-            });
-        """)
-        
         print("✅ Firefox browser ready", flush=True)
 
         found_count = 0
@@ -236,6 +228,16 @@ async def crawl_async(
                 print(f"🔍 Scanning {len(journal_slugs)} journal(s) for open access articles...", flush=True)
             
             for slug in journal_slugs:
+                # Create a fresh page for each journal to avoid state issues
+                print(f"\n📄 Creating new page for journal: {slug}", flush=True)
+                page = await context.new_page()
+                
+                await page.add_init_script("""
+                    Object.defineProperty(navigator, 'webdriver', {
+                        get: () => undefined
+                    });
+                """)
+                
                 journal_folder = os.path.join(out_folder, slug.replace('/', '_'))
                 os.makedirs(journal_folder, exist_ok=True)
                 print(f"📂 Journal folder: {journal_folder}", flush=True)
@@ -393,6 +395,10 @@ async def crawl_async(
                         continue
                     
                     await asyncio.sleep(1)
+                
+                # Close the page after finishing this journal
+                print(f"🔒 Closing page for journal: {slug}", flush=True)
+                await page.close()
 
         await context.close()
         await browser.close()
