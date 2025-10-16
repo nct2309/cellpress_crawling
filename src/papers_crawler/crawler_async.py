@@ -213,11 +213,10 @@ async def crawl_async(
         if journal_slugs:
             if total_progress_callback:
                 total_progress_callback(0, 0, "Scanning journals for open access articles...", 0, 0, "scanning")
+            elif cli_progress:
+                print(f"🔍 Scanning {len(journal_slugs)} journal(s) for open access articles...", flush=True)
             
             for slug in journal_slugs:
-                if limit and found_count >= limit:
-                    break
-                
                 journal_folder = os.path.join(out_folder, slug.replace('/', '_'))
                 os.makedirs(journal_folder, exist_ok=True)
                 logger.info(f"Journal folder: {journal_folder}")
@@ -248,17 +247,28 @@ async def crawl_async(
                     continue
                 
                 oa_count = sum(1 for art in articles if art.find(class_="OALabel"))
-                total_articles_found += min(oa_count, limit - found_count) if limit else oa_count
-                logger.info(f"Found {oa_count} open access articles in {slug}")
+                # Calculate how many we can download from this journal (limit is per journal)
+                journal_download_count = 0
+                journal_target = min(oa_count, limit) if limit else oa_count
+                total_articles_found += journal_target
+                logger.info(f"Found {oa_count} open access articles in {slug} (will download up to {journal_target})")
                 
                 if total_progress_callback:
                     total_progress_callback(found_count, total_articles_found, f"Found {total_articles_found} open access articles", 0, 0, "found")
-                elif cli_progress and total_articles_found > 0 and cli_progress.total == 0:
-                    # Start CLI progress bar once we know the total
-                    cli_progress.start(total_articles_found)
+                elif cli_progress:
+                    if cli_progress.total == 0 and total_articles_found > 0:
+                        # Start CLI progress bar once we know the total
+                        cli_progress.start(total_articles_found)
+                    else:
+                        # Update total if we found more articles
+                        cli_progress.total = total_articles_found
+                        if cli_progress.pbar:
+                            cli_progress.pbar.total = total_articles_found
                 
                 for art in articles:
-                    if limit and found_count >= limit:
+                    # Check if we've reached the limit for THIS journal
+                    if limit and journal_download_count >= limit:
+                        logger.info(f"Reached limit of {limit} downloads for journal {slug}")
                         break
                     
                     year_tag = art.find(class_="toc__item__date")
@@ -336,6 +346,7 @@ async def crawl_async(
                             downloaded_files.append(dest_path)
                             open_access_articles.append(article_title)
                             found_count += 1
+                            journal_download_count += 1  # Increment per-journal counter
                             
                             if progress_callback:
                                 progress_callback(filename, dest_path)
@@ -343,7 +354,7 @@ async def crawl_async(
                             if total_progress_callback:
                                 total_progress_callback(found_count, total_articles_found, f"Downloaded: {filename[:40]}...", file_size, speed_kbps, "completed")
                             elif cli_progress:
-                                cli_progress.update(found_count, total_articles_found, f"Downloaded: {filename[:40]}...", file_size, speed_kbps, "completed")
+                                cli_progress.update(found_count, total_articles_found, f"[{slug}] {filename[:30]}...", file_size, speed_kbps, "completed")
                         else:
                             logger.error(f"Downloaded file is too small or doesn't exist: {dest_path}")
                             
