@@ -77,7 +77,7 @@ class CLIProgressTracker:
             # Update progress bar
             if current > self.pbar.n:
                 self.pbar.n = current
-                self.pbar.refresh()
+                #self.pbar.refresh()
                 
             # Show status in postfix
             postfix = {}
