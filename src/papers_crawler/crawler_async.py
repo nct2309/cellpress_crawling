@@ -289,6 +289,7 @@ async def crawl_async(
                 for art in articles:
                     # Check if we've reached the limit for THIS journal
                     if limit and journal_download_count >= limit:
+                        journal_download_count = 0 # Reset for next journal
                         print(f"✋ Reached limit of {limit} downloads for journal {slug}")
                         break
                     
