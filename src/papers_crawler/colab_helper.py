@@ -5,6 +5,19 @@ Use these async versions when running in environments with asyncio event loops.
 import asyncio
 from src.papers_crawler.crawler_async import crawl_async, discover_journals_async
 
+# Check if we're in an environment with a running event loop (like Colab)
+try:
+    import nest_asyncio
+    nest_asyncio.apply()
+    _NEST_ASYNCIO_AVAILABLE = True
+except ImportError:
+    _NEST_ASYNCIO_AVAILABLE = False
+
+
+async def _run_async(coro):
+    """Helper to run async code in Colab/Jupyter."""
+    return await coro
+
 
 def crawl_colab(
     keywords: str = "",
@@ -21,11 +34,11 @@ def crawl_colab(
         from src.papers_crawler.colab_helper import crawl_colab, discover_journals_colab
         
         # Discover journals
-        journals = discover_journals_colab()
+        journals = await discover_journals_colab()
         print(f"Found {len(journals)} journals")
         
         # Crawl specific journals
-        crawl_colab(
+        downloaded, articles = await crawl_colab(
             year_from=2020,
             year_to=2024,
             out_folder="./papers",
@@ -34,16 +47,14 @@ def crawl_colab(
             journal_slugs=["cell", "immunity", "neuron"],
         )
     """
-    return asyncio.get_event_loop().run_until_complete(
-        crawl_async(
-            keywords=keywords,
-            year_from=year_from,
-            year_to=year_to,
-            out_folder=out_folder,
-            headless=headless,
-            limit=limit,
-            journal_slugs=journal_slugs,
-        )
+    return crawl_async(
+        keywords=keywords,
+        year_from=year_from,
+        year_to=year_to,
+        out_folder=out_folder,
+        headless=headless,
+        limit=limit,
+        journal_slugs=journal_slugs,
     )
 
 
@@ -53,11 +64,9 @@ def discover_journals_colab(force_refresh: bool = False):
     Example usage in Colab:
         from src.papers_crawler.colab_helper import discover_journals_colab
         
-        journals = discover_journals_colab()
+        journals = await discover_journals_colab()
         print(f"Found {len(journals)} journals")
         for slug, name in journals[:5]:
             print(f"  {slug}: {name}")
     """
-    return asyncio.get_event_loop().run_until_complete(
-        discover_journals_async(force_refresh=force_refresh)
-    )
+    return discover_journals_async(force_refresh=force_refresh)

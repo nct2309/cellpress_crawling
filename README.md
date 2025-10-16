@@ -88,16 +88,16 @@ crawl(
 # Import the Colab-specific helper functions
 from src.papers_crawler.colab_helper import crawl_colab, discover_journals_colab
 
-# Discover available journals
-journals = discover_journals_colab()
+# Discover available journals (use await since we're in an async environment)
+journals = await discover_journals_colab()
 print(f"Found {len(journals)} journals")
 
 # Show first 5 journals
 for slug, name in journals[:5]:
     print(f"  {slug}: {name}")
 
-# Crawl specific journals
-downloaded_files, articles = crawl_colab(
+# Crawl specific journals (use await)
+downloaded_files, articles = await crawl_colab(
     year_from=2020,
     year_to=2024,
     out_folder="./papers",
@@ -121,7 +121,7 @@ print(f"Downloaded {len(downloaded_files)} PDFs")
 
 ### Google Colab / Jupyter Notebooks
 
-If you get an error like `"It looks like you are using Playwright Sync API inside the asyncio loop"`, you need to use the async versions:
+If you get an error like `"It looks like you are using Playwright Sync API inside the asyncio loop"`, you need to use the async versions with `await`:
 
 **❌ Don't use (will fail in Colab):**
 ```python
@@ -132,10 +132,12 @@ journals = discover_journals()  # Error!
 **✅ Do use (works in Colab):**
 ```python
 from src.papers_crawler.colab_helper import crawl_colab, discover_journals_colab
-journals = discover_journals_colab()  # Works!
+
+# Use await since Colab runs in an async environment
+journals = await discover_journals_colab()  # Works!
 ```
 
-The `colab_helper` module provides wrapper functions that work correctly in asyncio environments.
+The `colab_helper` module provides wrapper functions that return coroutines you can `await` in Colab's async environment.
 
 ### 403 Forbidden Error / Cloudflare Challenges
 
