@@ -63,6 +63,7 @@ poetry run streamlit run scripts/run_crawler_streamlit.py
 
 ### Programmatic Usage
 
+**Regular Python scripts:**
 ```python
 from papers_crawler.crawler import crawl, discover_journals
 
@@ -82,6 +83,32 @@ crawl(
 )
 ```
 
+**Google Colab / Jupyter Notebooks:**
+```python
+# Import the Colab-specific helper functions
+from src.papers_crawler.colab_helper import crawl_colab, discover_journals_colab
+
+# Discover available journals
+journals = discover_journals_colab()
+print(f"Found {len(journals)} journals")
+
+# Show first 5 journals
+for slug, name in journals[:5]:
+    print(f"  {slug}: {name}")
+
+# Crawl specific journals
+downloaded_files, articles = crawl_colab(
+    year_from=2020,
+    year_to=2024,
+    out_folder="./papers",
+    headless=True,
+    limit=10,  # limit per journal
+    journal_slugs=["cell", "immunity", "neuron"],
+)
+
+print(f"Downloaded {len(downloaded_files)} PDFs")
+```
+
 ## How It Works
 
 1. **Journal Discovery**: Parses Cell.com's navbar menu to extract journal slugs and names
@@ -91,6 +118,24 @@ crawl(
 5. **Cookie Consent**: Automatically handles and accepts cookie consent popups
 
 ## Troubleshooting
+
+### Google Colab / Jupyter Notebooks
+
+If you get an error like `"It looks like you are using Playwright Sync API inside the asyncio loop"`, you need to use the async versions:
+
+**❌ Don't use (will fail in Colab):**
+```python
+from src.papers_crawler.crawler import crawl, discover_journals
+journals = discover_journals()  # Error!
+```
+
+**✅ Do use (works in Colab):**
+```python
+from src.papers_crawler.colab_helper import crawl_colab, discover_journals_colab
+journals = discover_journals_colab()  # Works!
+```
+
+The `colab_helper` module provides wrapper functions that work correctly in asyncio environments.
 
 ### 403 Forbidden Error / Cloudflare Challenges
 
