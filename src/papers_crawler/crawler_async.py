@@ -9,8 +9,11 @@ import os
 import sys
 import time
 import logging
+import csv
+import zipfile
 from typing import List, Optional, Tuple
 from urllib.parse import urljoin
+from datetime import datetime
 
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
@@ -330,7 +333,7 @@ async def crawl_async(
                     
                     oa_label = art.find(class_="OALabel")
                     if not oa_label:
-                        logger.debug(f"Skipping non-open-access article: {pdf_link}")
+                        logger.info(f"Skipping non-open-access article: {pdf_link}")
                         continue
                     
                     title_elem = art.find(class_="toc__item__title")
@@ -351,16 +354,20 @@ async def crawl_async(
                             cli_progress.update(found_count, total_articles_found, f"⬇️  {article_title[:30]}...", 0, 0, "starting", force=True)
                         else:
                             logger.info(f"⬇️  Start downloading file: {article_title[:50]}...")
-                            if IN_COLAB:
-                                await asyncio.sleep(0)
                         
                         download_start_time = time.time()
+                        
+                        logger.info(f"🔗 Clicking PDF link: {pdf_link[:80]}...")
                         
                         async with page.expect_download(timeout=30000) as download_info:
                             pdf_selector = f'a.pdfLink[href="{pdf_link}"]'
                             await page.click(pdf_selector, timeout=10000)
                         
+                        logger.info(f"⏳ Waiting for download to complete...")
+                        
                         download = await download_info.value
+                        
+                        logger.info(f"💾 Saving file to: {dest_path}")
                         
                         if total_progress_callback:
                             total_progress_callback(found_count, total_articles_found, f"Saving: {article_title[:50]}...", 0, 0, "downloading")
@@ -386,8 +393,6 @@ async def crawl_async(
                                     logger.info(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps/1024:.1f} MB/s")
                                 else:
                                     logger.info(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps:.1f} KB/s")
-                                if IN_COLAB:
-                                    await asyncio.sleep(0)
                             
                             downloaded_files.append(dest_path)
                             open_access_articles.append(article_title)
@@ -403,10 +408,12 @@ async def crawl_async(
                                 # Force update to show completion immediately
                                 cli_progress.update(found_count, total_articles_found, f"✅ {filename[:25]}...", file_size, speed_kbps, "completed", force=True)
                         else:
-                            print(f"❌ Downloaded file is too small or doesn't exist: {dest_path}")
+                            logger.error(f"❌ Downloaded file is too small or doesn't exist: {dest_path}")
                             
                     except Exception as e:
-                        print(f"❌ Failed to download PDF for '{article_title[:50]}': {e}")
+                        logger.error(f"❌ Failed to download PDF for '{article_title[:50]}': {e}")
+                        import traceback
+                        logger.debug(traceback.format_exc())
                         continue
                     
                     await asyncio.sleep(1)
@@ -422,6 +429,69 @@ async def crawl_async(
         cli_progress.close()
     
     print(f"\n🎉 Downloaded {found_count} PDFs to {out_folder}")
+    
+    # Create CSV file with download summary
+    if downloaded_files:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        csv_filename = f"download_summary_{timestamp}.csv"
+        csv_path = os.path.join(out_folder, csv_filename)
+        
+        print(f"\n📄 Creating download summary CSV: {csv_filename}")
+        
+        try:
+            with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(['Number', 'Journal', 'Article Name', 'File Path', 'File Size (KB)'])
+                
+                for idx, (file_path, article_name) in enumerate(zip(downloaded_files, open_access_articles), 1):
+                    # Extract journal name from file path
+                    journal_name = os.path.basename(os.path.dirname(file_path))
+                    file_size_kb = os.path.getsize(file_path) / 1024 if os.path.exists(file_path) else 0
+                    
+                    writer.writerow([
+                        idx,
+                        journal_name,
+                        article_name,
+                        file_path,
+                        f"{file_size_kb:.1f}"
+                    ])
+            
+            logger.info(f"✅ CSV summary saved to: {csv_path}")
+        except Exception as e:
+            logger.error(f"❌ Failed to create CSV summary: {e}")
+    
+    # Zip all journal subfolders
+    if downloaded_files:
+        print(f"\n📦 Creating ZIP archives for each journal...")
+        
+        # Get unique journal folders
+        journal_folders = set()
+        for file_path in downloaded_files:
+            journal_folder = os.path.dirname(file_path)
+            if os.path.exists(journal_folder):
+                journal_folders.add(journal_folder)
+        
+        for journal_folder in journal_folders:
+            journal_name = os.path.basename(journal_folder)
+            zip_filename = f"{journal_name}_{timestamp}.zip"
+            zip_path = os.path.join(out_folder, zip_filename)
+            
+            try:
+                with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                    for root, dirs, files in os.walk(journal_folder):
+                        for file in files:
+                            if file.endswith('.pdf'):
+                                file_path = os.path.join(root, file)
+                                arcname = os.path.join(journal_name, file)
+                                zipf.write(file_path, arcname)
+                
+                zip_size_mb = os.path.getsize(zip_path) / (1024 * 1024)
+                logger.info(f"✅ Created ZIP: {zip_filename} ({zip_size_mb:.1f} MB)")
+            except Exception as e:
+                logger.error(f"❌ Failed to create ZIP for {journal_name}: {e}")
+        
+        print(f"✅ All archives created in: {out_folder}")
+    
     return downloaded_files, open_access_articles
 
 
