@@ -25,10 +25,12 @@ source venv/bin/activate
 # venv\Scripts\activate
 
 # Install dependencies from requirements.txt
-pip install -r requirements.txt
+pip install -r requirements.txt --upgrade --no-deps
 
 # Install Firefox browser binaries (run once):
 playwright install firefox
+playwright install --only-shell
+
 ```
 
 ### Option 2: Using Poetry
@@ -39,6 +41,7 @@ poetry add playwright beautifulsoup4 requests streamlit
 
 # Install Firefox browser binaries (run once):
 poetry run playwright install firefox
+poetry run playwright install --only-shell
 ```
 
 ## Usage
@@ -84,12 +87,17 @@ crawl(
 ```
 
 **Google Colab / Jupyter Notebooks:**
-```python
-# Import the Colab-specific helper functions
-from src.papers_crawler.colab_helper import crawl_colab, discover_journals_colab
 
-# Discover available journals (use await since we're in an async environment)
-journals = await discover_journals_colab()
+📓 **See complete example:** [`examples/colab_example.ipynb`](examples/colab_example.ipynb)
+
+**Important:** In Colab/Jupyter, use the async functions with `await`:
+
+```python
+# Import the async functions directly (NOT the regular crawler!)
+from src.papers_crawler.crawler_async import crawl_async, discover_journals_async
+
+# Discover available journals (use await since Colab runs in an async environment)
+journals = await discover_journals_async()
 print(f"Found {len(journals)} journals")
 
 # Show first 5 journals
@@ -97,7 +105,7 @@ for slug, name in journals[:5]:
     print(f"  {slug}: {name}")
 
 # Crawl specific journals (use await)
-downloaded_files, articles = await crawl_colab(
+downloaded_files, articles = await crawl_async(
     year_from=2020,
     year_to=2024,
     out_folder="./papers",
@@ -121,7 +129,11 @@ print(f"Downloaded {len(downloaded_files)} PDFs")
 
 ### Google Colab / Jupyter Notebooks
 
-If you get an error like `"It looks like you are using Playwright Sync API inside the asyncio loop"`, you need to use the async versions with `await`:
+If you get errors like:
+- `"It looks like you are using Playwright Sync API inside the asyncio loop"`
+- `"RuntimeError: This event loop is already running"`
+
+You need to use the **async versions** with `await`:
 
 **❌ Don't use (will fail in Colab):**
 ```python
@@ -131,13 +143,24 @@ journals = discover_journals()  # Error!
 
 **✅ Do use (works in Colab):**
 ```python
-from src.papers_crawler.colab_helper import crawl_colab, discover_journals_colab
+from src.papers_crawler.crawler_async import crawl_async, discover_journals_async
 
 # Use await since Colab runs in an async environment
-journals = await discover_journals_colab()  # Works!
+journals = await discover_journals_async()  # Works!
+downloaded_files, articles = await crawl_async(...)  # Works!
 ```
 
-The `colab_helper` module provides wrapper functions that return coroutines you can `await` in Colab's async environment.
+📓 **See complete working example:** [`examples/colab_example.ipynb`](examples/colab_example.ipynb)
+
+**Installation in Colab:**
+```bash
+# Clone and install
+!git clone https://github.com/nct2309/cellpress_crawling.git
+%cd cellpress_crawling
+!pip install -r requirements.txt --upgrade --no-deps
+!playwright install firefox
+!playwright install --only-shell
+```
 
 ### 403 Forbidden Error / Cloudflare Challenges
 
