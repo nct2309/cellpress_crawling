@@ -356,7 +356,7 @@ async def crawl_async(
                         else:
                             print(f"⬇️  Start downloading file: {article_title[:50]}...", flush=True)
                             if IN_COLAB:
-                                await asyncio.sleep(0)
+                                await asyncio.sleep(5)
                         
                         download_start_time = time.time()
                         
@@ -391,7 +391,7 @@ async def crawl_async(
                                 else:
                                     print(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps:.1f} KB/s", flush=True)
                                 if IN_COLAB:
-                                    await asyncio.sleep(0)
+                                    await asyncio.sleep(5)
                             
                             downloaded_files.append(dest_path)
                             open_access_articles.append(article_title)
