@@ -93,6 +93,13 @@ crawl(
 **Important:** In Colab/Jupyter, use the async functions with `await`:
 
 ```python
+# Configure logging to see download progress in Colab
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s'  # Simple format for cleaner output
+)
+
 # Import the async functions directly (NOT the regular crawler!)
 from src.papers_crawler.crawler_async import crawl_async, discover_journals_async
 
@@ -116,6 +123,10 @@ downloaded_files, articles = await crawl_async(
 
 print(f"Downloaded {len(downloaded_files)} PDFs")
 ```
+
+**Note:** The logger configuration at the top enables real-time progress messages showing:
+- ⬇️ Start downloading file: [Article Title]
+- ✅ Downloaded file: [Filename] (size & speed)
 
 ## How It Works
 

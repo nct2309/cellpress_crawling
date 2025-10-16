@@ -158,86 +158,85 @@ async def crawl_async(
         init_scripts_only=True
     )
 
-    async with async_playwright() as p:
-        # Use Firefox with PDF download preferences
-        print("🚀 Launching Firefox browser...")
-        browser = await p.firefox.launch(
-            headless=headless,
-            firefox_user_prefs={
-                "pdfjs.disabled": True,
-                "browser.helperApps.neverAsk.saveToDisk": "application/pdf",
-                "browser.download.folderList": 2,
-                "browser.download.manager.showWhenStarting": False,
-                "browser.download.dir": os.path.abspath(out_folder),
-                "plugin.disable_full_page_plugin_for_types": "application/pdf",
-            }
-        )
-        
-        context = await browser.new_context(
-            accept_downloads=True,
-            user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0',
-            viewport={'width': 1920, 'height': 1080},
-            locale='en-US',
-            timezone_id='America/New_York',
-            permissions=['geolocation'],
-            geolocation={'longitude': -74.0060, 'latitude': 40.7128},
-            color_scheme='light',
-            extra_http_headers={
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Connection': 'keep-alive',
-                'Upgrade-Insecure-Requests': '1',
-            }
-        )
-        
-        print("✅ Firefox browser ready")
-
-        found_count = 0
-
-        async def handle_cookie_consent(page):
-            """Try to accept cookie consent if it appears."""
-            try:
-                cookie_selectors = [
-                    'button:has-text("Accept")',
-                    'button:has-text("Accept all")',
-                    'button:has-text("Accept All")',
-                    'button:has-text("I Accept")',
-                    'button:has-text("I agree")',
-                    'button:has-text("Agree")',
-                    'button:has-text("OK")',
-                    'button[id*="accept"]',
-                    'button[class*="accept"]',
-                    'a:has-text("Accept")',
-                    '#onetrust-accept-btn-handler',
-                    '.optanon-alert-box-button-middle',
-                ]
-                
-                for selector in cookie_selectors:
-                    try:
-                        if await page.locator(selector).is_visible(timeout=2000):
-                            logger.info(f"Found cookie consent button: {selector}")
-                            await page.click(selector, timeout=3000)
-                            logger.info("✓ Accepted cookie consent")
-                            await page.wait_for_timeout(1000)
-                            return True
-                    except Exception:
-                        continue
-                        
-            except Exception as e:
-                logger.debug(f"No cookie consent found or already accepted: {e}")
+    async def handle_cookie_consent(page):
+        """Try to accept cookie consent if it appears."""
+        try:
+            cookie_selectors = [
+                'button:has-text("Accept")',
+                'button:has-text("Accept all")',
+                'button:has-text("Accept All")',
+                'button:has-text("I Accept")',
+                'button:has-text("I agree")',
+                'button:has-text("Agree")',
+                'button:has-text("OK")',
+                'button[id*="accept"]',
+                'button[class*="accept"]',
+                'a:has-text("Accept")',
+                '#onetrust-accept-btn-handler',
+                '.optanon-alert-box-button-middle',
+            ]
             
-            return False
+            for selector in cookie_selectors:
+                try:
+                    if await page.locator(selector).is_visible(timeout=2000):
+                        logger.info(f"Found cookie consent button: {selector}")
+                        await page.click(selector, timeout=3000)
+                        logger.info("✓ Accepted cookie consent")
+                        await page.wait_for_timeout(1000)
+                        return True
+                except Exception:
+                    continue
+                    
+        except Exception as e:
+            logger.debug(f"No cookie consent found or already accepted: {e}")
+        
+        return False
 
-        if journal_slugs:
-            if total_progress_callback:
-                total_progress_callback(0, 0, "Scanning journals for open access articles...", 0, 0, "scanning")
-            elif cli_progress:
-                print(f"🔍 Scanning {len(journal_slugs)} journal(s) for open access articles...")
-            
+    found_count = 0
+
+    if journal_slugs:
+        if total_progress_callback:
+            total_progress_callback(0, 0, "Scanning journals for open access articles...", 0, 0, "scanning")
+        elif cli_progress:
+            print(f"🔍 Scanning {len(journal_slugs)} journal(s) for open access articles...", flush=True)
+        
+        async with async_playwright() as p:
             for slug in journal_slugs:
-                # Create a fresh page for each journal to avoid state issues
-                print(f"\n📄 Creating new page for journal: {slug}")
+                # Create a fresh browser and context for each journal to avoid state issues
+                print(f"\n� Launching Firefox for journal: {slug}...", flush=True)
+                
+                browser = await p.firefox.launch(
+                    headless=headless,
+                    firefox_user_prefs={
+                        "pdfjs.disabled": True,
+                        "browser.helperApps.neverAsk.saveToDisk": "application/pdf",
+                        "browser.download.folderList": 2,
+                        "browser.download.manager.showWhenStarting": False,
+                        "browser.download.dir": os.path.abspath(out_folder),
+                        "plugin.disable_full_page_plugin_for_types": "application/pdf",
+                    }
+                )
+                
+                context = await browser.new_context(
+                    accept_downloads=True,
+                    user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0',
+                    viewport={'width': 1920, 'height': 1080},
+                    locale='en-US',
+                    timezone_id='America/New_York',
+                    permissions=['geolocation'],
+                    geolocation={'longitude': -74.0060, 'latitude': 40.7128},
+                    color_scheme='light',
+                    extra_http_headers={
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                        'Accept-Language': 'en-US,en;q=0.9',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'Connection': 'keep-alive',
+                        'Upgrade-Insecure-Requests': '1',
+                    }
+                )
+                
+                print(f"✅ Firefox browser ready for {slug}", flush=True)
+                
                 page = await context.new_page()
                 
                 # Apply stealth mode to hide automation
@@ -300,7 +299,6 @@ async def crawl_async(
                 for art in articles:
                     # Check if we've reached the limit for THIS journal
                     if limit and journal_download_count >= limit:
-                        journal_download_count = 0 # Reset for next journal
                         print(f"✋ Reached limit of {limit} downloads for journal {slug}")
                         break
                     
@@ -351,7 +349,9 @@ async def crawl_async(
                             # Update progress bar to show we're starting this download (force update)
                             cli_progress.update(found_count, total_articles_found, f"⬇️  {article_title[:30]}...", 0, 0, "starting", force=True)
                         else:
-                            print(f"⬇️  Start downloading file: {article_title[:50]}...")
+                            logger.info(f"⬇️  Start downloading file: {article_title[:50]}...")
+                            if IN_COLAB:
+                                await asyncio.sleep(0)
                         
                         download_start_time = time.time()
                         
@@ -382,9 +382,11 @@ async def crawl_async(
                             
                             if cli_progress is None:
                                 if speed_kbps > 1024:
-                                    print(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps/1024:.1f} MB/s")
+                                    logger.info(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps/1024:.1f} MB/s")
                                 else:
-                                    print(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps:.1f} KB/s")
+                                    logger.info(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps:.1f} KB/s")
+                                if IN_COLAB:
+                                    await asyncio.sleep(0)
                             
                             downloaded_files.append(dest_path)
                             open_access_articles.append(article_title)
@@ -408,12 +410,11 @@ async def crawl_async(
                     
                     await asyncio.sleep(1)
                 
-                # Close the page after finishing this journal
-                print(f"🔒 Closing page for journal: {slug}")
+                # Close the page, context, and browser after finishing this journal
+                print(f"🔒 Closing browser for journal: {slug}", flush=True)
                 await page.close()
-
-        await context.close()
-        await browser.close()
+                await context.close()
+                await browser.close()
 
     # Close CLI progress tracker
     if cli_progress:
