@@ -562,14 +562,47 @@ async def crawl_async(
                 # Crawl issue archives if requested
                 if crawl_archives:
                     print(f"\n📚 Crawling issue archives for journal: {slug}", flush=True)
+                    print(f"🔧 Creating separate context for archive crawling...", flush=True)
+                    
+                    # Create a new context and page specifically for archive crawling
+                    archive_context = await browser.new_context(
+                        accept_downloads=True,
+                        user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0',
+                        viewport={'width': 1920, 'height': 1080},
+                        locale='en-US',
+                        timezone_id='America/New_York',
+                        permissions=['geolocation'],
+                        geolocation={'longitude': -74.0060, 'latitude': 40.7128},
+                        color_scheme='light',
+                        extra_http_headers={
+                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                            'Accept-Language': 'en-US,en;q=0.9',
+                            'Accept-Encoding': 'gzip, deflate, br',
+                            'Connection': 'keep-alive',
+                            'Upgrade-Insecure-Requests': '1',
+                        }
+                    )
+                    
+                    archive_page = await archive_context.new_page()
+                    
+                    # Apply stealth mode to the archive page
+                    await stealth.apply_stealth_async(archive_page)
+                    
+                    await archive_page.add_init_script("""
+                        Object.defineProperty(navigator, 'webdriver', {
+                            get: () => undefined
+                        });
+                    """)
+                    
+                    print(f"✅ Archive context ready", flush=True)
                     
                     # Go to issue page
                     issue_index_url = f"https://www.cell.com/{slug}/issue"
                     logger.info(f"Loading issue archive index: {issue_index_url}")
-                    await page.goto(issue_index_url, timeout=30000)
-                    await page.wait_for_timeout(3000)
+                    await archive_page.goto(issue_index_url, timeout=30000)
+                    await archive_page.wait_for_timeout(3000)
                     
-                    html = await page.content()
+                    html = await archive_page.content()
                     soup = BeautifulSoup(html, "html.parser")
                     
                     # Check if we've passed the Open Archive marker
@@ -613,14 +646,14 @@ async def crawl_async(
                     
                     logger.info(f"📚 Found {len(issue_links)} issues to crawl for {slug}")
                     
-                    # Crawl each issue
+                    # Crawl each issue using the archive page
                     for issue_url, is_open_archive in issue_links:
                         if limit and found_count >= limit:
                             logger.info(f"✋ Reached global limit of {limit} downloads")
                             break
                         
                         try:
-                            should_stop = await crawl_issue_page(page, issue_url, journal_folder, is_open_archive)
+                            should_stop = await crawl_issue_page(archive_page, issue_url, journal_folder, is_open_archive)
                             if should_stop:
                                 break
                         except Exception as e:
@@ -628,6 +661,11 @@ async def crawl_async(
                             continue
                         
                         await asyncio.sleep(2)  # Be polite between issues
+                    
+                    # Close the archive context and page
+                    print(f"🔒 Closing archive context for journal: {slug}", flush=True)
+                    await archive_page.close()
+                    await archive_context.close()
                 
                 # Close the page, context, and browser after finishing this journal
                 print(f"🔒 Closing browser for journal: {slug}", flush=True)
