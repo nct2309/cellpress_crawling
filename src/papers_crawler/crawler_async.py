@@ -602,6 +602,27 @@ async def crawl_async(
                     await archive_page.goto(issue_index_url, timeout=30000)
                     await archive_page.wait_for_timeout(3000)
                     
+                    # Expand all volume groups to load issue links (they're loaded via AJAX)
+                    logger.info("📂 Expanding all volume groups to load issue links...")
+                    try:
+                        # Find all expand links for volumes
+                        expand_links = await archive_page.query_selector_all('a.list-of-issues__group-expand')
+                        logger.info(f"Found {len(expand_links)} volume groups to expand")
+                        
+                        for i, link in enumerate(expand_links):
+                            try:
+                                # Click to expand the volume
+                                await link.click()
+                                await archive_page.wait_for_timeout(500)  # Wait for AJAX to load
+                                logger.debug(f"Expanded volume group {i+1}/{len(expand_links)}")
+                            except Exception as e:
+                                logger.debug(f"Failed to expand volume group {i+1}: {e}")
+                        
+                        logger.info("✅ All volume groups expanded")
+                        await archive_page.wait_for_timeout(2000)  # Give time for all content to load
+                    except Exception as e:
+                        logger.warning(f"⚠️ Failed to expand some volume groups: {e}")
+                    
                     html = await archive_page.content()
                     soup = BeautifulSoup(html, "html.parser")
                     
@@ -609,8 +630,11 @@ async def crawl_async(
                     in_open_archive = False
                     
                     # Find all issue links
+                    all_issue_links = soup.select('a[href*="/issue?pii="]')
+                    logger.info(f"🔍 Found {len(all_issue_links)} total issue links on archive page")
+                    
                     issue_links = []
-                    for link in soup.select('a[href*="/issue?pii="]'):
+                    for link in all_issue_links:
                         href = link.get("href", "")
                         if not href:
                             continue
@@ -625,10 +649,19 @@ async def crawl_async(
                                 in_open_archive = True
                                 logger.info("📂 Entered Open Archive section")
                         
-                        # Extract span elements to get issue date
+                        # Try to extract date from the link text or child elements
+                        link_text = link.get_text(strip=True)
+                        date_text = None
+                        
+                        # First try to find span with date
                         issue_date_span = link.find("span", string=lambda x: x and any(month in x for month in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]))
                         if issue_date_span:
                             date_text = issue_date_span.get_text(strip=True)
+                        elif link_text:
+                            # Use the entire link text if no specific date span found
+                            date_text = link_text
+                        
+                        if date_text:
                             # Try to extract year from date
                             try:
                                 issue_year = None
@@ -640,11 +673,15 @@ async def crawl_async(
                                 if issue_year and year_from <= issue_year <= year_to:
                                     full_url = urljoin("https://www.cell.com", href)
                                     issue_links.append((full_url, in_open_archive))
-                                    logger.info(f"Found issue: {date_text} ({'Open Archive' if in_open_archive else 'Regular'})")
-                            except Exception:
-                                pass
+                                    logger.info(f"✅ Found issue: {date_text[:50]} ({'Open Archive' if in_open_archive else 'Regular'})")
+                                else:
+                                    logger.debug(f"⏭️  Skipped issue (year {issue_year} not in range): {date_text[:50]}")
+                            except Exception as e:
+                                logger.debug(f"⚠️  Failed to parse date from: {date_text[:50]} - {e}")
+                        else:
+                            logger.debug(f"⚠️  No date text found for link: {href[:50]}")
                     
-                    logger.info(f"📚 Found {len(issue_links)} issues to crawl for {slug}")
+                    logger.info(f"📚 Found {len(issue_links)} issues to crawl for {slug} (filtered by year {year_from}-{year_to})")
                     
                     # Crawl each issue using the archive page
                     for issue_url, is_open_archive in issue_links:
