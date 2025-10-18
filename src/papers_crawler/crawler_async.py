@@ -278,11 +278,13 @@ async def crawl_async(
                 
                 download_start_time = time.time()
                 
-                logger.info(f"🔗 Clicking PDF link: {pdf_link[:80]}...")
+                logger.info(f"🔗 Navigating to PDF: {pdf_link[:80]}...")
+                
+                # Navigate directly to PDF URL - browser will auto-download
+                full_pdf_url = urljoin("https://www.cell.com", pdf_link)
                 
                 async with page.expect_download(timeout=30000) as download_info:
-                    pdf_selector = f'a.pdfLink[href="{pdf_link}"]'
-                    await page.click(pdf_selector, timeout=10000)
+                    await page.goto(full_pdf_url, timeout=30000)
                 
                 logger.info(f"⏳ Waiting for download to complete...")
                 
