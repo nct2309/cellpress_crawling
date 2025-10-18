@@ -213,8 +213,8 @@ async def crawl_async(
         """
         nonlocal found_count, downloaded_files, open_access_articles, article_metadata
         
-        logger.info(f"📖 Loading issue: {issue_url}")
-        logger.info(f"📅 Issue date (from list): {issue_date}")
+        print(f"📖 Loading issue: {issue_url}", flush=True)
+        print(f"📅 Issue date (from list): {issue_date}", flush=True)
         await page.goto(issue_url, timeout=30000)
         await page.wait_for_timeout(2000)
         
@@ -246,7 +246,7 @@ async def crawl_async(
         
         articles = soup.select(".articleCitation")
         
-        logger.info(f"Found {len(articles)} articles in issue")
+        print(f"Found {len(articles)} articles in issue", flush=True)
         
         for art in articles:
             if limit and found_count >= limit:
@@ -274,7 +274,7 @@ async def crawl_async(
             # Use issue date as publish date for all articles in this issue
             publish_date = issue_date
             
-            logger.info(f"📄 Found {'open-archive' if is_open_archive else 'open-access'} article: {article_title[:60]}...")
+            print(f"📄 Found {'open-archive' if is_open_archive else 'open-access'} article: {article_title[:60]}...", flush=True)
             
             try:
                 safe_title = "".join(c for c in article_title if c.isalnum() or c in (' ', '-', '_')).strip()
@@ -616,7 +616,7 @@ async def crawl_async(
                     
                     # Go to issue page
                     issue_index_url = f"https://www.cell.com/{slug}/issues"
-                    logger.info(f"Loading issue archive index: {issue_index_url}")
+                    print(f"Loading issue archive index: {issue_index_url}", flush=True)
                     await archive_page.goto(issue_index_url, timeout=30000)
                     await archive_page.wait_for_timeout(3000)
                     
@@ -627,7 +627,7 @@ async def crawl_async(
                     soup = BeautifulSoup(html, "html.parser")
                     
                     # Parse all issue links directly from the HTML (they're already in the page, just hidden)
-                    logger.info("📂 Parsing issue links from page HTML...")
+                    print(f"📂 Parsing issue links from page HTML...", flush=True)
                     issue_links = []
                     
                     # Check if we've passed the Open Archive marker
@@ -635,7 +635,7 @@ async def crawl_async(
                     
                     # Find all issue links directly
                     all_issue_links = soup.select('a[href*="/issue?pii="]')
-                    logger.info(f"🔍 Found {len(all_issue_links)} total issue links on page")
+                    print(f"🔍 Found {len(all_issue_links)} total issue links on page", flush=True)
                     
                     for link in all_issue_links:
                         href = link.get("href", "")
@@ -648,7 +648,7 @@ async def crawl_async(
                             open_archive_div = parent_li.find_previous("div", class_="list-of-issues__open-archive")
                             if open_archive_div and not in_open_archive:
                                 in_open_archive = True
-                                logger.info("📂 Entered Open Archive section")
+                                print(f"📂 Entered Open Archive section", flush=True)
                         
                         # Try to extract date from the link text or child elements
                         link_text = link.get_text(strip=True)
@@ -684,7 +684,7 @@ async def crawl_async(
                         else:
                             logger.debug(f"⚠️  No date text found for link: {href[:50]}")
                     
-                    logger.info(f"📚 Found {len(issue_links)} issues to crawl for {slug} (filtered by year {year_from}-{year_to})")
+                    print(f"📚 Found {len(issue_links)} issues to crawl for {slug} (filtered by year {year_from}-{year_to})", flush=True)
                     
                     # Crawl each issue using the archive page
                     for issue_url, is_open_archive, issue_date in issue_links:
