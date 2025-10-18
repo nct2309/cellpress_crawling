@@ -130,15 +130,18 @@ async def crawl_async(
     journal_slugs: Optional[List[str]] = None,
     progress_callback=None,
     total_progress_callback=None,
+    crawl_archives: bool = False,
 ) -> Tuple[List[str], List[str]]:
     """Async crawl Cell.com for articles matching keywords, year range, and optionally specific journals.
     
     If journal_slugs is provided, crawls from each journal's /newarticles page.
+    If crawl_archives is True, also crawls from /issue page for archived articles.
     Otherwise, uses keyword search across all journals.
     
     Args:
         progress_callback: Called with (filename, filepath) after each file is downloaded
         total_progress_callback: Called with (current, total, status_message, file_size, speed_kbps, stage) to update overall progress
+        crawl_archives: If True, also crawl /issue pages for more articles (including Open Archive)
     
     Returns:
         Tuple[List[str], List[str]]: (downloaded_file_paths, open_access_article_names)
@@ -148,6 +151,7 @@ async def crawl_async(
     os.makedirs(out_folder, exist_ok=True)
     downloaded_files = []
     open_access_articles = []
+    article_metadata = []  # Store (file_path, article_title, publish_date)
     total_articles_found = 0
     
     # Initialize CLI progress tracker (only if no callbacks provided)
@@ -196,6 +200,139 @@ async def crawl_async(
         return False
 
     found_count = 0
+    
+    async def crawl_issue_page(page, issue_url: str, journal_folder: str, is_open_archive: bool = False):
+        """Crawl a specific issue page for articles."""
+        nonlocal found_count, downloaded_files, open_access_articles, article_metadata
+        
+        logger.info(f"📖 Loading issue: {issue_url}")
+        await page.goto(issue_url, timeout=30000)
+        await page.wait_for_timeout(2000)
+        
+        html = await page.content()
+        soup = BeautifulSoup(html, "html.parser")
+        
+        # Extract issue date from the page
+        issue_date = "Unknown"
+        # Try to find issue date in the header/title area
+        issue_info = soup.find("div", class_="issue-item__title")
+        if issue_info:
+            issue_date = issue_info.get_text(strip=True)
+        else:
+            # Try alternative location
+            volume_issue = soup.find("span", class_="volume-issue")
+            if volume_issue:
+                issue_date = volume_issue.get_text(strip=True)
+        
+        logger.info(f"📅 Issue date: {issue_date}")
+        
+        articles = soup.select(".articleCitation")
+        
+        logger.info(f"Found {len(articles)} articles in issue")
+        
+        for art in articles:
+            if limit and found_count >= limit:
+                logger.info(f"✋ Reached global limit of {limit} downloads")
+                return True  # Signal to stop
+            
+            # Check if open access (or in open archive)
+            oa_label = art.find(class_="OALabel")
+            if not is_open_archive and not oa_label:
+                continue
+            
+            # Find PDF link
+            pdf_link = None
+            pdf_a = art.find("a", class_="pdfLink")
+            if pdf_a:
+                pdf_link = pdf_a.get("href", "")
+            
+            if not pdf_link:
+                continue
+            
+            # Extract article title
+            title_elem = art.find(class_="toc__item__title")
+            article_title = title_elem.get_text(strip=True) if title_elem else f"Article {found_count + 1}"
+            
+            # Use issue date as publish date for all articles in this issue
+            publish_date = issue_date
+            
+            logger.info(f"📄 Found {'open archive' if is_open_archive else 'open-access'} article: {article_title[:60]}...")
+            
+            try:
+                safe_title = "".join(c for c in article_title if c.isalnum() or c in (' ', '-', '_')).strip()
+                safe_title = safe_title[:100]
+                filename = f"{safe_title}.pdf"
+                dest_path = os.path.join(journal_folder, filename)
+                
+                # Skip if already downloaded
+                if os.path.exists(dest_path) and os.path.getsize(dest_path) > 1000:
+                    logger.info(f"⏭️  Skipping already downloaded: {filename}")
+                    continue
+                
+                if total_progress_callback:
+                    total_progress_callback(found_count, found_count + 1, f"Downloading: {article_title[:50]}...", 0, 0, "starting")
+                elif cli_progress:
+                    cli_progress.update(found_count, found_count + 1, f"⬇️  {article_title[:30]}...", 0, 0, "starting", force=True)
+                else:
+                    logger.info(f"⬇️  Start downloading file: {article_title[:50]}...")
+                
+                download_start_time = time.time()
+                
+                logger.info(f"🔗 Clicking PDF link: {pdf_link[:80]}...")
+                
+                async with page.expect_download(timeout=30000) as download_info:
+                    pdf_selector = f'a.pdfLink[href="{pdf_link}"]'
+                    await page.click(pdf_selector, timeout=10000)
+                
+                logger.info(f"⏳ Waiting for download to complete...")
+                
+                download = await download_info.value
+                
+                logger.info(f"💾 Saving file to: {dest_path}")
+                
+                await download.save_as(dest_path)
+                
+                download_time = time.time() - download_start_time
+                
+                if os.path.exists(dest_path) and os.path.getsize(dest_path) > 1000:
+                    file_size = os.path.getsize(dest_path)
+                    file_size_kb = file_size / 1024
+                    
+                    if download_time > 0:
+                        speed_kbps = file_size_kb / download_time
+                    else:
+                        speed_kbps = 0
+                    
+                    if cli_progress is None:
+                        if speed_kbps > 1024:
+                            logger.info(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps/1024:.1f} MB/s")
+                        else:
+                            logger.info(f"✅ Downloaded file: {filename[:50]} ({file_size_kb:.1f} KB) @ {speed_kbps:.1f} KB/s")
+                    
+                    downloaded_files.append(dest_path)
+                    open_access_articles.append(article_title)
+                    article_metadata.append((dest_path, article_title, publish_date))
+                    found_count += 1
+                    
+                    if progress_callback:
+                        progress_callback(filename, dest_path)
+                    
+                    if total_progress_callback:
+                        total_progress_callback(found_count, found_count, f"Downloaded: {filename[:40]}...", file_size, speed_kbps, "completed")
+                    elif cli_progress:
+                        cli_progress.update(found_count, found_count, f"✅ {filename[:25]}...", file_size, speed_kbps, "completed", force=True)
+                else:
+                    logger.error(f"❌ Downloaded file is too small or doesn't exist: {dest_path}")
+                    
+            except Exception as e:
+                logger.error(f"❌ Failed to download PDF for '{article_title[:50]}': {e}")
+                import traceback
+                logger.debug(traceback.format_exc())
+                continue
+            
+            await asyncio.sleep(1)
+        
+        return False  # Don't stop
 
     if journal_slugs:
         if total_progress_callback:
@@ -339,6 +476,9 @@ async def crawl_async(
                     title_elem = art.find(class_="toc__item__title")
                     article_title = title_elem.get_text(strip=True) if title_elem else f"Article {found_count + 1}"
                     
+                    # Extract publish date (same as year_text which has the date)
+                    publish_date = year_text.strip() if year_text else "Unknown"
+                    
                     print(f"📄 Found open-access article: {article_title[:60]}...")
                     
                     try:
@@ -396,6 +536,7 @@ async def crawl_async(
                             
                             downloaded_files.append(dest_path)
                             open_access_articles.append(article_title)
+                            article_metadata.append((dest_path, article_title, publish_date))
                             found_count += 1
                             journal_download_count += 1  # Increment per-journal counter
                             
@@ -417,6 +558,76 @@ async def crawl_async(
                         continue
                     
                     await asyncio.sleep(1)
+                
+                # Crawl issue archives if requested
+                if crawl_archives:
+                    print(f"\n📚 Crawling issue archives for journal: {slug}", flush=True)
+                    
+                    # Go to issue page
+                    issue_index_url = f"https://www.cell.com/{slug}/issue"
+                    logger.info(f"Loading issue archive index: {issue_index_url}")
+                    await page.goto(issue_index_url, timeout=30000)
+                    await page.wait_for_timeout(3000)
+                    
+                    html = await page.content()
+                    soup = BeautifulSoup(html, "html.parser")
+                    
+                    # Check if we've passed the Open Archive marker
+                    in_open_archive = False
+                    
+                    # Find all issue links
+                    issue_links = []
+                    for link in soup.select('a[href*="/issue?pii="]'):
+                        href = link.get("href", "")
+                        if not href:
+                            continue
+                        
+                        # Check if this is after the Open Archive marker
+                        # Find parent li element
+                        parent_li = link.find_parent("li")
+                        if parent_li:
+                            # Check if there's an Open Archive div before this issue
+                            open_archive_div = parent_li.find_previous("div", class_="list-of-issues__open-archive")
+                            if open_archive_div and not in_open_archive:
+                                in_open_archive = True
+                                logger.info("📂 Entered Open Archive section")
+                        
+                        # Extract span elements to get issue date
+                        issue_date_span = link.find("span", string=lambda x: x and any(month in x for month in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]))
+                        if issue_date_span:
+                            date_text = issue_date_span.get_text(strip=True)
+                            # Try to extract year from date
+                            try:
+                                issue_year = None
+                                for y in range(year_from - 1, year_to + 2):
+                                    if str(y) in date_text:
+                                        issue_year = y
+                                        break
+                                
+                                if issue_year and year_from <= issue_year <= year_to:
+                                    full_url = urljoin("https://www.cell.com", href)
+                                    issue_links.append((full_url, in_open_archive))
+                                    logger.info(f"Found issue: {date_text} ({'Open Archive' if in_open_archive else 'Regular'})")
+                            except Exception:
+                                pass
+                    
+                    logger.info(f"📚 Found {len(issue_links)} issues to crawl for {slug}")
+                    
+                    # Crawl each issue
+                    for issue_url, is_open_archive in issue_links:
+                        if limit and found_count >= limit:
+                            logger.info(f"✋ Reached global limit of {limit} downloads")
+                            break
+                        
+                        try:
+                            should_stop = await crawl_issue_page(page, issue_url, journal_folder, is_open_archive)
+                            if should_stop:
+                                break
+                        except Exception as e:
+                            logger.error(f"❌ Failed to crawl issue {issue_url}: {e}")
+                            continue
+                        
+                        await asyncio.sleep(2)  # Be polite between issues
                 
                 # Close the page, context, and browser after finishing this journal
                 print(f"🔒 Closing browser for journal: {slug}", flush=True)
@@ -441,9 +652,9 @@ async def crawl_async(
         try:
             with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
                 writer = csv.writer(csvfile)
-                writer.writerow(['Number', 'Journal', 'Article Name', 'File Path', 'File Size (KB)'])
+                writer.writerow(['Number', 'Journal', 'Article Name', 'Publish Date', 'File Path', 'File Size (KB)'])
                 
-                for idx, (file_path, article_name) in enumerate(zip(downloaded_files, open_access_articles), 1):
+                for idx, (file_path, article_name, publish_date) in enumerate(article_metadata, 1):
                     # Extract journal name from file path
                     journal_name = os.path.basename(os.path.dirname(file_path))
                     file_size_kb = os.path.getsize(file_path) / 1024 if os.path.exists(file_path) else 0
@@ -452,6 +663,7 @@ async def crawl_async(
                         idx,
                         journal_name,
                         article_name,
+                        publish_date,
                         file_path,
                         f"{file_size_kb:.1f}"
                     ])

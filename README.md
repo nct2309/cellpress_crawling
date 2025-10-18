@@ -107,15 +107,21 @@ for slug, name in journals[:5]:
 # Crawl specific journals (use await)
 downloaded_files, articles = await crawl_async(
     year_from=2020,
-    year_to=2025,
+    year_to=2024,
     out_folder="./papers",
     headless=True,
-    limit=12,  # limit per journal, limit = 0 is unlimited/ crawl all
+    limit=10,  # limit per journal
     journal_slugs=["cell", "immunity", "neuron"],
+    crawl_archives=True,  # Also crawl /issue pages for more articles (including Open Archive)
 )
 
 print(f"Downloaded {len(downloaded_files)} PDFs")
 ```
+
+**Note:** 
+- Set `crawl_archives=True` to also crawl the `/issue` page for each journal, which provides access to archived articles
+- Articles in the "Open Archive" section are all freely accessible (no open-access tag check needed)
+- Regular issue articles still require the open-access tag (OALabel)
 
 **Note:** The logger configuration at the top enables real-time progress messages showing:
 - ⬇️ Start downloading file: [Article Title]
