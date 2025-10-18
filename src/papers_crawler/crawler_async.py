@@ -209,6 +209,9 @@ async def crawl_async(
         await page.goto(issue_url, timeout=30000)
         await page.wait_for_timeout(2000)
         
+        # Handle cookie consent on issue page
+        await handle_cookie_consent(page)
+        
         html = await page.content()
         soup = BeautifulSoup(html, "html.parser")
         
@@ -278,13 +281,11 @@ async def crawl_async(
                 
                 download_start_time = time.time()
                 
-                logger.info(f"🔗 Navigating to PDF: {pdf_link[:80]}...")
-                
-                # Navigate directly to PDF URL - browser will auto-download
-                full_pdf_url = urljoin("https://www.cell.com", pdf_link)
+                logger.info(f"🔗 Clicking PDF link: {pdf_link[:80]}...")
                 
                 async with page.expect_download(timeout=30000) as download_info:
-                    await page.goto(full_pdf_url, timeout=30000)
+                    pdf_selector = f'a.pdfLink[href="{pdf_link}"]'
+                    await page.click(pdf_selector, timeout=10000, force=True)
                 
                 logger.info(f"⏳ Waiting for download to complete...")
                 
@@ -603,6 +604,9 @@ async def crawl_async(
                     logger.info(f"Loading issue archive index: {issue_index_url}")
                     await archive_page.goto(issue_index_url, timeout=30000)
                     await archive_page.wait_for_timeout(3000)
+                    
+                    # Handle cookie consent on archive page
+                    await handle_cookie_consent(archive_page)
                     
                     html = await archive_page.content()
                     soup = BeautifulSoup(html, "html.parser")
