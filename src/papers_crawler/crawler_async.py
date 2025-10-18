@@ -597,7 +597,7 @@ async def crawl_async(
                     print(f"✅ Archive context ready", flush=True)
                     
                     # Go to issue page
-                    issue_index_url = f"https://www.cell.com/{slug}/issue"
+                    issue_index_url = f"https://www.cell.com/{slug}/issues"
                     logger.info(f"Loading issue archive index: {issue_index_url}")
                     await archive_page.goto(issue_index_url, timeout=30000)
                     await archive_page.wait_for_timeout(3000)
