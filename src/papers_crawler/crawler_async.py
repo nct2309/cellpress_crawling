@@ -605,97 +605,63 @@ async def crawl_async(
                     html = await archive_page.content()
                     soup = BeautifulSoup(html, "html.parser")
                     
-                    # Extract all volume group URLs (they contain the full issue list via AJAX)
-                    logger.info("📂 Extracting volume group URLs...")
-                    volume_urls = []
-                    for link in soup.select('a.list-of-issues__group-expand'):
-                        href = link.get('href')
-                        if href and 'issueGroupId' in href:
-                            full_url = urljoin("https://www.cell.com", href)
-                            volume_urls.append(full_url)
-                    
-                    logger.info(f"Found {len(volume_urls)} volume groups to fetch")
-                    
-                    # Collect all issue links from all volumes
-                    all_issue_links_html = []
-                    
-                    # First, get issues from the initially loaded page
-                    all_issue_links_html.append(html)
-                    
-                    # Then fetch each volume group page to get their issues
-                    for vol_idx, vol_url in enumerate(volume_urls):
-                        try:
-                            logger.debug(f"Fetching volume group {vol_idx+1}/{len(volume_urls)}: {vol_url[:80]}...")
-                            await archive_page.goto(vol_url, timeout=30000)
-                            await archive_page.wait_for_timeout(1000)
-                            vol_html = await archive_page.content()
-                            all_issue_links_html.append(vol_html)
-                        except Exception as e:
-                            logger.debug(f"Failed to fetch volume group {vol_idx+1}: {e}")
-                    
-                    logger.info(f"✅ Fetched {len(all_issue_links_html)} pages with issue links")
-                    
-                    # Parse all collected HTML to extract issue links
+                    # Parse all issue links directly from the HTML (they're already in the page, just hidden)
+                    logger.info("📂 Parsing issue links from page HTML...")
                     issue_links = []
                     
-                    for page_idx, html_content in enumerate(all_issue_links_html):
-                        soup = BeautifulSoup(html_content, "html.parser")
+                    # Check if we've passed the Open Archive marker
+                    in_open_archive = False
+                    
+                    # Find all issue links directly
+                    all_issue_links = soup.select('a[href*="/issue?pii="]')
+                    logger.info(f"🔍 Found {len(all_issue_links)} total issue links on page")
+                    
+                    for link in all_issue_links:
+                        href = link.get("href", "")
+                        if not href:
+                            continue
                         
-                        # Check if we've passed the Open Archive marker
-                        in_open_archive = False
+                        # Check if this is after the Open Archive marker
+                        parent_li = link.find_parent("li")
+                        if parent_li:
+                            open_archive_div = parent_li.find_previous("div", class_="list-of-issues__open-archive")
+                            if open_archive_div and not in_open_archive:
+                                in_open_archive = True
+                                logger.info("📂 Entered Open Archive section")
                         
-                        # Find all issue links on this page
-                        page_issue_links = soup.select('a[href*="/issue?pii="]')
-                        logger.debug(f"Page {page_idx+1}: Found {len(page_issue_links)} issue links")
+                        # Try to extract date from the link text or child elements
+                        link_text = link.get_text(strip=True)
+                        date_text = None
                         
-                        for link in page_issue_links:
-                            href = link.get("href", "")
-                            if not href:
-                                continue
-                            
-                            # Check if this is after the Open Archive marker
-                            # Find parent li element
-                            parent_li = link.find_parent("li")
-                            if parent_li:
-                                # Check if there's an Open Archive div before this issue
-                                open_archive_div = parent_li.find_previous("div", class_="list-of-issues__open-archive")
-                                if open_archive_div and not in_open_archive:
-                                    in_open_archive = True
-                                    logger.info("📂 Entered Open Archive section")
-                            
-                            # Try to extract date from the link text or child elements
-                            link_text = link.get_text(strip=True)
-                            date_text = None
-                            
-                            # First try to find span with date
-                            issue_date_span = link.find("span", string=lambda x: x and any(month in x for month in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]))
-                            if issue_date_span:
-                                date_text = issue_date_span.get_text(strip=True)
-                            elif link_text:
-                                # Use the entire link text if no specific date span found
-                                date_text = link_text
-                            
-                            if date_text:
-                                # Try to extract year from date
-                                try:
-                                    issue_year = None
-                                    for y in range(year_from - 1, year_to + 2):
-                                        if str(y) in date_text:
-                                            issue_year = y
-                                            break
-                                    
-                                    if issue_year and year_from <= issue_year <= year_to:
-                                        full_url = urljoin("https://www.cell.com", href)
-                                        # Avoid duplicates
-                                        if (full_url, in_open_archive) not in issue_links:
-                                            issue_links.append((full_url, in_open_archive))
-                                            logger.debug(f"✅ Found issue: {date_text[:50]} ({'Open Archive' if in_open_archive else 'Regular'})")
-                                    else:
-                                        logger.debug(f"⏭️  Skipped issue (year {issue_year} not in range): {date_text[:50]}")
-                                except Exception as e:
-                                    logger.debug(f"⚠️  Failed to parse date from: {date_text[:50]} - {e}")
-                            else:
-                                logger.debug(f"⚠️  No date text found for link: {href[:50]}")
+                        # First try to find span with date
+                        issue_date_span = link.find("span", string=lambda x: x and any(month in x for month in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]))
+                        if issue_date_span:
+                            date_text = issue_date_span.get_text(strip=True)
+                        elif link_text:
+                            # Use the entire link text if no specific date span found
+                            date_text = link_text
+                        
+                        if date_text:
+                            # Try to extract year from date
+                            try:
+                                issue_year = None
+                                for y in range(year_from - 1, year_to + 2):
+                                    if str(y) in date_text:
+                                        issue_year = y
+                                        break
+                                
+                                if issue_year and year_from <= issue_year <= year_to:
+                                    full_url = urljoin("https://www.cell.com", href)
+                                    # Avoid duplicates
+                                    if (full_url, in_open_archive) not in issue_links:
+                                        issue_links.append((full_url, in_open_archive))
+                                        logger.debug(f"✅ Found issue: {date_text[:50]} ({'Open Archive' if in_open_archive else 'Regular'})")
+                                else:
+                                    logger.debug(f"⏭️  Skipped issue (year {issue_year} not in range): {date_text[:50]}")
+                            except Exception as e:
+                                logger.debug(f"⚠️  Failed to parse date from: {date_text[:50]} - {e}")
+                        else:
+                            logger.debug(f"⚠️  No date text found for link: {href[:50]}")
                     
                     logger.info(f"📚 Found {len(issue_links)} issues to crawl for {slug} (filtered by year {year_from}-{year_to})")
                     
