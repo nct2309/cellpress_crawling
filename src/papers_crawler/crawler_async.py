@@ -201,11 +201,20 @@ async def crawl_async(
 
     found_count = 0
     
-    async def crawl_issue_page(page, issue_url: str, journal_folder: str, is_open_archive: bool = False):
-        """Crawl a specific issue page for articles."""
+    async def crawl_issue_page(page, issue_url: str, journal_folder: str, is_open_archive: bool = False, issue_date: str = "Unknown"):
+        """Crawl a specific issue page for articles.
+        
+        Args:
+            page: Playwright page object
+            issue_url: URL of the issue to crawl
+            journal_folder: Folder to save PDFs
+            is_open_archive: Whether this is an open archive issue (all articles free)
+            issue_date: Pre-extracted issue date from the issue list page
+        """
         nonlocal found_count, downloaded_files, open_access_articles, article_metadata
         
         logger.info(f"📖 Loading issue: {issue_url}")
+        logger.info(f"📅 Issue date (from list): {issue_date}")
         await page.goto(issue_url, timeout=30000)
         await page.wait_for_timeout(2000)
         
@@ -215,19 +224,25 @@ async def crawl_async(
         html = await page.content()
         soup = BeautifulSoup(html, "html.parser")
         
-        # Extract issue date from the page
-        issue_date = "Unknown"
-        # Try to find issue date in the header/title area
-        issue_info = soup.find("div", class_="issue-item__title")
-        if issue_info:
-            issue_date = issue_info.get_text(strip=True)
-        else:
-            # Try alternative location
-            volume_issue = soup.find("span", class_="volume-issue")
-            if volume_issue:
-                issue_date = volume_issue.get_text(strip=True)
-        
-        logger.info(f"📅 Issue date: {issue_date}")
+        # If date is still Unknown, try to extract from page as fallback
+        if issue_date == "Unknown":
+            logger.warning(f"⚠️ No date provided for issue, attempting to extract from page...")
+            date_selectors = [
+                ("div", {"class": "issue-item__title"}),
+                ("span", {"class": "volume-issue"}),
+                ("h1", {"class": "issue-item__title"}),
+                ("div", {"class": "issue-item__detail"}),
+                ("div", {"class": "u-cloak-me"}),
+            ]
+            
+            for tag, attrs in date_selectors:
+                elem = soup.find(tag, attrs)
+                if elem:
+                    text = elem.get_text(strip=True)
+                    if text and text != "Unknown":
+                        issue_date = text
+                        logger.info(f"📅 Extracted issue date from {tag}.{attrs.get('class', [''])[0]}: {issue_date}")
+                        break
         
         articles = soup.select(".articleCitation")
         
@@ -259,7 +274,7 @@ async def crawl_async(
             # Use issue date as publish date for all articles in this issue
             publish_date = issue_date
             
-            logger.info(f"📄 Found {'open archive' if is_open_archive else 'open-access'} article: {article_title[:60]}...")
+            logger.info(f"📄 Found {'open-archive' if is_open_archive else 'open-access'} article: {article_title[:60]}...")
             
             try:
                 safe_title = "".join(c for c in article_title if c.isalnum() or c in (' ', '-', '_')).strip()
@@ -658,9 +673,9 @@ async def crawl_async(
                                 
                                 if issue_year and year_from <= issue_year <= year_to:
                                     full_url = urljoin("https://www.cell.com", href)
-                                    # Avoid duplicates
-                                    if (full_url, in_open_archive) not in issue_links:
-                                        issue_links.append((full_url, in_open_archive))
+                                    # Avoid duplicates - store (url, is_open_archive, date_text)
+                                    if (full_url, in_open_archive, date_text) not in issue_links:
+                                        issue_links.append((full_url, in_open_archive, date_text))
                                         logger.debug(f"✅ Found issue: {date_text[:50]} ({'Open Archive' if in_open_archive else 'Regular'})")
                                 else:
                                     logger.debug(f"⏭️  Skipped issue (year {issue_year} not in range): {date_text[:50]}")
@@ -672,13 +687,13 @@ async def crawl_async(
                     logger.info(f"📚 Found {len(issue_links)} issues to crawl for {slug} (filtered by year {year_from}-{year_to})")
                     
                     # Crawl each issue using the archive page
-                    for issue_url, is_open_archive in issue_links:
+                    for issue_url, is_open_archive, issue_date in issue_links:
                         if limit and found_count >= limit:
                             logger.info(f"✋ Reached global limit of {limit} downloads")
                             break
                         
                         try:
-                            should_stop = await crawl_issue_page(archive_page, issue_url, journal_folder, is_open_archive)
+                            should_stop = await crawl_issue_page(archive_page, issue_url, journal_folder, is_open_archive, issue_date)
                             if should_stop:
                                 break
                         except Exception as e:
