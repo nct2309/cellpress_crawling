@@ -20,7 +20,7 @@ from typing import List, Optional, Tuple
 from urllib.parse import urljoin
 from datetime import datetime
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag, NavigableString
 from playwright.async_api import async_playwright, Page
 
 from playwright_stealth import Stealth
@@ -38,13 +38,15 @@ logger = logging.getLogger(__name__)
 async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[str]:
     """Navigate to full-text HTML page and extract all text content.
     
-    Extracts the following sections:
-    - Title
-    - Authors
-    - Abstract
-    - Main text body (all sections)
+    Extracts all content from the article including:
+    - Header section (title, authors, affiliations, dates)
+    - Introduction and all article sections
+    - All headings (h1, h2, h3, h4, h5, h6) and paragraphs
     - Figure captions
     - References
+    
+    Focuses on content within <article> > <div data-core-wrapper="header"> 
+    and <div data-core-wrapper="content"> for comprehensive extraction.
     
     Args:
         page: Playwright page object for navigation
@@ -67,101 +69,328 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
         
         # Remove specific UI classes that contain "show more/less" and other UI elements
         ui_classes = ['show-more', 'show-less', 'expand', 'collapse', 'toggle', 'button', 
-                      'nav', 'menu', 'header', 'footer', 'sidebar', 'advertisement',
+                      'nav', 'menu', 'footer', 'sidebar', 'advertisement',
                       'social-share', 'download-link', 'metrics', 'altmetric']
         for ui_class in ui_classes:
             for elem in soup.find_all(class_=lambda x: x and ui_class in x.lower()):
                 elem.decompose()
         
         text_parts = []
-        seen_texts = set()  # Track seen text to avoid duplicates
         
-        def add_unique_text(text: str, prefix: str = ""):
-            """Add text only if it hasn't been seen before (avoid duplicates)."""
-            text = text.strip()
-            if text and text not in seen_texts and len(text) > 10:  # Ignore very short texts
-                seen_texts.add(text)
-                if prefix:
-                    text_parts.append(f"{prefix}{text}\n")
-                else:
-                    text_parts.append(f"{text}\n")
+        # Find the main article element
+        article = soup.find("article")
         
-        # Extract title
-        title_elem = soup.find("h1", {"property": "name"})
-        if title_elem:
-            title = title_elem.get_text(strip=True)
-            add_unique_text(title, "TITLE: ")
-        
-        # Extract authors
-        authors_elem = soup.find("div", class_="contributors")
-        if authors_elem:
-            authors = authors_elem.get_text(separator=", ", strip=True)
-            add_unique_text(authors, "AUTHORS: ")
-        
-        # Extract abstract
-        abstract_elem = soup.find("section", id="author-abstract")
-        if abstract_elem:
-            text_parts.append("\nABSTRACT:\n")
-            # Get only the direct text content, not nested UI elements
-            for p in abstract_elem.find_all(['p', 'div'], recursive=True):
-                p_text = p.get_text(separator=" ", strip=True)
-                add_unique_text(p_text)
-        
-        # Extract main body text - only actual content paragraphs
-        body_elem = soup.find("section", id="bodymatter")
-        if body_elem:
-            text_parts.append("\n--- MAIN TEXT ---\n")
-            
-            # Process sections in order
-            for section in body_elem.find_all(['section', 'div'], recursive=False):
-                # Extract section heading
-                heading = section.find(['h2', 'h3', 'h4'])
-                if heading:
-                    heading_text = heading.get_text(strip=True)
-                    if heading_text and heading_text not in seen_texts:
-                        seen_texts.add(heading_text)
-                        text_parts.append(f"\n{heading_text}\n")
+        if article:
+            # Extract from data-core-wrapper="header" section
+            header_wrapper = article.find("div", {"data-core-wrapper": "header"})
+            if header_wrapper:
+                text_parts.append("=" * 80 + "\n")
+                text_parts.append("ARTICLE HEADER\n")
+                text_parts.append("=" * 80 + "\n\n")
                 
-                # Extract paragraphs from this section
-                for p in section.find_all('p'):
-                    # Skip if paragraph is inside a figure (we'll handle figures separately)
-                    if p.find_parent('figure'):
+                # Extract all headings and content from header
+                for elem in header_wrapper.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div']):
+                    # Skip nested elements if parent was already processed
+                    if elem.find_parent(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']) and elem.name in ['span', 'a', 'strong', 'em']:
                         continue
-                    p_text = p.get_text(separator=" ", strip=True)
-                    add_unique_text(p_text)
+                    
+                    elem_text = elem.get_text(separator=" ", strip=True)
+                    if elem_text:
+                        # Add heading markers for h tags
+                        if elem.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
+                            level = elem.name[1]  # Get number from h1, h2, etc.
+                            text_parts.append(f"\n{'#' * int(level)} {elem_text}\n\n")
+                        else:
+                            text_parts.append(f"{elem_text}\n")
+            
+            # Extract from data-core-wrapper="content" section (main article body)
+            content_wrapper = article.find("div", {"data-core-wrapper": "content"})
+            if content_wrapper:
+                text_parts.append("\n" + "=" * 80 + "\n")
+                text_parts.append("ARTICLE CONTENT\n")
+                text_parts.append("=" * 80 + "\n\n")
+                
+                # Recursively walk content to preserve nested section structure
+                heading_tags = ("h1", "h2", "h3", "h4", "h5", "h6")
+                skip_names = {"script", "style", "svg", "noscript", "form", "hr", "iframe"}
+                indent_step = 2
+                max_indent = 12
+
+                container_keywords = (
+                    "core-container",
+                    "section",
+                    "subsection",
+                    "article__section",
+                    "article-section",
+                    "body-section",
+                    "core-paragraph",
+                    "paragraph"
+                )
+
+                def clean_text(value: str) -> str:
+                    if not value:
+                        return ""
+                    return re.sub(r"\s+", " ", value).strip()
+
+                def append_list(list_tag: Tag, indent: int) -> None:
+                    items = [child for child in list_tag.children if isinstance(child, Tag) and child.name == "li"]
+                    if not items:
+                        return
+
+                    for idx, item in enumerate(items, 1):
+                        bullet = f"{idx}. " if list_tag.name == "ol" else "- "
+                        fragments = []
+                        for child in item.contents:
+                            if isinstance(child, NavigableString):
+                                fragment = clean_text(str(child))
+                                if fragment:
+                                    fragments.append(fragment)
+                            elif isinstance(child, Tag) and child.name not in ("ul", "ol"):
+                                fragment = clean_text(child.get_text(" ", strip=True))
+                                if fragment:
+                                    fragments.append(fragment)
+
+                        bullet_text = " ".join(fragments).strip()
+                        if bullet_text:
+                            text_parts.append(f"{' ' * indent}{bullet}{bullet_text}\n")
+                        else:
+                            text_parts.append(f"{' ' * indent}{bullet.strip()}\n")
+
+                        for nested in item.children:
+                            if isinstance(nested, Tag) and nested.name in ("ul", "ol"):
+                                append_list(nested, min(indent + indent_step, max_indent))
+
+                    text_parts.append("\n")
+
+                def append_table(table_tag: Tag, indent: int) -> None:
+                    rows = []
+                    for tr in table_tag.find_all("tr"):
+                        cells = []
+                        for cell in tr.find_all(["th", "td"]):
+                            cell_text = clean_text(cell.get_text(" ", strip=True))
+                            cells.append(cell_text)
+                        if any(cell for cell in cells):
+                            rows.append(cells)
+
+                    if not rows:
+                        return
+
+                    text_parts.append(f"{' ' * indent}[Table]\n")
+                    for row in rows:
+                        line = " | ".join(cell for cell in row if cell)
+                        if line:
+                            text_parts.append(f"{' ' * indent}{line}\n")
+                    text_parts.append("\n")
+
+                def append_content(node, indent: int = 0) -> None:
+                    if isinstance(node, NavigableString):
+                        text = clean_text(str(node))
+                        if text:
+                            text_parts.append(f"{' ' * indent}{text}\n")
+                        return
+
+                    if not isinstance(node, Tag):
+                        return
+
+                    name = node.name.lower()
+
+                    if name in skip_names:
+                        return
+
+                    if node.get("aria-hidden") == "true":
+                        return
+
+                    node_id = (node.get("id") or "").lower()
+                    if node_id == "references":
+                        return
+
+                    if name == "figure" or (node.get("data-component") or "").lower() == "figure":
+                        return
+
+                    classes = [cls.lower() for cls in node.get("class", [])]
+                    if any("figure" in cls for cls in classes):
+                        return
+
+                    if name == "br":
+                        text_parts.append("\n")
+                        return
+
+                    if name in heading_tags:
+                        heading_text = clean_text(node.get_text(" ", strip=True))
+                        if heading_text:
+                            level = min(int(name[1]), 6)
+                            text_parts.append(f"\n{'#' * level} {heading_text}\n\n")
+                        return
+
+                    if name in {"p", "blockquote"}:
+                        paragraph = clean_text(node.get_text(" ", strip=True))
+                        if paragraph:
+                            text_parts.append(f"{' ' * indent}{paragraph}\n")
+                        return
+
+                    if name in {"ul", "ol"}:
+                        append_list(node, indent)
+                        return
+
+                    if name == "table":
+                        append_table(node, indent)
+                        return
+
+                    next_indent = indent
+                    is_container = name == "section" or any(
+                        keyword in cls for cls in classes for keyword in container_keywords
+                    ) or node.has_attr("data-core-component")
+
+                    if is_container:
+                        next_indent = min(indent + indent_step, max_indent)
+
+                    for child in node.children:
+                        append_content(child, next_indent)
+
+                    if is_container:
+                        text_parts.append("\n")
+
+                for child in content_wrapper.children:
+                    append_content(child, 0)
         
-        # Extract figure captions
-        figures = soup.find_all("figure", class_="graphic")
+        # Fallback: if article element or wrappers not found, use old extraction method
+        if not text_parts:
+            logger.warning("⚠️ Article wrappers not found, using fallback extraction")
+            
+            # Extract title
+            title_elem = soup.find("h1", {"property": "name"})
+            if not title_elem:
+                title_elem = soup.find("h1")
+            if title_elem:
+                title = title_elem.get_text(strip=True)
+                if title:
+                    text_parts.append(f"# {title}\n\n")
+            
+            # Extract authors
+            authors_elem = soup.find("div", class_="contributors")
+            if authors_elem:
+                authors = authors_elem.get_text(separator=", ", strip=True)
+                if authors:
+                    text_parts.append(f"AUTHORS: {authors}\n\n")
+            
+            # Extract abstract
+            abstract_elem = soup.find("section", id="author-abstract")
+            if abstract_elem:
+                text_parts.append("## ABSTRACT\n\n")
+                for elem in abstract_elem.find_all(['p', 'div']):
+                    elem_text = elem.get_text(separator=" ", strip=True)
+                    if elem_text:
+                        text_parts.append(f"{elem_text}\n")
+            
+            # Extract introduction and main body
+            intro_elem = soup.find("section", id="introduction")
+            if intro_elem:
+                text_parts.append("\n## INTRODUCTION\n\n")
+                for elem in intro_elem.find_all(['h2', 'h3', 'h4', 'p']):
+                    if elem.name in ['h2', 'h3', 'h4']:
+                        level = int(elem.name[1])
+                        elem_text = elem.get_text(strip=True)
+                        if elem_text:
+                            text_parts.append(f"\n{'#' * level} {elem_text}\n\n")
+                    else:
+                        elem_text = elem.get_text(separator=" ", strip=True)
+                        if elem_text and not elem.find_parent('figure'):
+                            text_parts.append(f"{elem_text}\n")
+            
+            # Extract all other body sections
+            body_elem = soup.find("section", id="bodymatter")
+            if body_elem:
+                text_parts.append("\n## MAIN CONTENT\n\n")
+                for elem in body_elem.find_all(['h2', 'h3', 'h4', 'h5', 'h6', 'p']):
+                    if elem.name in ['h2', 'h3', 'h4', 'h5', 'h6']:
+                        level = int(elem.name[1])
+                        elem_text = elem.get_text(strip=True)
+                        if elem_text:
+                            text_parts.append(f"\n{'#' * level} {elem_text}\n\n")
+                    else:
+                        elem_text = elem.get_text(separator=" ", strip=True)
+                        if elem_text and not elem.find_parent('figure'):
+                            text_parts.append(f"{elem_text}\n")
+        
+        # Extract figure captions (from anywhere in the page)
+        figures = soup.find_all("figure")
         if figures:
-            text_parts.append("\n--- FIGURES ---\n")
+            text_parts.append("\n" + "=" * 80 + "\n")
+            text_parts.append("FIGURES\n")
+            text_parts.append("=" * 80 + "\n\n")
             for idx, fig in enumerate(figures, 1):
                 caption = fig.find("figcaption")
                 if caption:
-                    caption_text = caption.get_text(separator=" ", strip=True)
-                    if caption_text and caption_text not in seen_texts:
-                        seen_texts.add(caption_text)
-                        text_parts.append(f"\nFigure {idx}: {caption_text}\n")
+                    # Get figure label and title
+                    fig_label = caption.find("span", class_="label")
+                    fig_title = caption.find("span", class_="figure__title__text")
+                    
+                    if fig_label or fig_title:
+                        label_text = fig_label.get_text(strip=True) if fig_label else f"Figure {idx}"
+                        title_text = fig_title.get_text(strip=True) if fig_title else ""
+                        text_parts.append(f"\n### {label_text}")
+                        if title_text:
+                            text_parts.append(f": {title_text}")
+                        text_parts.append("\n\n")
+                    
+                    # Extract all caption content, including accordion/hidden content
+                    caption_content = caption.find("div", class_="figure__caption__text__content")
+                    if not caption_content:
+                        caption_content = caption.find("div", class_="accordion__content")
+                    if not caption_content:
+                        # Fallback: get all divs with role="paragraph" or id starting with "fspara"
+                        caption_content = caption
+                    
+                    # Extract all paragraphs within the caption
+                    caption_paras = caption_content.find_all(['div', 'p'], recursive=True)
+                    if caption_paras:
+                        for para in caption_paras:
+                            # Skip if it's a nested button or control element
+                            if para.name == 'button' or 'button' in para.get('class', []):
+                                continue
+                            # Skip if it's just the label or title we already extracted
+                            if para.find_parent(['span']) and 'label' in str(para.find_parent(['span']).get('class', [])):
+                                continue
+                            
+                            para_text = para.get_text(separator=" ", strip=True)
+                            if para_text and len(para_text) > 10:  # Skip very short text fragments
+                                # Remove button text like "Hide caption" or "Figure viewer"
+                                if para_text not in ['Hide caption', 'Figure viewer', 'Show caption', 'Collapse', 'Expand']:
+                                    text_parts.append(f"{para_text}\n\n")
+                    else:
+                        # Fallback: get all text from caption
+                        caption_text = caption.get_text(separator=" ", strip=True)
+                        if caption_text:
+                            # Clean up button text
+                            caption_text = caption_text.replace('Hide caption', '').replace('Figure viewer', '')
+                            caption_text = caption_text.replace('Show caption', '').replace('Collapse', '').replace('Expand', '')
+                            caption_text = ' '.join(caption_text.split())  # Normalize whitespace
+                            if caption_text:
+                                text_parts.append(f"{caption_text}\n\n")
         
-        # Extract references - get each reference as a separate line
+        # Extract references
         refs_elem = soup.find("section", id="references")
         if refs_elem:
-            text_parts.append("\n--- REFERENCES ---\n")
-            # Try to find individual reference items
+            text_parts.append("\n" + "=" * 80 + "\n")
+            text_parts.append("REFERENCES\n")
+            text_parts.append("=" * 80 + "\n\n")
+            
             ref_items = refs_elem.find_all(['li', 'div', 'p'], class_=lambda x: x and 'reference' in str(x).lower())
             if ref_items:
-                for ref in ref_items:
+                for idx, ref in enumerate(ref_items, 1):
                     ref_text = ref.get_text(separator=" ", strip=True)
-                    add_unique_text(ref_text)
+                    if ref_text:
+                        text_parts.append(f"{idx}. {ref_text}\n")
             else:
-                # Fallback: get all text but try to preserve structure
                 for elem in refs_elem.find_all(['p', 'div']):
                     ref_text = elem.get_text(separator=" ", strip=True)
-                    add_unique_text(ref_text)
+                    if ref_text:
+                        text_parts.append(f"{ref_text}\n")
         
         full_text = "\n".join(text_parts)
         
         if full_text.strip():
-            logger.info(f"✅ Successfully extracted {len(full_text)} characters of text ({len(seen_texts)} unique text blocks)")
+            logger.info(f"✅ Successfully extracted {len(full_text)} characters of text")
             return full_text
         else:
             logger.warning("⚠️ No text content extracted from page")
@@ -169,6 +398,7 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             
     except Exception as e:
         logger.error(f"❌ Failed to extract full-text: {e}")
+        logger.debug(traceback.format_exc())
         return None
 
 
