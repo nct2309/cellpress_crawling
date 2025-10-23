@@ -156,6 +156,63 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                 return int(match.group(1)), identifier
             return 10**6, identifier
 
+        def normalize_identifier(value: Optional[str]) -> str:
+            if not value:
+                return ""
+            normalized = str(value).strip().lower()
+            if normalized.startswith("#"):
+                normalized = normalized[1:]
+            normalized = re.sub(r"\s+", "", normalized)
+            return normalized
+
+        def split_identifier_values(raw_value) -> List[str]:
+            if not raw_value:
+                return []
+            if isinstance(raw_value, (list, tuple, set)):
+                collected: List[str] = []
+                for item in raw_value:
+                    collected.extend(split_identifier_values(item))
+                return collected
+            value = str(raw_value).strip()
+            if not value:
+                return []
+            if value.startswith("#"):
+                value = value[1:]
+            if value.startswith("http") and "#" in value:
+                value = value.split("#", 1)[1]
+            parts = re.split(r"[\s,;]+", value)
+            return [part for part in parts if part]
+
+        def extract_candidate_ids(element: Optional[Tag]) -> List[str]:
+            if not element:
+                return []
+            attributes = (
+                "id",
+                "name",
+                "href",
+                "data-rid",
+                "data-ref",
+                "data-reference",
+                "data-footnote-id",
+                "data-id",
+                "data-target",
+                "data-uuid",
+                "data-bib",
+                "data-bib-id",
+                "data-citation-id",
+                "data-annotation-id",
+            )
+            identifiers: List[str] = []
+            for attr in attributes:
+                raw = element.get(attr)
+                if attr == "href" and raw and "#" in str(raw):
+                    raw = str(raw).split("#", 1)[1]
+                elif attr == "href":
+                    continue
+                values = split_identifier_values(raw)
+                identifiers.extend(values)
+            return identifiers
+
         def build_footnote_map() -> None:
             selectors = [
                 'a[id^="bib"]',
@@ -176,9 +233,15 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                         if anchor:
                             fid = anchor.get("id") or anchor.get("name")
                     if not fid:
-                        continue
-                    fid_lower = fid.lower()
-                    if fid_lower in seen_ids:
+                        candidates = extract_candidate_ids(candidate)
+                        if not candidates:
+                            continue
+                        ids_to_process = candidates
+                    else:
+                        ids_to_process = [fid]
+                    normalized_ids = [normalize_identifier(value) for value in ids_to_process if value]
+                    normalized_ids = [value for value in normalized_ids if value]
+                    if not normalized_ids:
                         continue
                     container = candidate
                     if container.name in {"a", "span", "sup"}:
@@ -188,10 +251,13 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                     text = clean_reference_entry(container)
                     if not text:
                         continue
-                    footnote_map[fid_lower] = text
                     in_refs = bool(references_section and references_section in container.parents)
-                    footnote_in_refs[fid_lower] = in_refs
-                    seen_ids.add(fid_lower)
+                    for normalized_id in normalized_ids:
+                        if normalized_id in seen_ids:
+                            continue
+                        footnote_map[normalized_id] = text
+                        footnote_in_refs[normalized_id] = in_refs
+                        seen_ids.add(normalized_id)
                     if not in_refs:
                         mark_footnote_elements(container)
 
@@ -231,6 +297,29 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                     seen_text.add(lower_text)
                     entries.append(text)
             return entries
+
+        def collect_inline_footnotes(container: Tag) -> List[str]:
+            if not footnote_map:
+                return []
+            collected: List[str] = []
+            seen_ids: Set[str] = set()
+            for sup in container.find_all("sup"):
+                candidate_ids = extract_candidate_ids(sup)
+                if not candidate_ids:
+                    for anchor in sup.find_all("a"):
+                        candidate_ids.extend(extract_candidate_ids(anchor))
+                for candidate_id in candidate_ids:
+                    normalized = normalize_identifier(candidate_id)
+                    if not normalized or normalized in seen_ids:
+                        continue
+                    if footnote_in_refs.get(normalized):
+                        continue
+                    note_text = footnote_map.get(normalized)
+                    if not note_text:
+                        continue
+                    seen_ids.add(normalized)
+                    collected.append(note_text)
+            return collected
 
         def clean_text(value: str) -> str:
             if not value:
@@ -361,6 +450,9 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
 
             name = node.name.lower()
 
+            if node in footnote_elements:
+                return
+
             if name in skip_names:
                 return
 
@@ -401,15 +493,10 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             if name in {"p", "blockquote"}:
                 # Extract paragraph text with inline superscripts preserved
                 paragraph = clean_text(node.get_text(" ", strip=True))
-                
-                # Collect footnote references if present (but not their full content)
-                footnote_refs = []
-                for sup in node.find_all("sup"):
-                    # Only get the reference marker, not expanded footnote
-                    sup_text = clean_text(sup.get_text(" ", strip=True))
-                    if sup_text and len(sup_text) <= 3 and sup_text not in footnote_refs:
-                        footnote_refs.append(sup_text)
-                
+                inline_notes = collect_inline_footnotes(node)
+                if inline_notes:
+                    notes_text = "; ".join(inline_notes)
+                    paragraph = f"{paragraph} (Footnote: {notes_text})"
                 append_line(paragraph, indent=indent)
                 return
 
@@ -620,32 +707,13 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                             if caption_text:
                                 text_parts.append(f"{caption_text}\n\n")
         
-        # Extract references - only if not already processed in content_wrapper
-        refs_elem = soup.find("section", id="references")
-        if refs_elem and "REFERENCES" not in "\n".join(text_parts):
+        reference_entries = get_reference_entries()
+        if reference_entries and "REFERENCES" not in "\n".join(text_parts):
             text_parts.append("\n" + "=" * 80 + "\n")
             text_parts.append("REFERENCES\n")
             text_parts.append("=" * 80 + "\n\n")
-            
-            # Find reference list items
-            ref_list = refs_elem.find("ol") or refs_elem.find("ul")
-            if ref_list:
-                ref_items = ref_list.find_all("li", recursive=False)
-                seen_refs = set()
-                for idx, ref in enumerate(ref_items, 1):
-                    ref_text = clean_text(ref.get_text(" ", strip=True))
-                    if ref_text and ref_text not in seen_refs:
-                        seen_refs.add(ref_text)
-                        text_parts.append(f"{idx}. {ref_text}\n")
-            else:
-                # Fallback to divs/paragraphs
-                ref_items = refs_elem.find_all(['div', 'p'], class_=lambda x: x and 'reference' in str(x).lower())
-                seen_refs = set()
-                for idx, ref in enumerate(ref_items, 1):
-                    ref_text = clean_text(ref.get_text(" ", strip=True))
-                    if ref_text and ref_text not in seen_refs and len(ref_text) > 20:
-                        seen_refs.add(ref_text)
-                        text_parts.append(f"{idx}. {ref_text}\n")
+            for idx, entry in enumerate(reference_entries, 1):
+                text_parts.append(f"{idx}. {entry}\n")
         
         full_text = "\n".join(text_parts)
         
