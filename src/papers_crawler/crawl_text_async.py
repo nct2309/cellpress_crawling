@@ -57,6 +57,7 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
         str: Concatenated plain text content with section headers, or None if extraction fails
     """
     try:
+        print(f"🔍 Starting text extraction from: {fulltext_url}", flush=True)
         logger.info(f"📖 Navigating to full-text page: {fulltext_url}")
         await page.goto(fulltext_url, timeout=30000)
         await page.wait_for_timeout(2000)
@@ -124,11 +125,29 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             "open table in a new tab",
             "view abstract",
             "supplementary information",
+            "open crossref in new tab",
+            "open scopus in new tab",
+            "open pubmed in new tab",
+            "open google scholar in new tab",
+            "open full text in new tab",
+            "aria-label",
         )
 
         def clean_reference_entry(tag: Tag) -> str:
+            """Extract clean text from a reference entry, excluding UI elements and links."""
+            # Create a copy to avoid modifying the original
+            tag_copy = tag.__copy__() if hasattr(tag, '__copy__') else tag
+            
+            # Remove external links section if present (contains Crossref, Scopus, etc.)
+            for elem in tag_copy.find_all(class_="external-links"):
+                elem.decompose()
+            
+            # Also remove any anchor tags (which contain links)
+            for elem in tag_copy.find_all("a"):
+                elem.decompose()
+            
             fragments: List[str] = []
-            for string in tag.stripped_strings:
+            for string in tag_copy.stripped_strings:
                 fragment = clean_text(str(string))
                 if not fragment:
                     continue
@@ -140,7 +159,7 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                 return ""
             combined = " ".join(fragments)
             combined = re.sub(r"\s+", " ", combined).strip()
-            combined = re.sub(r"^\d+(\.|:)?\s*", "", combined)
+            # Keep the reference number - don't strip it
             combined = combined.replace(" ,", ",")
             return combined
 
@@ -214,26 +233,32 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             return identifiers
 
         def build_footnote_map() -> None:
+            """Build a map of footnotes, excluding actual bibliography references."""
             selectors = [
-                'a[id^="bib"]',
-                'a[id^="ref"]',
-                'a[name^="bib"]',
-                'a[name^="ref"]',
-                '[id^="bib"]',
-                '[id^="ref"]',
-                'li.reference',
-                'li.bibliography__item',
+                # Only look for true footnotes, not bibliography references
+                '[id^="fn"]',  # Footnotes
+                'div[role="doc-footnote"]',  # Document footnotes
+                # Note: removed bib/ref selectors as those are bibliography references
             ]
             seen_ids: Set[str] = set()
             for selector in selectors:
                 for candidate in soup.select(selector):
+                    # Skip if this is inside the references section
+                    if references_section and references_section in candidate.parents:
+                        continue
+                    
                     fid = candidate.get("id") or candidate.get("name")
                     if not fid:
                         anchor = candidate.find("a", id=True) or candidate.find("a", attrs={"name": True})
                         if anchor:
                             fid = anchor.get("id") or anchor.get("name")
+                    ids_to_process: List[str]
                     if not fid:
                         candidates = extract_candidate_ids(candidate)
+                        if not candidates:
+                            descendant_with_id = candidate.find(id=True)
+                            if descendant_with_id and descendant_with_id.get("id"):
+                                candidates = [descendant_with_id.get("id")]
                         if not candidates:
                             continue
                         ids_to_process = candidates
@@ -262,18 +287,84 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                         mark_footnote_elements(container)
 
         def get_reference_entries() -> List[str]:
+            """Extract reference entries from the references section.
+            
+            Handles Cell.com's specific HTML structure where each reference is in:
+            <div role="listitem">
+                <div class="citations">
+                    <div class="citation">
+                        <div class="citation-content"> ... </div>
+                        <div class="external-links"> ... (ignore this) </div>
+                    </div>
+                </div>
+            </div>
+            """
             entries: List[str] = []
             seen_text: Set[str] = set()
+            
             if references_section:
-                for candidate in references_section.select('li, div, p'):
-                    text = clean_reference_entry(candidate)
+                # First try Cell.com structure with role="listitem"
+                role_list = references_section.find(attrs={"role": "list"})
+                if role_list:
+                    for list_item in role_list.find_all(attrs={"role": "listitem"}, recursive=False):
+                        # Look for the citations div which contains the full reference
+                        citations_div = list_item.find("div", class_="citations")
+                        if citations_div:
+                            # Extract from citation-content only (not external-links)
+                            citation_content = citations_div.find("div", class_="citation-content")
+                            if citation_content:
+                                text = clean_reference_entry(citation_content)
+                            else:
+                                # Fallback: clean the entire citations div
+                                text = clean_reference_entry(citations_div)
+                        else:
+                            # Fallback: clean the entire listitem
+                            text = clean_reference_entry(list_item)
+                        
+                        if not text:
+                            continue
+                        lower_text = text.lower()
+                        if lower_text in seen_text:
+                            continue
+                        seen_text.add(lower_text)
+                        entries.append(text)
+                    if entries:
+                        return entries
+
+                # Try traditional <li> structure
+                for list_item in references_section.find_all("li"):
+                    text = clean_reference_entry(list_item)
+                    if not text:
+                        continue
                     lower_text = text.lower()
-                    if not text or lower_text in seen_text:
+                    if lower_text in seen_text:
                         continue
                     seen_text.add(lower_text)
                     entries.append(text)
+
                 if entries:
                     return entries
+
+                # Last resort: find div/p elements
+                for candidate in references_section.find_all(["div", "p"]):
+                    if candidate.find_parent(["li"]) or candidate.get("role") == "listitem":
+                        continue
+                    # Skip if this is a citation-content div (already handled above)
+                    if "citation-content" in candidate.get("class", []):
+                        continue
+                    text = clean_reference_entry(candidate)
+                    if not text:
+                        continue
+                    lower_text = text.lower()
+                    if lower_text in seen_text:
+                        continue
+                    seen_text.add(lower_text)
+                    entries.append(text)
+
+                if entries:
+                    return entries
+                    
+            # Handle footnotes if no references found
             if footnote_map:
                 ordered_ids = sorted(
                     (fid for fid, in_refs in footnote_in_refs.items() if in_refs),
@@ -298,28 +389,22 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                     entries.append(text)
             return entries
 
-        def collect_inline_footnotes(container: Tag) -> List[str]:
-            if not footnote_map:
-                return []
-            collected: List[str] = []
-            seen_ids: Set[str] = set()
-            for sup in container.find_all("sup"):
-                candidate_ids = extract_candidate_ids(sup)
-                if not candidate_ids:
-                    for anchor in sup.find_all("a"):
-                        candidate_ids.extend(extract_candidate_ids(anchor))
-                for candidate_id in candidate_ids:
-                    normalized = normalize_identifier(candidate_id)
-                    if not normalized or normalized in seen_ids:
-                        continue
-                    if footnote_in_refs.get(normalized):
-                        continue
-                    note_text = footnote_map.get(normalized)
-                    if not note_text:
-                        continue
-                    seen_ids.add(normalized)
-                    collected.append(note_text)
-            return collected
+        def collect_inline_references(container: Tag) -> str:
+            """Collect reference citations and format them as (Ref: 1, 2, 3)."""
+            ref_numbers = []
+            seen_refs = set()
+            
+            # Find all links with role="doc-biblioref" (these are reference citations)
+            for anchor in container.find_all("a", attrs={"role": "doc-biblioref"}):
+                # Extract the reference number from the link
+                ref_text = anchor.get_text(strip=True)
+                if ref_text and ref_text not in seen_refs:
+                    seen_refs.add(ref_text)
+                    ref_numbers.append(ref_text)
+            
+            if ref_numbers:
+                return f" (Ref: {', '.join(ref_numbers)})"
+            return ""
 
         def clean_text(value: str) -> str:
             if not value:
@@ -408,6 +493,11 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                 
                 full_text = clean_text(full_text)
                 
+                # Add reference citations inline
+                ref_text = collect_inline_references(item)
+                if ref_text and full_text:
+                    full_text = f"{full_text}{ref_text}"
+
                 if full_text:
                     append_line(f"{bullet}{full_text}", indent=indent, allow_repeat=True)
                 else:
@@ -419,30 +509,103 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
 
             ensure_paragraph_break()
 
+        def append_role_list(list_tag: Tag, indent: int) -> None:
+            items = [child for child in list_tag.find_all(attrs={"role": "listitem"}, recursive=False)]
+            if not items:
+                return
+
+            next_indent = min(indent + indent_step, max_indent)
+
+            for item in items:
+                label_node = item.find(class_="label")
+                label_text = clean_text(label_node.get_text(" ", strip=True)) if label_node else ""
+                if label_text and len(label_text) <= 4:
+                    bullet = f"{label_text} "
+                else:
+                    bullet = "- "
+
+                content_node = item.find(class_="content") or item
+
+                # Remove nested list text to avoid duplication
+                nested_direct_lists = content_node.find_all(attrs={"role": "list"}, recursive=False)
+                nested_html_lists = content_node.find_all(["ul", "ol"], recursive=False)
+                nested_texts = [clean_text(nested.get_text(" ", strip=True)) for nested in (nested_direct_lists + nested_html_lists)]
+
+                full_text = clean_text(content_node.get_text(" ", strip=True))
+                for nested_text in nested_texts:
+                    if nested_text:
+                        full_text = full_text.replace(nested_text, "").strip()
+
+                # Add reference citations inline
+                ref_text = collect_inline_references(content_node)
+                if ref_text and full_text:
+                    full_text = f"{full_text}{ref_text}"
+
+                if full_text:
+                    append_line(f"{bullet}{full_text}", indent=indent, allow_repeat=True)
+                else:
+                    append_line(bullet.strip(), indent=indent, allow_repeat=True)
+
+                for nested in nested_direct_lists:
+                    append_role_list(nested, next_indent)
+                for nested in nested_html_lists:
+                    append_list(nested, next_indent)
+
+            ensure_paragraph_break()
+
         def append_table(table_tag: Tag, indent: int) -> None:
             rows = []
+            max_cols = 0
+            
             for tr in table_tag.find_all("tr"):
                 cells = []
                 for cell in tr.find_all(["th", "td"]):
-                    cell_text = clean_text(cell.get_text(" ", strip=True))
+                    # Make a copy to handle reference links
+                    cell_copy = cell.__copy__() if hasattr(cell, '__copy__') else cell
+                    
+                    # Replace reference links with (Ref: N) format
+                    for ref_link in cell_copy.find_all("a", attrs={"role": "doc-biblioref"}):
+                        ref_num = ref_link.get_text(strip=True)
+                        if ref_num:
+                            ref_link.replace_with(f" (Ref: {ref_num})")
+                    
+                    cell_text = clean_text(cell_copy.get_text(" ", strip=True))
                     cells.append(cell_text)
+                    
                 if any(cell for cell in cells):
                     rows.append(cells)
+                    max_cols = max(max_cols, len(cells))
 
             if not rows:
                 return
 
-            append_line("[Table]", indent=indent, allow_repeat=True)
+            # Add a table header
+            table_id = table_tag.get("id", "")
+            table_label = f"[Table{' ' + table_id if table_id else ''}]"
+            append_line(table_label, indent=indent, allow_repeat=True)
+            append_line("-" * 80, indent=indent, allow_repeat=True)
+            
+            # Format and append each row
             for row in rows:
-                line = " | ".join(cell for cell in row if cell)
+                # Pad row to max_cols if needed
+                while len(row) < max_cols:
+                    row.append("")
+                line = " | ".join(cell for cell in row)
                 if line:
                     append_line(line, indent=indent, allow_repeat=True)
+                    
+            append_line("-" * 80, indent=indent, allow_repeat=True)
             ensure_paragraph_break()
 
         def append_content(node, indent: int = 0) -> None:
+            """Recursively extract text content from HTML nodes.
+            
+            Block-level elements like <p>, <h1>, etc. extract their text using get_text()
+            which automatically includes inline element text, preventing newlines in
+            superscripts/subscripts. We skip inline element tags to prevent them from
+            being processed separately, but their text is included via parent's get_text().
+            """
             if isinstance(node, NavigableString):
-                text = clean_text(str(node))
-                append_line(text, indent=indent)
                 return
 
             if not isinstance(node, Tag):
@@ -451,6 +614,16 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             name = node.name.lower()
 
             if node in footnote_elements:
+                return
+
+            role_attr = (node.get("role") or "").lower()
+
+            if role_attr == "list":
+                append_role_list(node, indent)
+                return
+            if role_attr == "listitem":
+                return
+            if role_attr == "doc-footnote":
                 return
 
             if name in skip_names:
@@ -463,11 +636,21 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             if node_id == "references":
                 return
 
+            # Handle figures - but extract tables if they're inside
             if name == "figure" or (node.get("data-component") or "").lower() == "figure":
+                # Check if this figure contains a table
+                table = node.find("table")
+                if table:
+                    # Extract the table
+                    append_table(table, indent)
                 return
 
             classes = [cls.lower() for cls in node.get("class", [])]
             if any("figure" in cls for cls in classes):
+                # Check if this element contains a table
+                table = node.find("table")
+                if table:
+                    append_table(table, indent)
                 return
             if any("sidebar" in cls for cls in classes):
                 return
@@ -476,12 +659,9 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             if name in {"aside", "div", "section"} and any("footnote" in cls for cls in classes):
                 return
 
-            # Skip inline elements like sup, sub, span - they're handled by parent
-            if name in {"sup", "sub", "span", "a", "strong", "em", "i", "b"}:
-                return
-
-            if name == "br":
-                # Don't break on <br> inside inline elements - just treat as space
+            # Skip inline formatting elements - their text is extracted by parent paragraphs via get_text()
+            # This prevents PD-L1<sup>hi</sup> from becoming "PD-L1\n\nhi"
+            if name in {"sup", "sub", "span", "a", "strong", "em", "i", "b", "br"}:
                 return
 
             if name in heading_tags:
@@ -490,14 +670,24 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                     append_heading(min(int(name[1]), 6), heading_text)
                 return
 
-            if name in {"p", "blockquote"}:
-                # Extract paragraph text with inline superscripts preserved
-                paragraph = clean_text(node.get_text(" ", strip=True))
-                inline_notes = collect_inline_footnotes(node)
-                if inline_notes:
-                    notes_text = "; ".join(inline_notes)
-                    paragraph = f"{paragraph} (Footnote: {notes_text})"
-                append_line(paragraph, indent=indent)
+            # Handle paragraphs: both <p> tags and <div role="paragraph">
+            if name in {"p", "blockquote"} or role_attr == "paragraph":
+                # Process paragraph by converting reference links to (Ref: N) inline
+                # Clone the node to avoid modifying the original
+                from copy import copy
+                node_copy = copy(node)
+                
+                # Find all reference citation links and replace them with text
+                for ref_link in node_copy.find_all("a", attrs={"role": "doc-biblioref"}):
+                    ref_num = ref_link.get_text(strip=True)
+                    if ref_num:
+                        # Replace the entire <a> tag with " (Ref: N)"
+                        ref_link.replace_with(f" (Ref: {ref_num})")
+                
+                # Now extract the text with references replaced
+                paragraph = clean_text(node_copy.get_text(" ", strip=True))
+                if paragraph:
+                    append_line(paragraph, indent=indent)
                 return
 
             if name in {"ul", "ol"}:
@@ -713,7 +903,9 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             text_parts.append("REFERENCES\n")
             text_parts.append("=" * 80 + "\n\n")
             for idx, entry in enumerate(reference_entries, 1):
-                text_parts.append(f"{idx}. {entry}\n")
+                # Remove leading reference number if present (e.g., "1. " or "1 ")
+                cleaned_entry = re.sub(r'^\d+\.\s*', '', entry)
+                text_parts.append(f"{idx}. {cleaned_entry}\n")
         
         full_text = "\n".join(text_parts)
         
@@ -923,6 +1115,8 @@ async def crawl_text_async(
                 # Extract text from full-text page
                 text_content = await extract_fulltext_as_text(page, fulltext_link)
                 
+                print(f"✅ Extraction completed. Content length: {len(text_content) if text_content else 0} characters", flush=True)
+                
                 if text_content and len(text_content) > 100:
                     # Save to file
                     success = await save_text_to_file(text_content, dest_path)
@@ -955,14 +1149,13 @@ async def crawl_text_async(
                         elif cli_progress:
                             cli_progress.update(found_count, found_count, f"✅ {article_title[:30]}...", file_size, speed_kbps, "completed")
                     else:
-                        logger.error(f"❌ Failed to save text file: {dest_path}")
+                        print(f"❌ Failed to save text file: {dest_path}", flush=True)
                 else:
-                    logger.error(f"❌ Extracted text is too small or empty")
+                    print(f"❌ Extracted text is too small or empty. Length: {len(text_content) if text_content else 0}", flush=True)
                     
             except Exception as e:
-                logger.error(f"❌ Failed to extract text for '{article_title[:50]}': {e}")
-                logger.debug(traceback.format_exc())
-                continue
+                print(f"❌ Failed to extract text for '{article_title[:50]}': {e}", flush=True)
+                print(traceback.format_exc(), flush=True)
             
             await asyncio.sleep(1)
         
@@ -1211,28 +1404,51 @@ async def crawl_text_async(
                     print(f"🔍 Found {len(all_issue_links)} total issue links on page", flush=True)
                     
                     for link in all_issue_links:
-                        parent = link.find_parent("li") or link.find_parent("div")
-                        if parent and "Open Archive" in parent.get_text():
-                            in_open_archive = True
-                        
                         href = link.get("href", "")
-                        if not href.startswith("http"):
-                            href = f"https://www.cell.com{href}"
+                        if not href:
+                            continue
                         
-                        date_text = "Unknown"
-                        date_elem = link.find_parent().find(class_="issue-item__title") if link.find_parent() else None
-                        if date_elem:
-                            date_text = date_elem.get_text(strip=True)
+                        # Check if this is after the Open Archive marker
+                        parent_li = link.find_parent("li")
+                        if parent_li:
+                            open_archive_div = parent_li.find_previous("div", class_="list-of-issues__open-archive")
+                            if open_archive_div and not in_open_archive:
+                                in_open_archive = True
+                                print(f"📂 Entered Open Archive section", flush=True)
                         
-                        try:
-                            if date_text != "Unknown":
-                                year_match = re.search(r'\d{4}', date_text)
-                                if year_match:
-                                    year = int(year_match.group())
-                                    if year_from <= year <= year_to:
-                                        issue_links.append((href, in_open_archive, date_text))
-                        except Exception:
-                            pass
+                        # Try to extract date from the link text or child elements
+                        link_text = link.get_text(strip=True)
+                        date_text = None
+                        
+                        # First try to find span with date
+                        issue_date_span = link.find("span", string=lambda x: x and any(month in x for month in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]))
+                        if issue_date_span:
+                            date_text = issue_date_span.get_text(strip=True)
+                        elif link_text:
+                            # Use the entire link text if no specific date span found
+                            date_text = link_text
+                        
+                        if date_text:
+                            # Try to extract year from date
+                            try:
+                                issue_year = None
+                                for y in range(year_from - 1, year_to + 2):
+                                    if str(y) in date_text:
+                                        issue_year = y
+                                        break
+                                
+                                if issue_year and year_from <= issue_year <= year_to:
+                                    full_url = urljoin("https://www.cell.com", href)
+                                    # Avoid duplicates
+                                    if (full_url, in_open_archive, date_text) not in issue_links:
+                                        issue_links.append((full_url, in_open_archive, date_text))
+                                        logger.debug(f"✅ Found issue: {date_text[:50]} ({'Open Archive' if in_open_archive else 'Regular'})")
+                                else:
+                                    logger.debug(f"⏭️  Skipped issue (year {issue_year} not in range): {date_text[:50]}")
+                            except Exception as e:
+                                logger.debug(f"⚠️  Failed to parse date from: {date_text[:50]} - {e}")
+                        else:
+                            logger.debug(f"⚠️  No date text found for link: {href[:50]}")
                     
                     print(f"📚 Found {len(issue_links)} issues to crawl for {slug} (filtered by year {year_from}-{year_to})", flush=True)
                     
