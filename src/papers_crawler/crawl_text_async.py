@@ -106,14 +106,15 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             "metrics",
             "copyright",
             "licence",
-            "license",
-            "footnote"
+            "license"
         ]
 
         def clean_text(value: str) -> str:
             if not value:
                 return ""
-            return re.sub(r"\s+", " ", value).strip()
+            # Preserve inline superscripts but normalize whitespace
+            text = re.sub(r"\s+", " ", value).strip()
+            return text
 
         def should_skip_text(text: str) -> bool:
             if not text:
@@ -163,24 +164,24 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
 
             for idx, item in enumerate(items, 1):
                 bullet = f"{idx}. " if list_tag.name == "ol" else "- "
-                fragments = []
-                for child in item.contents:
-                    if isinstance(child, NavigableString):
-                        fragment = clean_text(str(child))
-                        if fragment:
-                            fragments.append(fragment)
-                    elif isinstance(child, Tag) and child.name not in ("ul", "ol"):
-                        fragment = clean_text(child.get_text(" ", strip=True))
-                        if fragment:
-                            fragments.append(fragment)
-
-                bullet_text = " ".join(fragments).strip()
-                if bullet_text:
-                    append_line(f"{bullet}{bullet_text}", indent=indent)
-                else:
-                    append_line(bullet.strip(), indent=indent)
-
+                
+                # Collect all text including superscripts inline
+                full_text = clean_text(item.get_text(" ", strip=True))
+                
+                # Remove nested list text temporarily
                 nested_lists = item.find_all(["ul", "ol"], recursive=False)
+                for nested in nested_lists:
+                    nested_text = nested.get_text(" ", strip=True)
+                    full_text = full_text.replace(nested_text, "")
+                
+                full_text = clean_text(full_text)
+                
+                if full_text:
+                    append_line(f"{bullet}{full_text}", indent=indent, allow_repeat=True)
+                else:
+                    append_line(bullet.strip(), indent=indent, allow_repeat=True)
+
+                # Process nested lists
                 for nested in nested_lists:
                     append_list(nested, min(indent + indent_step, max_indent))
 
@@ -235,11 +236,17 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                 return
             if any("sidebar" in cls for cls in classes):
                 return
-            if any("footnote" in cls for cls in classes):
+            
+            # Skip standalone footnote blocks (we handle them inline)
+            if name in {"aside", "div", "section"} and any("footnote" in cls for cls in classes):
+                return
+
+            # Skip inline elements like sup, sub, span - they're handled by parent
+            if name in {"sup", "sub", "span", "a", "strong", "em", "i", "b"}:
                 return
 
             if name == "br":
-                ensure_paragraph_break()
+                # Don't break on <br> inside inline elements - just treat as space
                 return
 
             if name in heading_tags:
@@ -249,7 +256,17 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                 return
 
             if name in {"p", "blockquote"}:
+                # Extract paragraph text with inline superscripts preserved
                 paragraph = clean_text(node.get_text(" ", strip=True))
+                
+                # Collect footnote references if present (but not their full content)
+                footnote_refs = []
+                for sup in node.find_all("sup"):
+                    # Only get the reference marker, not expanded footnote
+                    sup_text = clean_text(sup.get_text(" ", strip=True))
+                    if sup_text and len(sup_text) <= 3 and sup_text not in footnote_refs:
+                        footnote_refs.append(sup_text)
+                
                 append_line(paragraph, indent=indent)
                 return
 
@@ -599,24 +616,32 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                             if caption_text:
                                 text_parts.append(f"{caption_text}\n\n")
         
-        # Extract references
+        # Extract references - only if not already processed in content_wrapper
         refs_elem = soup.find("section", id="references")
-        if refs_elem:
+        if refs_elem and "REFERENCES" not in "\n".join(text_parts):
             text_parts.append("\n" + "=" * 80 + "\n")
             text_parts.append("REFERENCES\n")
             text_parts.append("=" * 80 + "\n\n")
             
-            ref_items = refs_elem.find_all(['li', 'div', 'p'], class_=lambda x: x and 'reference' in str(x).lower())
-            if ref_items:
+            # Find reference list items
+            ref_list = refs_elem.find("ol") or refs_elem.find("ul")
+            if ref_list:
+                ref_items = ref_list.find_all("li", recursive=False)
+                seen_refs = set()
                 for idx, ref in enumerate(ref_items, 1):
-                    ref_text = ref.get_text(separator=" ", strip=True)
-                    if ref_text:
+                    ref_text = clean_text(ref.get_text(" ", strip=True))
+                    if ref_text and ref_text not in seen_refs:
+                        seen_refs.add(ref_text)
                         text_parts.append(f"{idx}. {ref_text}\n")
             else:
-                for elem in refs_elem.find_all(['p', 'div']):
-                    ref_text = elem.get_text(separator=" ", strip=True)
-                    if ref_text:
-                        text_parts.append(f"{ref_text}\n")
+                # Fallback to divs/paragraphs
+                ref_items = refs_elem.find_all(['div', 'p'], class_=lambda x: x and 'reference' in str(x).lower())
+                seen_refs = set()
+                for idx, ref in enumerate(ref_items, 1):
+                    ref_text = clean_text(ref.get_text(" ", strip=True))
+                    if ref_text and ref_text not in seen_refs and len(ref_text) > 20:
+                        seen_refs.add(ref_text)
+                        text_parts.append(f"{idx}. {ref_text}\n")
         
         full_text = "\n".join(text_parts)
         
@@ -737,7 +762,7 @@ async def crawl_text_async(
 
     found_count = 0
     
-    async def crawl_issue_page(page, issue_url: str, journal_folder: str, is_open_archive: bool = False, issue_date: str = "Unknown"):
+    async def crawl_issue_page(page, issue_url: str, journal_folder: str, journal_download_count: int, is_open_archive: bool = False, issue_date: str = "Unknown"):
         """Crawl a specific issue page for articles and extract text."""
         nonlocal found_count, saved_files, open_access_articles, article_metadata
         
@@ -774,9 +799,9 @@ async def crawl_text_async(
         print(f"Found {len(articles)} articles in issue", flush=True)
         
         for art in articles:
-            if limit and found_count >= limit:
-                logger.info(f"✋ Reached global limit of {limit} extractions")
-                return True
+            if limit and journal_download_count >= limit:
+                logger.info(f"✋ Reached journal limit of {limit} extractions")
+                return journal_download_count, True
             
             oa_label = art.find(class_="OALabel")
             if not is_open_archive and not oa_label:
@@ -848,6 +873,7 @@ async def crawl_text_async(
                         open_access_articles.append(article_title)
                         article_metadata.append((dest_path, article_title, publish_date))
                         found_count += 1
+                        journal_download_count += 1
                         
                         if progress_callback:
                             progress_callback(filename, dest_path)
@@ -868,7 +894,7 @@ async def crawl_text_async(
             
             await asyncio.sleep(1)
         
-        return False
+        return journal_download_count, False
 
     if journal_slugs:
         if total_progress_callback:
@@ -1005,7 +1031,6 @@ async def crawl_text_async(
                         
                         if os.path.exists(dest_path) and os.path.getsize(dest_path) > 100:
                             logger.info(f"⏭️  Skipping already extracted: {filename}")
-                            journal_download_count += 1
                             continue
                         
                         if total_progress_callback:
@@ -1140,11 +1165,11 @@ async def crawl_text_async(
                     print(f"📚 Found {len(issue_links)} issues to crawl for {slug} (filtered by year {year_from}-{year_to})", flush=True)
                     
                     for issue_url, is_open_archive, issue_date in issue_links:
-                        if limit and found_count >= limit:
-                            print(f"✋ Reached global limit of {limit}, stopping archive crawl", flush=True)
+                        if limit and journal_download_count >= limit:
+                            print(f"✋ Reached journal limit of {limit}, stopping archive crawl", flush=True)
                             break
                         
-                        should_stop = await crawl_issue_page(archive_page, issue_url, journal_folder, is_open_archive, issue_date)
+                        journal_download_count, should_stop = await crawl_issue_page(archive_page, issue_url, journal_folder, journal_download_count, is_open_archive, issue_date)
                         if should_stop:
                             break
                         
