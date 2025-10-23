@@ -61,38 +61,74 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
         html = await page.content()
         soup = BeautifulSoup(html, "html.parser")
         
+        # Remove UI elements, buttons, and navigation that are not article content
+        for unwanted in soup.find_all(['button', 'nav', 'script', 'style', 'iframe', 'aside']):
+            unwanted.decompose()
+        
+        # Remove specific UI classes that contain "show more/less" and other UI elements
+        ui_classes = ['show-more', 'show-less', 'expand', 'collapse', 'toggle', 'button', 
+                      'nav', 'menu', 'header', 'footer', 'sidebar', 'advertisement',
+                      'social-share', 'download-link', 'metrics', 'altmetric']
+        for ui_class in ui_classes:
+            for elem in soup.find_all(class_=lambda x: x and ui_class in x.lower()):
+                elem.decompose()
+        
         text_parts = []
+        seen_texts = set()  # Track seen text to avoid duplicates
+        
+        def add_unique_text(text: str, prefix: str = ""):
+            """Add text only if it hasn't been seen before (avoid duplicates)."""
+            text = text.strip()
+            if text and text not in seen_texts and len(text) > 10:  # Ignore very short texts
+                seen_texts.add(text)
+                if prefix:
+                    text_parts.append(f"{prefix}{text}\n")
+                else:
+                    text_parts.append(f"{text}\n")
         
         # Extract title
         title_elem = soup.find("h1", {"property": "name"})
         if title_elem:
             title = title_elem.get_text(strip=True)
-            text_parts.append(f"TITLE: {title}\n")
+            add_unique_text(title, "TITLE: ")
         
         # Extract authors
         authors_elem = soup.find("div", class_="contributors")
         if authors_elem:
             authors = authors_elem.get_text(separator=", ", strip=True)
-            text_parts.append(f"AUTHORS: {authors}\n")
+            add_unique_text(authors, "AUTHORS: ")
         
         # Extract abstract
         abstract_elem = soup.find("section", id="author-abstract")
         if abstract_elem:
-            abstract_text = abstract_elem.get_text(separator="\n", strip=True)
-            text_parts.append(f"\nABSTRACT:\n{abstract_text}\n")
+            text_parts.append("\nABSTRACT:\n")
+            # Get only the direct text content, not nested UI elements
+            for p in abstract_elem.find_all(['p', 'div'], recursive=True):
+                p_text = p.get_text(separator=" ", strip=True)
+                add_unique_text(p_text)
         
-        # Extract main body text
+        # Extract main body text - only actual content paragraphs
         body_elem = soup.find("section", id="bodymatter")
         if body_elem:
             text_parts.append("\n--- MAIN TEXT ---\n")
-            # Extract all section headings and paragraphs
-            for elem in body_elem.find_all(["h2", "h3", "h4", "p", "div"], class_=lambda x: x != "figure"):
-                elem_text = elem.get_text(strip=True)
-                if elem_text:
-                    if elem.name in ["h2", "h3", "h4"]:
-                        text_parts.append(f"\n{elem_text}\n")
-                    else:
-                        text_parts.append(f"{elem_text}\n")
+            
+            # Process sections in order
+            for section in body_elem.find_all(['section', 'div'], recursive=False):
+                # Extract section heading
+                heading = section.find(['h2', 'h3', 'h4'])
+                if heading:
+                    heading_text = heading.get_text(strip=True)
+                    if heading_text and heading_text not in seen_texts:
+                        seen_texts.add(heading_text)
+                        text_parts.append(f"\n{heading_text}\n")
+                
+                # Extract paragraphs from this section
+                for p in section.find_all('p'):
+                    # Skip if paragraph is inside a figure (we'll handle figures separately)
+                    if p.find_parent('figure'):
+                        continue
+                    p_text = p.get_text(separator=" ", strip=True)
+                    add_unique_text(p_text)
         
         # Extract figure captions
         figures = soup.find_all("figure", class_="graphic")
@@ -101,20 +137,31 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             for idx, fig in enumerate(figures, 1):
                 caption = fig.find("figcaption")
                 if caption:
-                    caption_text = caption.get_text(strip=True)
-                    text_parts.append(f"\nFigure {idx}: {caption_text}\n")
+                    caption_text = caption.get_text(separator=" ", strip=True)
+                    if caption_text and caption_text not in seen_texts:
+                        seen_texts.add(caption_text)
+                        text_parts.append(f"\nFigure {idx}: {caption_text}\n")
         
-        # Extract references
+        # Extract references - get each reference as a separate line
         refs_elem = soup.find("section", id="references")
         if refs_elem:
             text_parts.append("\n--- REFERENCES ---\n")
-            refs_text = refs_elem.get_text(separator="\n", strip=True)
-            text_parts.append(refs_text)
+            # Try to find individual reference items
+            ref_items = refs_elem.find_all(['li', 'div', 'p'], class_=lambda x: x and 'reference' in str(x).lower())
+            if ref_items:
+                for ref in ref_items:
+                    ref_text = ref.get_text(separator=" ", strip=True)
+                    add_unique_text(ref_text)
+            else:
+                # Fallback: get all text but try to preserve structure
+                for elem in refs_elem.find_all(['p', 'div']):
+                    ref_text = elem.get_text(separator=" ", strip=True)
+                    add_unique_text(ref_text)
         
         full_text = "\n".join(text_parts)
         
         if full_text.strip():
-            logger.info(f"✅ Successfully extracted {len(full_text)} characters of text")
+            logger.info(f"✅ Successfully extracted {len(full_text)} characters of text ({len(seen_texts)} unique text blocks)")
             return full_text
         else:
             logger.warning("⚠️ No text content extracted from page")
