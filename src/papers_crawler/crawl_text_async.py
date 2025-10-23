@@ -16,6 +16,7 @@ import asyncio
 import re
 import json
 import traceback
+from collections import deque
 from typing import List, Optional, Tuple
 from urllib.parse import urljoin
 from datetime import datetime
@@ -76,6 +77,203 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                 elem.decompose()
         
         text_parts = []
+        recent_lines = deque(maxlen=60)
+
+        heading_tags = ("h1", "h2", "h3", "h4", "h5", "h6")
+        skip_names = {"script", "style", "svg", "noscript", "form", "hr", "iframe"}
+        indent_step = 2
+        max_indent = 12
+        container_keywords = (
+            "core-container",
+            "section",
+            "subsection",
+            "article__section",
+            "article-section",
+            "body-section",
+            "core-paragraph",
+            "paragraph",
+            "content-block"
+        )
+        unwanted_phrases = [
+            "search for articles by this author",
+            "crossref",
+            "scopus",
+            "google scholar",
+            "show more",
+            "show less",
+            "supplementary material",
+            "supplementary information",
+            "metrics",
+            "copyright",
+            "licence",
+            "license",
+            "footnote"
+        ]
+
+        def clean_text(value: str) -> str:
+            if not value:
+                return ""
+            return re.sub(r"\s+", " ", value).strip()
+
+        def should_skip_text(text: str) -> bool:
+            if not text:
+                return True
+            lower = text.lower()
+            if lower.startswith("/* lines") and lower.endswith(" omitted */"):
+                return True
+            if any(phrase in lower for phrase in unwanted_phrases):
+                return True
+            if len(lower) <= 2 and not any(ch.isalpha() for ch in lower):
+                return True
+            if lower in {"…", "...", "∙", "·"}:
+                return True
+            return False
+
+        def ensure_paragraph_break() -> None:
+            if not text_parts:
+                return
+            last = text_parts[-1]
+            if last == "\n" or last.endswith("\n\n"):
+                return
+            text_parts.append("\n")
+
+        def append_line(text: str, indent: int = 0, allow_repeat: bool = False) -> None:
+            cleaned = clean_text(text)
+            if should_skip_text(cleaned):
+                return
+            if not allow_repeat and cleaned in recent_lines:
+                return
+            recent_lines.append(cleaned)
+            line = f"{' ' * indent}{cleaned}" if indent else cleaned
+            text_parts.append(f"{line}\n")
+
+        def append_heading(level: int, text: str) -> None:
+            heading_text = clean_text(text)
+            if should_skip_text(heading_text):
+                return
+            level = max(1, min(level, 6))
+            ensure_paragraph_break()
+            text_parts.append(f"{'#' * level} {heading_text}\n")
+            text_parts.append("\n")
+
+        def append_list(list_tag: Tag, indent: int) -> None:
+            items = [child for child in list_tag.find_all("li", recursive=False)]
+            if not items:
+                return
+
+            for idx, item in enumerate(items, 1):
+                bullet = f"{idx}. " if list_tag.name == "ol" else "- "
+                fragments = []
+                for child in item.contents:
+                    if isinstance(child, NavigableString):
+                        fragment = clean_text(str(child))
+                        if fragment:
+                            fragments.append(fragment)
+                    elif isinstance(child, Tag) and child.name not in ("ul", "ol"):
+                        fragment = clean_text(child.get_text(" ", strip=True))
+                        if fragment:
+                            fragments.append(fragment)
+
+                bullet_text = " ".join(fragments).strip()
+                if bullet_text:
+                    append_line(f"{bullet}{bullet_text}", indent=indent)
+                else:
+                    append_line(bullet.strip(), indent=indent)
+
+                nested_lists = item.find_all(["ul", "ol"], recursive=False)
+                for nested in nested_lists:
+                    append_list(nested, min(indent + indent_step, max_indent))
+
+            ensure_paragraph_break()
+
+        def append_table(table_tag: Tag, indent: int) -> None:
+            rows = []
+            for tr in table_tag.find_all("tr"):
+                cells = []
+                for cell in tr.find_all(["th", "td"]):
+                    cell_text = clean_text(cell.get_text(" ", strip=True))
+                    cells.append(cell_text)
+                if any(cell for cell in cells):
+                    rows.append(cells)
+
+            if not rows:
+                return
+
+            append_line("[Table]", indent=indent, allow_repeat=True)
+            for row in rows:
+                line = " | ".join(cell for cell in row if cell)
+                if line:
+                    append_line(line, indent=indent, allow_repeat=True)
+            ensure_paragraph_break()
+
+        def append_content(node, indent: int = 0) -> None:
+            if isinstance(node, NavigableString):
+                text = clean_text(str(node))
+                append_line(text, indent=indent)
+                return
+
+            if not isinstance(node, Tag):
+                return
+
+            name = node.name.lower()
+
+            if name in skip_names:
+                return
+
+            if node.get("aria-hidden") == "true":
+                return
+
+            node_id = (node.get("id") or "").lower()
+            if node_id == "references":
+                return
+
+            if name == "figure" or (node.get("data-component") or "").lower() == "figure":
+                return
+
+            classes = [cls.lower() for cls in node.get("class", [])]
+            if any("figure" in cls for cls in classes):
+                return
+            if any("sidebar" in cls for cls in classes):
+                return
+            if any("footnote" in cls for cls in classes):
+                return
+
+            if name == "br":
+                ensure_paragraph_break()
+                return
+
+            if name in heading_tags:
+                heading_text = clean_text(node.get_text(" ", strip=True))
+                if heading_text:
+                    append_heading(min(int(name[1]), 6), heading_text)
+                return
+
+            if name in {"p", "blockquote"}:
+                paragraph = clean_text(node.get_text(" ", strip=True))
+                append_line(paragraph, indent=indent)
+                return
+
+            if name in {"ul", "ol"}:
+                append_list(node, indent)
+                return
+
+            if name == "table":
+                append_table(node, indent)
+                return
+
+            next_indent = indent
+            is_container = name == "section" or any(
+                keyword in cls for cls in classes for keyword in container_keywords
+            ) or node.has_attr("data-core-component")
+
+            if is_container:
+                next_indent = min(indent + indent_step, max_indent)
+
+            for child in node.children:
+                append_content(child, next_indent)
+
+            if is_container:
+                ensure_paragraph_break()
         
         # Find the main article element
         article = soup.find("article")
@@ -87,21 +285,54 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                 text_parts.append("=" * 80 + "\n")
                 text_parts.append("ARTICLE HEADER\n")
                 text_parts.append("=" * 80 + "\n\n")
-                
-                # Extract all headings and content from header
-                for elem in header_wrapper.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div']):
-                    # Skip nested elements if parent was already processed
-                    if elem.find_parent(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']) and elem.name in ['span', 'a', 'strong', 'em']:
-                        continue
-                    
-                    elem_text = elem.get_text(separator=" ", strip=True)
-                    if elem_text:
-                        # Add heading markers for h tags
-                        if elem.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
-                            level = elem.name[1]  # Get number from h1, h2, etc.
-                            text_parts.append(f"\n{'#' * int(level)} {elem_text}\n\n")
-                        else:
-                            text_parts.append(f"{elem_text}\n")
+
+                title = ""
+                meta_title = soup.find("meta", {"name": "citation_title"}) or soup.find("meta", {"property": "og:title"})
+                if meta_title and meta_title.get("content"):
+                    title = clean_text(meta_title.get("content"))
+                if not title:
+                    title_tag = header_wrapper.find("h1")
+                    if title_tag:
+                        title = clean_text(title_tag.get_text(" ", strip=True))
+                if title:
+                    append_heading(1, title)
+
+                author_meta = [clean_text(tag.get("content", "")) for tag in soup.find_all("meta", {"name": "citation_author"})]
+                authors: List[str] = []
+                for author in author_meta:
+                    if author and author not in authors:
+                        authors.append(author)
+                if not authors:
+                    for tag in header_wrapper.select('a[rel="author"], span[data-test="author-name"], span.author-name, span[itemprop="name"], a[itemprop="name"]'):
+                        name_text = clean_text(tag.get_text(" ", strip=True).replace("Search for articles by this author", ""))
+                        if should_skip_text(name_text):
+                            continue
+                        if name_text and name_text not in authors:
+                            authors.append(name_text)
+                if authors:
+                    append_line("Authors: " + ", ".join(authors), allow_repeat=True)
+
+                journal_meta = soup.find("meta", {"name": "citation_journal_title"})
+                if journal_meta and journal_meta.get("content"):
+                    append_line(f"Journal: {clean_text(journal_meta.get('content'))}", allow_repeat=True)
+
+                date_meta = soup.find("meta", {"name": "citation_publication_date"}) or soup.find("meta", {"name": "dc.Date"})
+                if date_meta and date_meta.get("content"):
+                    append_line(f"Publication Date: {clean_text(date_meta.get('content'))}", allow_repeat=True)
+
+                doi_meta = soup.find("meta", {"name": "citation_doi"})
+                if doi_meta and doi_meta.get("content"):
+                    append_line(f"DOI: {clean_text(doi_meta.get('content'))}", allow_repeat=True)
+
+                keywords = []
+                for keyword_meta in soup.find_all("meta", {"name": "citation_keywords"}):
+                    keyword = clean_text(keyword_meta.get("content", ""))
+                    if keyword and keyword not in keywords:
+                        keywords.append(keyword)
+                if keywords:
+                    append_line("Keywords: " + ", ".join(keywords), allow_repeat=True)
+
+                ensure_paragraph_break()
             
             # Extract from data-core-wrapper="content" section (main article body)
             content_wrapper = article.find("div", {"data-core-wrapper": "content"})
