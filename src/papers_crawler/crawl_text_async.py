@@ -17,7 +17,7 @@ import re
 import json
 import traceback
 from collections import deque
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 from urllib.parse import urljoin
 from datetime import datetime
 
@@ -79,6 +79,12 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
         text_parts = []
         recent_lines = deque(maxlen=60)
 
+        references_section = soup.find("section", id="references")
+        footnote_map: Dict[str, str] = {}
+        footnote_in_refs: Dict[str, bool] = {}
+        footnote_elements: Set[Tag] = set()
+        pending_bullet_prefix: Optional[str] = None
+
         heading_tags = ("h1", "h2", "h3", "h4", "h5", "h6")
         skip_names = {"script", "style", "svg", "noscript", "form", "hr", "iframe"}
         indent_step = 2
@@ -90,8 +96,6 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             "article__section",
             "article-section",
             "body-section",
-            "core-paragraph",
-            "paragraph",
             "content-block"
         )
         unwanted_phrases = [
@@ -109,6 +113,125 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             "license"
         ]
 
+        reference_skip_phrases = (
+            "full text",
+            "full text (pdf)",
+            "pdf",
+            "crossref",
+            "scopus",
+            "pubmed",
+            "google scholar",
+            "open table in a new tab",
+            "view abstract",
+            "supplementary information",
+        )
+
+        def clean_reference_entry(tag: Tag) -> str:
+            fragments: List[str] = []
+            for string in tag.stripped_strings:
+                fragment = clean_text(str(string))
+                if not fragment:
+                    continue
+                lower_fragment = fragment.lower()
+                if any(phrase in lower_fragment for phrase in reference_skip_phrases):
+                    continue
+                fragments.append(fragment)
+            if not fragments:
+                return ""
+            combined = " ".join(fragments)
+            combined = re.sub(r"\s+", " ", combined).strip()
+            combined = re.sub(r"^\d+(\.|:)?\s*", "", combined)
+            combined = combined.replace(" ,", ",")
+            return combined
+
+        def mark_footnote_elements(container: Tag) -> None:
+            footnote_elements.add(container)
+            for descendant in container.descendants:
+                if isinstance(descendant, Tag):
+                    footnote_elements.add(descendant)
+
+        def reference_sort_key(identifier: str) -> Tuple[int, str]:
+            match = re.search(r"(\d+)", identifier)
+            if match:
+                return int(match.group(1)), identifier
+            return 10**6, identifier
+
+        def build_footnote_map() -> None:
+            selectors = [
+                'a[id^="bib"]',
+                'a[id^="ref"]',
+                'a[name^="bib"]',
+                'a[name^="ref"]',
+                '[id^="bib"]',
+                '[id^="ref"]',
+                'li.reference',
+                'li.bibliography__item',
+            ]
+            seen_ids: Set[str] = set()
+            for selector in selectors:
+                for candidate in soup.select(selector):
+                    fid = candidate.get("id") or candidate.get("name")
+                    if not fid:
+                        anchor = candidate.find("a", id=True) or candidate.find("a", attrs={"name": True})
+                        if anchor:
+                            fid = anchor.get("id") or anchor.get("name")
+                    if not fid:
+                        continue
+                    fid_lower = fid.lower()
+                    if fid_lower in seen_ids:
+                        continue
+                    container = candidate
+                    if container.name in {"a", "span", "sup"}:
+                        parent_candidate = container.find_parent(['li', 'div', 'section', 'p'])
+                        if parent_candidate:
+                            container = parent_candidate
+                    text = clean_reference_entry(container)
+                    if not text:
+                        continue
+                    footnote_map[fid_lower] = text
+                    in_refs = bool(references_section and references_section in container.parents)
+                    footnote_in_refs[fid_lower] = in_refs
+                    seen_ids.add(fid_lower)
+                    if not in_refs:
+                        mark_footnote_elements(container)
+
+        def get_reference_entries() -> List[str]:
+            entries: List[str] = []
+            seen_text: Set[str] = set()
+            if references_section:
+                for candidate in references_section.select('li, div, p'):
+                    text = clean_reference_entry(candidate)
+                    lower_text = text.lower()
+                    if not text or lower_text in seen_text:
+                        continue
+                    seen_text.add(lower_text)
+                    entries.append(text)
+                if entries:
+                    return entries
+            if footnote_map:
+                ordered_ids = sorted(
+                    (fid for fid, in_refs in footnote_in_refs.items() if in_refs),
+                    key=reference_sort_key
+                )
+                for fid in ordered_ids:
+                    text = footnote_map.get(fid)
+                    if not text:
+                        continue
+                    lower_text = text.lower()
+                    if lower_text in seen_text:
+                        continue
+                    seen_text.add(lower_text)
+                    entries.append(text)
+                if entries:
+                    return entries
+                for text in footnote_map.values():
+                    lower_text = text.lower()
+                    if lower_text in seen_text or not text:
+                        continue
+                    seen_text.add(lower_text)
+                    entries.append(text)
+            return entries
+
         def clean_text(value: str) -> str:
             if not value:
                 return ""
@@ -119,14 +242,17 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
         def should_skip_text(text: str) -> bool:
             if not text:
                 return True
-            lower = text.lower()
+            stripped = text.strip()
+            lower = stripped.lower()
             if lower.startswith("/* lines") and lower.endswith(" omitted */"):
                 return True
             if any(phrase in lower for phrase in unwanted_phrases):
                 return True
+            if stripped in {"•", "·"}:
+                return False
             if len(lower) <= 2 and not any(ch.isalpha() for ch in lower):
                 return True
-            if lower in {"…", "...", "∙", "·"}:
+            if lower in {"…", "...", "∙"}:
                 return True
             return False
 
@@ -139,14 +265,31 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             text_parts.append("\n")
 
         def append_line(text: str, indent: int = 0, allow_repeat: bool = False) -> None:
+            nonlocal pending_bullet_prefix
             cleaned = clean_text(text)
+            if not cleaned:
+                return
+            stripped = cleaned.strip()
+            if stripped in {"•", "·"}:
+                pending_bullet_prefix = f"{' ' * indent}• "
+                return
+            if stripped in {"+", "-", "−"} and text_parts:
+                updated = text_parts[-1].rstrip("\n") + f" {stripped}\n"
+                text_parts[-1] = updated
+                recent_lines.append(clean_text(updated.strip()))
+                return
             if should_skip_text(cleaned):
                 return
-            if not allow_repeat and cleaned in recent_lines:
+            if indent and not pending_bullet_prefix:
+                cleaned = f"{' ' * indent}{cleaned}"
+            if pending_bullet_prefix:
+                cleaned = pending_bullet_prefix + cleaned
+                pending_bullet_prefix = None
+            dedup_key = clean_text(cleaned)
+            if not allow_repeat and dedup_key in recent_lines:
                 return
-            recent_lines.append(cleaned)
-            line = f"{' ' * indent}{cleaned}" if indent else cleaned
-            text_parts.append(f"{line}\n")
+            recent_lines.append(dedup_key)
+            text_parts.append(f"{cleaned}\n")
 
         def append_heading(level: int, text: str) -> None:
             heading_text = clean_text(text)
@@ -291,7 +434,8 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
 
             if is_container:
                 ensure_paragraph_break()
-        
+        build_footnote_map()
+
         # Find the main article element
         article = soup.find("article")
         
@@ -358,146 +502,6 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                 text_parts.append("ARTICLE CONTENT\n")
                 text_parts.append("=" * 80 + "\n\n")
                 
-                # Recursively walk content to preserve nested section structure
-                heading_tags = ("h1", "h2", "h3", "h4", "h5", "h6")
-                skip_names = {"script", "style", "svg", "noscript", "form", "hr", "iframe"}
-                indent_step = 2
-                max_indent = 12
-
-                container_keywords = (
-                    "core-container",
-                    "section",
-                    "subsection",
-                    "article__section",
-                    "article-section",
-                    "body-section",
-                    "core-paragraph",
-                    "paragraph"
-                )
-
-                def clean_text(value: str) -> str:
-                    if not value:
-                        return ""
-                    return re.sub(r"\s+", " ", value).strip()
-
-                def append_list(list_tag: Tag, indent: int) -> None:
-                    items = [child for child in list_tag.children if isinstance(child, Tag) and child.name == "li"]
-                    if not items:
-                        return
-
-                    for idx, item in enumerate(items, 1):
-                        bullet = f"{idx}. " if list_tag.name == "ol" else "- "
-                        fragments = []
-                        for child in item.contents:
-                            if isinstance(child, NavigableString):
-                                fragment = clean_text(str(child))
-                                if fragment:
-                                    fragments.append(fragment)
-                            elif isinstance(child, Tag) and child.name not in ("ul", "ol"):
-                                fragment = clean_text(child.get_text(" ", strip=True))
-                                if fragment:
-                                    fragments.append(fragment)
-
-                        bullet_text = " ".join(fragments).strip()
-                        if bullet_text:
-                            text_parts.append(f"{' ' * indent}{bullet}{bullet_text}\n")
-                        else:
-                            text_parts.append(f"{' ' * indent}{bullet.strip()}\n")
-
-                        for nested in item.children:
-                            if isinstance(nested, Tag) and nested.name in ("ul", "ol"):
-                                append_list(nested, min(indent + indent_step, max_indent))
-
-                    text_parts.append("\n")
-
-                def append_table(table_tag: Tag, indent: int) -> None:
-                    rows = []
-                    for tr in table_tag.find_all("tr"):
-                        cells = []
-                        for cell in tr.find_all(["th", "td"]):
-                            cell_text = clean_text(cell.get_text(" ", strip=True))
-                            cells.append(cell_text)
-                        if any(cell for cell in cells):
-                            rows.append(cells)
-
-                    if not rows:
-                        return
-
-                    text_parts.append(f"{' ' * indent}[Table]\n")
-                    for row in rows:
-                        line = " | ".join(cell for cell in row if cell)
-                        if line:
-                            text_parts.append(f"{' ' * indent}{line}\n")
-                    text_parts.append("\n")
-
-                def append_content(node, indent: int = 0) -> None:
-                    if isinstance(node, NavigableString):
-                        text = clean_text(str(node))
-                        if text:
-                            text_parts.append(f"{' ' * indent}{text}\n")
-                        return
-
-                    if not isinstance(node, Tag):
-                        return
-
-                    name = node.name.lower()
-
-                    if name in skip_names:
-                        return
-
-                    if node.get("aria-hidden") == "true":
-                        return
-
-                    node_id = (node.get("id") or "").lower()
-                    if node_id == "references":
-                        return
-
-                    if name == "figure" or (node.get("data-component") or "").lower() == "figure":
-                        return
-
-                    classes = [cls.lower() for cls in node.get("class", [])]
-                    if any("figure" in cls for cls in classes):
-                        return
-
-                    if name == "br":
-                        text_parts.append("\n")
-                        return
-
-                    if name in heading_tags:
-                        heading_text = clean_text(node.get_text(" ", strip=True))
-                        if heading_text:
-                            level = min(int(name[1]), 6)
-                            text_parts.append(f"\n{'#' * level} {heading_text}\n\n")
-                        return
-
-                    if name in {"p", "blockquote"}:
-                        paragraph = clean_text(node.get_text(" ", strip=True))
-                        if paragraph:
-                            text_parts.append(f"{' ' * indent}{paragraph}\n")
-                        return
-
-                    if name in {"ul", "ol"}:
-                        append_list(node, indent)
-                        return
-
-                    if name == "table":
-                        append_table(node, indent)
-                        return
-
-                    next_indent = indent
-                    is_container = name == "section" or any(
-                        keyword in cls for cls in classes for keyword in container_keywords
-                    ) or node.has_attr("data-core-component")
-
-                    if is_container:
-                        next_indent = min(indent + indent_step, max_indent)
-
-                    for child in node.children:
-                        append_content(child, next_indent)
-
-                    if is_container:
-                        text_parts.append("\n")
-
                 for child in content_wrapper.children:
                     append_content(child, 0)
         
