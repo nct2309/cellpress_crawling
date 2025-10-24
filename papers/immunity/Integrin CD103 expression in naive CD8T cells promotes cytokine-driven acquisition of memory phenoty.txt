@@ -1,0 +1,719 @@
+================================================================================
+ARTICLE HEADER
+================================================================================
+
+# Integrin CD103 expression in naive CD8+ T cells promotes cytokine-driven acquisition of memory phenotype and effector function
+
+Authors: Can Li, Davinna L. Ligons, Dominic Lanasa, Hilary R. Keller, Megan A. Luckey, Brian Capaldo, Daoud Meerzaman, Joo-Young Park, Jung-Hyun Park
+Journal: Immunity
+DOI: 10.1016/j.immuni.2025.08.014
+Keywords: dendritic cells; E-cadherin; IFN-β; IL-12; IL-15
+
+
+================================================================================
+ARTICLE CONTENT
+================================================================================
+
+## Highlights
+
+    •Integrin CD103, which binds to E-cadherin, is highly expressed on naive CD8+ T cells•E-cadherin-expressing DCs express type I IFNs and homeostatic cytokines•E-cadherin+ DCs engage naive CD8+ T cells to promote their differentiation•Cytokine-driven effects of CD103 binding to E-cadherin controls CD8+ T cell immunity
+
+## Summary
+
+    Integrin CD103 binds to E-cadherin, a cell adhesion molecule predominantly expressed on epithelial cells, thus mediating the tissue residency of CD103+ T cells in barrier sites. Importantly, circulating naive CD8+ T cells also express large amounts of CD103, but whether CD103 contributes to CD8+ T cell immunity beyond its role in cell adhesion is unclear. Here, we report that CD103 expression in naive CD8+ T cells facilitates their engagement with E-cadherin-expressing cells, promoting their acquisition of memory phenotype and effector function. Notably, dendritic cell (DC) subsets expressing E-cadherin and producing type I interferons and interleukin-12 (IL-12) were responsible for this process. As a corollary, the DC-specific loss of E-cadherin resulted in diminished effector CD8+ T cell differentiation and increased tumor susceptibility, while the forced expression of CD103 enhanced the effector functions and anti-tumor activity of CD8+ T cells, revealing a regulatory role for CD103 in cytotoxic T cell immunity.
+
+## Graphical abstract
+
+## Keywords
+
+  1. dendritic cells
+  2. E-cadherin
+  3. IFN-β
+  4. IL-12
+  5. IL-15
+
+## Introduction
+
+      CD8+ T cells are generated in the thymus but acquire effector function and phenotype in peripheral tissues. (Ref: 1) The differentiation of naive into effector CD8+ T cells is associated with gaining a memory-like phenotype, (Ref: 2) but not all memory-phenotype (MP) CD8+ T cells originate from true antigen-activated cytotoxic T cells, as they also include cytokine-induced virtual memory (VM) cells, bystander cells, and innate-like CD8+ T cells. (Ref: 3) (Ref: 4) The presence of MP CD8+ T cells in germ-free (GF) and neonate mice suggests that antigen-independent signals can also convert naive CD8+ T cells into MP effector T cells. (Ref: 5) However, the molecular circuitries underlying the differentiation of MP effector T cells have yet to be fully mapped. Currently, the cellular cues driving MP CD8+ T cell differentiation are thought to comprise both tonic and agonistic T cell receptor (TCR) signaling triggered by self and/or foreign antigens, alongside lymphopenia-induced proliferation and homeostatic cytokines. (Ref: 6) (Ref: 7) On the other hand, the contributions of costimulatory surface molecules, including integrins, remain unclear. (Ref: 8)
+      CD103 (integrin αE) is a cell adhesion molecule that heterodimerizes with integrin β7 to bind E-cadherin (CD324), its only known ligand. (Ref: 9) (Ref: 10) Because E-cadherin is prominently expressed on epithelial cells, CD103 facilitates the tissue retention of CD103+ lymphocytes in epithelial tissues. (Ref: 11) As such, CD103 expression is considered critical for the tissue residency of intraepithelial lymphocytes in the intestine, (Ref: 11) and the retention of CD103+ dendritic cells (DCs), Foxp3+ T regulatory (Treg) cells, and tissue-resident memory T cells (TRM) in barrier sites where E-cadherin is abundantly expressed. (Ref: 12) (Ref: 13) Notably, CD103+ Tregs are preferentially attracted to and reside within inflamed tissues, (Ref: 14) while CD103+ CD8+ effector T cells have been associated with altered outcomes of graft-versus-host disease in allografts and cancer. (Ref: 15) (Ref: 16) Thus, CD103 is critical in directing tissue residency, thereby effectuating immune activation and antigen clearance. CD103 is selectively induced on CD8+, but not CD4+ lineage T cells, (Ref: 17) (Ref: 18) (Ref: 19) (Ref: 20) (Ref: 21) and its protein abundance declines with age and prolonged circulation, (Ref: 22) indicating that CD103 expression is associated with CD8+ T cell homeostasis and differentiation. The molecular basis of CD8+-specific CD103 expression has been attributed to the CD8+ lineage-specifying transcription factor Runx3d, (Ref: 21) but how CD103 is controlled in CD8+ effector T cells is poorly understood.
+      Here, we identify the homeostatic cytokine interleukin-15 (IL-15) and downstream signal transducer and activator of transcription 5 (STAT5) as negative regulators of CD103 expression, and further demonstrate that failing to downregulate CD103 results in expanding the MP CD8+ T cell pool at the expense of naive CD8+ T cells. Moreover, CD103 enabled naive CD8+ T cells to access a local cytokine milieu of interferon-β (IFN-β) and IL-12 that was supplied by a population of E-cadherin+ DCs and that poised naive CD8+ T cells for their phenotypic and functional differentiation into MP CD8+ T cells. These findings provide insights into the molecular mechanisms governing CD103 expression and unveil unexpected functions of CD103 in controlling the homeostasis and cytokine-driven differentiation of CD8+ T cells.
+
+## Results
+
+### Peripheral CD8+ T cells show distinct patterns of CD103 expression
+
+        CD103 expression parallels CD8+ lineage specification such that CD103 is selectively expressed on mature CD8+ single-positive (CD8SP) thymocytes and CD8+ lymph node (LN) T cells but conspicuously absent from CD4+ T cells (Figures 1A and S1A). (Ref: 21) A significant fraction of LN CD8+ T cells lacked CD103 (CD103neg), and these CD103neg CD8+ T cells expressed memory but no activation markers (Figures 1A, 1B, and S1B), suggesting that CD103 downregulation could mark MP CD8+ T cells. To this end, we assessed CD103neg LN CD8+ T cells for increased basal proliferation and IFN-γ expression, two hallmarks of MP CD8+ T cells. (Ref: 5) (Ref: 23) (Ref: 24) Indeed, proliferation and IFN-γ production were significantly increased in CD103neg compared with CD103+ CD8+ T cells (Figure 1C), suggesting that the characteristics of CD103neg cells align with those of MP CD8+ T cells.
+        Under steady-state conditions, only a few CD8+ T cells are true antigen-experienced memory cells. The majority corresponds to MP CD8+ T cells that have acquired memory markers through homeostatic mechanisms, including VM CD8+ T cells that can be identified by their distinct expression of CD44 and CD49d. (Ref: 25) (Ref: 26) Notably, both CD49dloCD44hi VM and CD122hiCD44hi MP CD8+ T cells lacked CD103, while most naive CD8+ T cells (CD44loCD122lo or CD44loCD49dint) expressed large amounts of CD103 proteins (Figures 1D, S1C, and S1D). However, some CD8+ T cells lacked CD103 expression despite appearing as naive, prompting us to question whether all CD103neg CD8+ T cells can be classified as MP cells. To address this question, we examined CD8+ T cell differentiation at a higher resolution, employing differential expression of the memory markers Ly6C and CXCR3 to segregate CD8+ T cells into three subsets. (Ref: 27) (Ref: 28) Ly6C/CXCR3 double-negative (LC. DN) cells are naive, expressing small quantities of CD44 and CD122 proteins, whereas Ly6C/CXCR3 double-positive (LC. DP) cells are end-differentiated MP CD8+ T cells, expressing large quantities of CD44, CD122, T-bet, Eomesodermin (Eomes), and IFN-γ proteins and mRNAs (Figures 1E, 1F, S1E, and S1F). LC. DP cells showed a low abundance of CD49d proteins but expressed large amounts of CD62L proteins, suggesting that they mostly correspond to VM cells (Figure S1G). (Ref: 29) Indeed, the frequencies and numbers of VM and LC. DP CD8+ T cells in GF mice did not differ from those of specific pathogen-free (SPF) mice (Figures 1G and S1H), affirming LC. DP cells as VM CD8+ T cells. CXCR3-negative Ly6C single-positive (L. SP) CD8+ T cells, on the other hand, displayed an intermediate phenotype, producing substantial amounts of IFN-γ and Eomes without fully upregulating memory markers (Figures 1E, 1F, S1E, and S1F). Thus, the differential expression of Ly6C and CXCR3 identifies three stages of CD8+ T cell differentiation, whereby naive cells correspond to LC. DN cells that transition through an L. SP intermediate stage into LC. DP cells. Importantly, CD103 and β7 expression aligned with this pattern, such that LC. DN cells expressed large amounts of both CD103 and β7 proteins and mRNAs that gradually decreased upon differentiating into LC. DP CD8+ T cells (Figures 1H, S1I, and S1J).
+        To directly demonstrate that CD103neg cells are derived from CD103hi CD8+ T cells, we adoptively transferred LC. DN cells, which are necessarily CD103hi, into wild-type (WT) host mice. Two weeks after transfer, a significant fraction of donor CD8+ T cells had converted into L. SP cells, which was accompanied by CD103 downregulation (Figure S1K). Adoptively transferred OT-I TCR transgenic LC. DN CD8+ T cells also downregulated CD103 protein expression when challenged with their cognate antigenic peptide, ovalbumin (OVA)257-264, to differentiate them into effector cells (Figure S1L). These results indicated that CD103neg CD8+ T cells can be generated by antigen-driven cues as well. In agreement, multiple studies have shown that antigen-primed circulating memory CD8+ T cells, including those migrating through secondary lymphoid organs, lack CD103 expression. (Ref: 30) (Ref: 31) Collectively, these results document that changes in CD103 protein expression are associated with CD8+ T cell differentiation.
+
+### Cytokines mediate the downregulation of CD103 expression
+
+        Given that IL-15 is a key factor in MP CD8+ T cell differentiation, (Ref: 24) (Ref: 32) we asked whether IL-15 would play a role in CD103 downregulation. To this end, we examined mouse models with altered IL-15 expression, either overexpressing (IL-15Tg) (Ref: 33) or lacking IL-15 (Il15–/–), (Ref: 34) and found the frequency of CD103neg CD8+ T cells being markedly increased in IL-15Tg but substantially decreased in Il15–/– mice (Figures S2A and S2B). Also, in vitro stimulation of CD103hi LC. DN CD8+ T cells with recombinant IL-15 downregulated both CD103 mRNA and protein expression (Figures 1I and 1J), while B cell lymphoma-2 (Bcl-2) mRNA expression was upregulated in the same cells (Figure S2C). Because IL-15 did not suppress CD8 expression on CD8+ T cells (Figure S2D), (Ref: 35) these results indicated that the suppressive effect of IL-15 is CD103 specific.
+        To map the signaling pathway of CD103 downregulation, we used pharmacological reagents to block IL-15 signaling, focusing on two major downstream pathways: STAT5 and Phosphoinositide 3-Kinase/Akt. (Ref: 36) The combined inhibition of STAT5 and Akt, but not Akt alone, inhibited IL-15-induced Bcl-2 upregulation, a classical target of STAT5, and impaired CD103 downregulation (Figures 1K and S2E), (Ref: 32) indicating that IL-15 suppresses CD103 expression primarily through STAT5. To determine whether STAT5 activation would be sufficient to downregulate CD103 expression, we next analyzed transgenic mice expressing constitutively active STAT5b in T cells (STAT5-CATg). (Ref: 37) Assessing the protein abundance of phospho-STAT5 (pSTAT5) in LC. DN CD8+ T cells showed increased amounts of pSTAT5 in STAT5-CATg mice without affecting the abundance of pAkt proteins (Figure S2F). When gating on naive LC. DN CD8+ T cells that normally express large amounts of CD103 proteins, the surface expression of both CD103 and β7 was significantly decreased in STAT5-CATg mice, inversely correlating with the protein abundance of pSTAT5 (Figure 1L). Altogether, these results reveal a previously unappreciated negative regulatory pathway of CD103 expression that is controlled by IL-15.
+
+### Naive CD8+ T cell differentiation requires CD103
+
+        To discriminate whether CD103 downregulation is the cause or the consequence of MP cell differentiation, we analyzed mice deficient for Itgae, the gene encoding CD103 (Itgae–/–). (Ref: 11)Itgae–/– CD8+ T cells did not differ from those of WT mice (Figure S2G), and the abundance of MP (i. e., LC. DP) and CXCR3 naive-phenotype (i. e., L. SP and LC. DN) CD8+ T cells also remained comparable (Figure S2H). Among CXCR3 naive cells, however, the abundance of L. SP cells and the amount of Ly6C proteins were significantly decreased (Figures 2A and 2B), indicating that CD103 is necessary to establish a robust population of L. SP CD8+ T cells.
+        To examine whether such a CD103 requirement is cell intrinsic, we conducted competitive T cell transfer experiments of Itgae–/– CD8+ T cells into congenic host mice to examine their differentiation into L. SP cells (Figure 2C). The recovery of L. SP cells from peripheral LNs (pLNs) and spleens was significantly reduced for Itgae–/– donor CD8+ T cells (Figures 2C and S2I), presumably due to enhanced differentiation rather than impaired survival or proliferation, because the percentage of Bcl-2+ and Ki-67+ cells were unaffected in Itgae–/– CD8+ T cells (Figure S2J). These results suggest that CD103 is a cell-intrinsic requirement for driving LC. DN cell differentiation into L. SP CD8+ T cells.
+
+### Peripheral LNs harbor distinct populations of E-cadherin-expressing DCs
+
+        We next aimed to locate the cellular source of CD103’s ligand, E-cadherin, in peripheral lymphoid tissues. E-cadherin was highly expressed on thymic stromal cells but undetectable on pLN stromal cells, including fibroblastic reticular cells, lymphatic endothelial cells, and blood endothelial cells (Figures 2D and S2K), (Ref: 38) (Ref: 39) as well as pLN B and T cells (Figure S2K). Given that E-cadherin was previously described on some DCs, (Ref: 40) (Ref: 41) we examined pLN DCs for E-cadherin expression. Migratory DCs (mDCs) and plasmacytoid DCs (pDCs), but not resident DCs (rDCs), expressed large amounts of E-cadherin proteins (Figure 2E). (Ref: 42) Examining E-cadherin-expressing CD11c+ DCs for major histocompatibility complex II (MHC-II) versus PDCA-1 expression further revealed a fraction of E-cadherin+ (E-cad+) DCs that were neither mDCs or pDCs and whose identities were unclear (Figure 2F). Moreover, E-cad+ mDCs turned out to be heterogeneous in their abundance of langerin (CD207), a marker for Langerhans cells (LCs) (Figure 2F), (Ref: 43) whereby CD207-expressing E-cad+ mDCs contained additional subsets based on Xcr1, a marker for type 1 classical DCs (cDC1) involved in antigen cross-presentation, (Ref: 44) and Sirpα, a marker for cDC2 cells (Figure 2F). Thus, E-cadherin is broadly expressed among different DC subsets.
+        To gain an overview of E-cadherin expression, we used fluorescence-activated cell sorting (FACS) to isolate pLN DCs based on CD11c and MHC-II (Figure S3A) and performed cellular indexing of transcriptomes and epitopes by sequencing (CITE-seq) analysis. (Ref: 45) The combination of single-cell RNA sequencing (scRNA-seq) with multiplexed staining of barcoded antibodies (antibody-derived tags, ADTs) in CITE-seq permits the identification of distinct cell populations with high accuracy and reproducibility. (Ref: 45) In agreement, our replicate experiments were highly consistent, initially yielding 7 clusters from a total of 18,344 cells upon uniform manifold approximation and projection (UMAP)-based dimensionality reduction (Figure S3B). Cluster 3 was excluded from further analysis because it was enriched for NK/innate lymphoid cell 1 (ILC1) cell markers (e. g., NK1.1, CD27, CD49b, and Ncr1), expressing low amounts of MHC-II protein and mRNA (Figures S3C and S3D). A higher resolution cluster analysis of the remaining cells yielded 9 clusters (Figure 2G), which were annotated based on transcriptional similarity scores to hallmark gene signatures in the ImmGen database (Figure S3E). (Ref: 46) Accordingly, all clusters could be assigned to a specific DC subset based on the top 10 differentially expressed genes (DEGs), lineage-specific markers, and ADTs, except for cluster 7, which turned out to be contaminated with monocytes (Figures 2G, 2I, and S3E–S3G). Among the 8 remaining clusters, pDC (cluster 9) and pDC-like cells (cluster 5) were the highest expressers of Cdh1, encoding E-cadherin, (Ref: 47) while E-cadherin proteins, marked as ADT_CD324, were prominently expressed in these two clusters, in addition to clusters 4 and 8, which correspond to mDCs (Figure 2H). We cataloged clusters 2, 4, 6, and 8 as mDC lineage cells because they are phenotypically CD11cintMHC-IIhi, expressing large quantities of Ccr7 mRNA. Specifically, cluster 8 expressed CD326 and CD207, two markers associated with LCs, while cluster 4 appeared to be CD103+ cDC1, expressing Xcr1 and CD207. (Ref: 48) (Ref: 49) Clusters 2 and 6, on the other hand, minimally expressed E-cadherin, and they corresponded to heterogeneous groups of cDC2. (Ref: 48) Collectively, these results demonstrate that E-cadherin is expressed in diverse subsets of DCs, broadening the scope of cellular interactions with CD103-expressing CD8+ T cells.
+
+### E-cad+ DC-derived type I IFNs promote CD8+ T cell differentiation
+
+        To test the role of E-cadherin in DCs, we generated mice with conditional deletion of E-cadherin in DCs. Such Cdh1ΔDC mice lacked E-cadherin in all DC subsets, including mDCs and pDCs (Figure 3A), without affecting the frequency and number of pLN DCs (Figure S4A). DC-specific E-cadherin deficiency also did not affect the frequency or number of LC. DP MP CD8+ T cells (Figure S4B), and the number of naive CD8+ T cells (identified by their lack of CXCR3 expression, i. e., CXCR3) remained unaffected as well (Figures S4B and S4C). Among CXCR3 CD8+ T cells, however, the frequencies and numbers of L. SP cells were significantly decreased (Figures 3B and S4D) without changes in CD103 expression (Figure S4E), indicating that CD103 binding to E-cadherin contributes to the differentiation of LC. DN into L. SP CD8+ T cells.
+        To visualize the requirement for E-cadherin engagement, we adoptively transferred LC. DN CD8+ T cells into Cdh1WT or Cdh1ΔDC host mice and assessed their differentiation in vivo (Figure 3C). Host mice with DC-specific E-cadherin deficiency failed to provide an environment conducive to the efficient differentiation of L. SP cells, leading to significantly reduced abundance of L. SP CD8+ T cells (Figures 3C and S4F) but not affecting their protein abundance of CD103 (Figure S4G). Thus, E-cadherin on DCs promotes the differentiation of CD103+ naive CD8+ T cells. To understand how E-cad+ DCs affect naive CD8+ T cells, we next performed bulk RNA-seq analysis of LC. DN CD8+ T cells from WT and Itgae–/– mice (Figure S4H). Gene set enrichment analysis (GSEA) revealed profound differences in their STAT1 and type I IFN gene signatures (Figure 3D), indicating a potential role for E-cad+ DCs in supplying type I IFNs and triggering STAT1 activation. Indeed, STAT1-deficiency decreased the frequencies and numbers of L. SP CD8+ T cells in Stat1ΔT mice that lack STAT1 in all T cells (Figures 3E and S4I), (Ref: 50) without affecting CD103 expression (Figure S4J). (Ref: 51) (Ref: 52) We further mapped the identity of the STAT1 activators to type I IFNs because only IFN-β, and not IFN-γ, was capable of driving the in vitro differentiation of LC. DN into L. SP cells (Figures 3F and S4K). In agreement, Ifnar1–/– mice, lacking type I IFN receptors, (Ref: 53) displayed a significant loss in L. SP cells, while CD103 protein expression on LC. DN CD8+ T cells remained unaffected (Figures S4L and S4M). Moreover, adoptively transferred Ifnar1–/– LC. DN CD8+ T cells failed to differentiate into L. SP cells, affirming a critical role for type I IFNs in naive CD8+ T cell differentiation (Figure 3G).
+        To formally establish that E-cad+ DCs are required because of type I IFN production, we administered recombinant IFN-β into Cdh1ΔDC mice, finding it sufficient to upregulate Ly6C and increase the frequencies of L. SP cells (Figure 3H). Considering that pDCs are major producers of type I IFNs, as affirmed by IFN-β1 reporter expression in CpG-stimulated Ifnb1-enhanced yellow fluorescent protein (EYFP) pLN cells (Figure 3I), (Ref: 54) we cocultured CpG-activated pDCs with LC. DN cells to monitor their differentiation into L. SP cells. As expected, CpG-activated pDCs (Figure 3J) as well as the supernatant of activated pDCs promoted the differentiation of L. SP cells (Figure 3K). Because Ifnar1–/– LC. DN cells failed to respond to pDC supernatants, we consider it unlikely that cytokines other than IFN-β are involved in this process. Specifically, E-cad+ pDCs appeared to be independent of transforming growth factor β (TGF-β), a cytokine that preconditions naive CD8+ T cells, (Ref: 55) because they lack αVβ8, an integrin necessary to activate TGF-β (Figures S4N and S4O). Collectively, these results support a model of CD8+ T cell differentiation where the engagement of CD103+ naive CD8+ T cells with type I IFN-producing E-cad+ pDCs presets them for differentiation into MP T cells.
+
+### E-cadherin engagement by CD103 promotes the effector function of CD8+ T cells
+
+        To visualize the contribution of E-cad+ DCs to CD8+ T cell immunity, we employed the lung metastasis model of OVA-expressing B16-F10 melanoma cells, where adoptively transferred OVA-specific OT-I CD8+ T cells eliminate host tumor cells in an antigen-specific manner (Figure 4A). (Ref: 56) To this end, we injected LC. DN OT-I CD8+ T cells into either Cdh1WT or Cdh1ΔDC host mice and inoculated them with B16-F10-OVA melanoma cells after 7 days. Cdh1ΔDC host mice showed a significant increase in their tumor burden (Figure 4A), revealing a critical role of DC-expressed E-cadherin in anti-tumor immunity. Moreover, both IFN-γ and granzyme A (GzmA) expression were significantly reduced in tumor-infiltrating OT-I CD8+ T cells of Cdh1ΔDC host mice (Figure 4B), indicating that the lack of CD103 engagement impedes the acquisition of CD8+ effector function.
+        To demonstrate that CD8+ T cell intrinsic CD103 expression drives their effector cell differentiation, we generated CD103-deficient OT-I mice (OT-IItgae–/–). Adoptive transfer of LC. DN OT-IItgae–/– CD8+ T cells into Thy1.1+ host mice showed significantly impaired differentiation into L. SP cells compared with co-injected CD45.1+ congenic control OT-I donor cells (Figure 4C). Additionally, OT-IItgae–/– donor CD8+ T cells showed substantially impaired anti-tumor activity in the B16-F10-OVA lung metastasis model, as evidenced by the significantly increased tumor burden (Figure 4D) and diminished IFN-γ production (Figure 4E). These results suggest that CD103 expression by naive CD8+ T cells is a previously unappreciated requirement for promoting the effector function of CD8+ T cells.
+
+### Forced CD103 expression induces the accumulation of MP CD8+ T cells
+
+        To test if CD103 overexpression reinforces MP CD8+ T cell differentiation, we analyzed T cell-specific CD103 transgenic mice (CD103Tg) (Ref: 21) (Figures 4F and 4G). The peripheral CD8+ T cell subset composition in CD103Tg mice was substantially altered, whereby the frequencies and numbers of LC. DN cells significantly decreased, while L. SP and LC. DP cells were increased (Figures 4H, 4I, S5A, and S5B). Incidentally, the CD8+ T cell subset that mostly benefited from forced CD103 expression was the LC. DP subset, which is also the population with the largest increase in CD103 expression (8.6-fold) (Figure 4J). These results were partly expected as we knew that CD103 promotes the differentiation of LC. DN cells into L. SP cells, correlating with a greater abundance of Ly6C surface proteins (Figure 4K). Considering the diminished amounts of Ly6C surface proteins in Itgae–/– L. SP cells (Figure 2B), CD103 not only controls the differentiation but also the phenotype of CD8+ T cells.
+        To affirm that it is the E-cadherin engagement that promotes LC. DN naive CD8+ T cell differentiation into L. SP cells, we adoptively transferred LC. DN cells into E-cadherin-deficient or sufficient host mice and monitored their differentiation in vivo. Specifically, we isolated LC. DN cells from Itgae–/– and CD103Tg mice, labeled them with CellTrace Blue (CTB) or CellTrace Violet (CTV), respectively, and mixed them with LC. DN CD8+ T cells from congenic CD45.1+ WT mice before their injection into Cdh1WT or Cdh1ΔDC host mice. CellTrace labeling and congenic markers revealed that Itgae–/– donor CD8+ T cells were significantly impaired, while CD103Tg donor CD8+ T cells were markedly enhanced in their differentiation into L. SP cells in Cdh1WT host mice (Figure 4L). Importantly, such differences depended on host E-cad+ DCs because LC. DN cells injected into Cdh1ΔDC host mice were ineffective in their differentiation into L. SP cells, independently of their donor origin (Figure 4L). Thus, CD103 promotes the differentiation of naive into MP CD8+ T cells in an E-cadherin-dependent manner.
+
+### CD103 overexpression promotes the survival of MP CD8+ T cells
+
+        To understand the molecular basis of CD103-mediated CD8+ T cell differentiation, we performed bulk RNA-seq analysis of FACS-sorted LC. DP CD8+ T cells. Principal-component analysis and correlation heatmapping of RNA-seq data demonstrated discrete gene expression patterns between WT and CD103Tg LC. DP CD8+ T cells, whereby 792 genes were significantly upregulated, and 494 genes were downregulated in CD103Tg LC. DP cells (Figures 5A and S5C). Gene Ontology enrichment of DEGs further indicated that cell cycle and cell division signatures were enriched in the CD103Tg group, while apoptosis-related pathways were enriched in the WT group (Figure S5D). Thus, CD103 overexpression could have either increased the proliferation or the survival of LC. DP cells. To distinguish these possibilities, we first asked if CD103 overexpression would drive the proliferation of LC. DP CD8+ T cells. In vivo bromodeoxyuridine (BrdU) labeling and nuclear Ki-67 analysis, however, suggested this to be unlikely, as no significant differences were observed between WT and CD103Tg cells (Figures 5B and S5E). Alternatively, CD103 engagement could have supplied prosurvival cues to LC. DP cells, resulting in the accumulation of this subset. Consistent with this hypothesis, quantification of active caspase-3 revealed significantly decreased frequencies of apoptotic LC. DP cells in CD103Tg mice (Figure 5C). By re-assessing our RNA-seq data using ingenuity pathway analysis (IPA), we further found that most DEGs were involved in cell death and survival (Table S1), and that cell viability and survival pathways were activated in CD103Tg LC. DP CD8+ T cells (Figure 5D). GSEA of the RNA-seq datasets further showed that the CD103Tg group was enriched for genes involved in negative regulation of the apoptotic signaling pathway (Figure 5E). These results support a prosurvival effect by CD103 overexpression, prompting us to examine the expression of prosurvival molecules, including Bcl-2, Bcl-xL, and Id2, which we found to be highly induced in LC. DP but not in LC. DN CD8+ T cells of CD103Tg mice (Figures 5F, 5G, and S5F). Consequently, increased cell survival is a major contributing factor to the increased numbers of LC. DP CD8+ T cells in CD103Tg mice. The increased ratio of LC. DP to L. SP cells upon CD103 overexpression supports this notion (Figure 5H).
+        Last, we injected LC. DN CD8+ T cells from WT and CD103Tg mice into lymphopenic hosts and tracked their differentiation into LC. DP cells to demonstrate that such CD103-driven accumulation of MP CD8+ T cells is cell intrinsic. Indeed, CD103Tg donor CD8+ T cells differentiated to a greater degree into LC. DP cells than WT CD8+ T cells (Figure 5I), confirming that the CD103Tg promotes the accumulation of MP cells in a cell-intrinsic manner. Because in vitro adhesion assays showed significantly enhanced binding of CD103Tg LC. DP CD8+ T cells to E-cadherin compared with their WT counterparts (Figures 5J and S5G), CD103 overexpression acts through increased engagement with E-cad+ DCs.
+
+### CD103 drives the differentiation of MP CD8+ T cells independently of IL-15
+
+        The abundance of MP CD8+ T cells increases in IL-15Tg mice (Figure S6A), (Ref: 57) (Ref: 58) while it decreases in the LN, spleen, and other tissues of Il15–/– mice (Figures 6A, 6B, S6B, and S6C). (Ref: 34) Because E-cad+ DCs promote the expansion of CD103Tg LC. DP cells, we asked if CD103 would increase their access to IL-15. Unexpectedly, however, CD103 overexpression increased both the frequency and number of LC. DP cells even in the absence of IL-15 (Il15–/–CD103Tg) (Figures 6A, 6B, S6B, and S6C), and they mostly corresponded to VM cells (Figure S6D), revealing that CD103 can promote the maintenance of MP CD8+ T cells independently of IL-15.
+        To identify the E-cad+ DC-derived differentiation/survival factor that is not IL-15, we cocultured L. SP CD8+ T cells with E-cad+ DCs from Il15–/– mice and tested their differentiation into LC. DP cells. The coculture with purified pDCs did not trigger their differentiation (Figure 6D), and stimulating L. SP cells with large amounts of recombinant IFN-β also failed to drive their differentiation into LC. DP cells (Figure S6E). Thus, pDCs and IFN-β play no critical roles in LC. DP cell differentiation. In addition to pDCs, another major subset of E-cad+ DCs are the mDCs, which comprise at least two subpopulations based on their CD207 expression (Figure 2F). The coculture with either of the mDC subsets successfully induced the terminal differentiation of L. SP cells (Figure 6D), indicating that mDCs possess the ability to promote LC. DP CD8+ T cell differentiation.
+        Having excluded IFN-β as the differentiation/survival factor for IL-15-independent MP CD8+ T cells, we reassessed our RNA-seq datasets to identify potential cytokines that can drive the MP acquisition of L. SP CD8+ T cells (Figure S6F). Il12b, encoding the subunit of cytokine IL-12, showed a similar expression pattern as Il15, which is highly expressed by mDCs but not pDCs (Figure 6E). Such selective expression was confirmed by intracellular staining for IL-12 proteins, where both CD207 and CD207+ mDCs produced copious amounts of IL-12, not only upon lipopolysaccharide (LPS)-induced activation, but also under steady-state conditions (Figures 6F and S6G). These findings establish E-cad+ mDCs as a major source of IL-12 (Figure S6H). Along these lines, IL-12 receptor mRNA quantities gradually increased during CD8+ T cell differentiation, explaining IL-12’s preferential effect on LC. DP but not LC. DN cells to drive their expansion and accumulation (Figures 6G, S7A, and S7B). To examine whether CD103Tg CD8+ T cells are receptive to increased IL-12 signaling, we next assessed the gene signature of CD103Tg versus WT CD8+ T cells by GSEA, confirming a profound enrichment of IL-12-STAT4 target genes in the CD103Tg group (Figure 6H). In agreement, Ly6a, one of the highest-ranked IL-12-STAT4 downstream targets was highly induced in CD103Tg LC. DP CD8+ T cells (Figures 6I and S7C). Altogether, these results support a model where the overexpression of CD103 promotes the binding of CD8+ T cells to IL-12-producing E-cad+ DCs, leading to increased differentiation and expansion of LC. DP cells even in the absence of IL-15. Indeed, in vitro stimulation of FACS-purified L. SP CD8+ T cells or total CD8+ T cells with IL-12 substantially promoted the differentiation, expansion, and survival of LC. DP CD8+ T cells (Figures 6J, S7D, and S7E), providing molecular insight for the IL-15-independent differentiation of CD103Tg CD8+ T cells.
+
+### CD103 overexpression promotes CD8+ T cell effector function independently of IL-15
+
+        CD103 overexpression caused the expansion of LC. DP CD8+ T cells independently of IL-15, but it remained unclear whether these IL-15-independent cells would be functionally competent. To this end, we cataloged the expression of genes related to CD8+ effector functions in CD103Tg CD8+ T cells (Figure 7A). (Ref: 59) We identified a series of effector genes induced upon increased CD103 expression, including nuclear factors like Id2, and cytotoxicity-related molecules, such as Gzma and Gzmb, whose expression was induced independently of IL-15 as shown by quantitative real-time PCR (real-time qPCR) analysis of Il15–/–CD103Tg CD8+ T cells (Figure 7B). Moreover, LC. DP CD8+ T cells from Il15–/–CD103Tg mice were potent producers of IFN-γ (Figure 7C), which highly expressed nuclear Id2, a survival factor that also promotes CD8+ effector functions (Figure 7D). (Ref: 60) Thus, CD103-overexpression expands the homeostatic effector memory pool of LC. DP CD8+ T cells, even in the absence of IL-15.
+        Because IL-15 is necessary for the effector function of CD8+ T cells, NK/ILC1 cells, and natural killer T (NKT) cells, IL-15 deficiency results in poor anti-tumor immunity. (Ref: 61) (Ref: 62) (Ref: 63) As such, Il15–/– mice displayed increased tumor burden and increased numbers of metastatic nodules in the lung when subjected to the B16-F10 tumor metastasis model (Figures 7E and 7F). In marked contrast, Il15–/–CD103Tg mice showed a significant improvement in anti-tumor activity (Figures 7E and 7F). Such effects were independent of NK1.1+ NK cells, ILC1 cells, (Ref: 64) or NKT cell-mediated innate anti-tumor immunity, because both NK/ILC1 and NKT1 cells were absent in Il15–/–CD103Tg mice (Figures S7F and S7G). Instead, we attributed the increased anti-tumor activity to increased effector function of Il15–/–CD103Tg CD8+ T cells that express large amounts of GzmB (Figure 7G). Specifically, tumor-infiltrating CD8+ T cells of Il15–/–CD103Tg mice contained large proportions of IFN-γ producers and GzmA expressers (Figures 7H, 7I, and S7H), indicating that the improved anti-tumor response resulted from the enhanced effector functions of Il15–/–CD103Tg CD8+ T cells. Collectively, these results highlight the role of CD103 in promoting MP CD8+ T cell differentiation and enhancing effector functions, even in the absence of IL-15, thereby underscoring a mechanism that relies on a previously unappreciated subset of E-cadherin-expressing DCs.
+
+## Discussion
+
+      Naive CD8+ T cells express copious amounts of CD103, but it has been unclear why. (Ref: 21) Here, we report that CD103 promotes the steady-state conversion of naive CD8+ T cells into memory-like effectors via cytokine supplementation by E-cadherin-expressing DCs. Because circulating MP CD8+ T cells lack CD103, CD103hi naive CD8+ T cells outcompete MP CD8+ T cells for binding of E-cad+ DCs, facilitating their access to homeostatic cytokines and poising them for acquisition of effector function. Thus, CD103 is a regulator of T cell differentiation, whose expression is carefully timed and titrated to maximize CD8+ T cell immunity.
+      In CD8+ T cells, CD103 is largely absent on antigen-induced memory T cells that circulate through peripheral lymphoid tissues (Ref: 30) (Ref: 31) (Ref: 65) but is highly induced in a subset of non-circulating effector memory CD8+ T cells. (Ref: 66) (Ref: 67) (Ref: 68) (Ref: 69) Tissue-resident CD8+ T cells require CD103 to provide critical tissue immunity in situ, as demonstrated for brain-resident memory CD8+ T cells in a virus infection model (Ref: 70) and tissue retention of CD8+ TRM cells in the intestine following lymphocytic choriomeningitis virus infection, (Ref: 71) agreeing with a role for CD103 primarily in cell adhesion. (Ref: 72) In contrast, our study shows that CD103 also plays an unexpected role in facilitating the engagement of naive CD8+ T cells with E-cad+ DCs, triggering the sequential induction of two distinct cytokine signaling pathways, namely type I IFN activation followed by IL-12/IL-15 signaling, which presets their differentiation into effector cells. Notably, the two successive stages of cytokine signaling were mediated by at least two subsets of E-cad+ DCs, i. e., type I IFNs by pDCs and IL-12 by mDCs, whereby the inability to engage E-cad+ DCs impaired overall MP effector differentiation of naive CD8+ T cells.
+      Identifying E-cadherin expression on LN DCs raised the question of how to reconcile E-cad+ DCs with pre-established subsets of DCs. Because most rDCs lacked whereas mDCs highly expressed E-cadherin, we considered it particularly necessary to correlate E-cad+ mDC subsets with known subsets of LN mDCs, which we achieved by CITE-seq analysis followed by high-dimension flow cytometry. Among mDCs, a subset expressing the integrins αVβ8 has been recently reported to precondition naive CD8+ T cells into epithelial TRM cells. (Ref: 55) These αVβ8+ mDCs are functionally similar to E-cad+ DCs as they target naive CD8+ T cells to induce a cytokine-driven preconditioning program, but how αVβ8+ mDCs preferentially engage naive CD8+ T cells has not been fully explained. (Ref: 55) Our study provides a potential solution to this issue as we found αVβ8+ mDCs to express E-cadherin, suggesting the possibility that CD103 binding of E-cadherin might also contribute to the preconditioning of naive CD8+ T cells by αVβ8+ mDCs. (Ref: 55)
+      Our study also unveils a regulatory mechanism of CD103 expression that is controlled by IL-15, a key cytokine for MP CD8+ T cells. (Ref: 24) (Ref: 32) (Ref: 73) IL-15 downregulates CD103 expression, which would disengage CD103neg MP CD8+ T cell binding from E-cad+ DCs. CD103hi naive CD8+ T cells, on the other hand, would gain better access to the survival niche provided by E-cad+ DCs. In agreement, CD103 overexpression disturbed the composition of the peripheral CD8+ T cell pool, resulting in the accumulation of MP CD8+ T cells at the expense of a numerical loss of naive CD8+ T cells. Thus, IL-15-induced suppression of CD103 represents a key mechanism for the homeostatic maintenance of both the size and diversity of the peripheral CD8+ T cell pool. In this regard, the heterogeneity of naive CD8+ T cells in terms of their phenotype and differentiation status (Ref: 7) has been linked to distinct cytokine signaling, depending on the DC subsets that they encounter under steady-state conditions, (Ref: 55) (Ref: 73) (Ref: 74) (Ref: 75) and it is likely that E-cad+ DCs also contribute to this process.
+      In conclusion, our study unveils CD103 expression as a naive CD8+ T cell-targeted mechanism, augmenting their potential to differentiate into MP CD8+ T cells through facilitating access to immunoregulatory cytokines. As a corollary, CD103 would contribute to the homeostatic maintenance of the peripheral CD8+ T cell compartments by balancing the sizes of the naive and MP T cell pool while maximizing the effector differentiation of MP CD8+ T cells. Thus, the cytokine-driven circuitry of CD103 expression is an uncovered regulatory mechanism of CD8+ T cell immunity.
+
+### Limitations of the study
+
+        A key function of CD103 on naive CD8+ T cells is to promote their differentiation into L. SP cells, but it remains unclear whether L. SP cells represent a stable population retaining lineage plasticity or a transient population whose main function would be to bridge the differentiation of naive into MP CD8+ T cells. Our experimental data are inconclusive on this question, and further studies will be necessary to clarify this point. The effect of cytokines, specifically IL-15, in controlling CD103 expression also requires further investigations at the molecular level, as IL-15 not only controls the abundance of CD103-expressing CD8+ T cells but also appears to directly suppress CD103 expression itself. Last, it also needs to be resolved whether CD103 controls the anti-tumor activity of CD8+ T cells at the population level by expanding the size and function of MP effectors, or at a single-cell level, directly controlling and accelerating naive CD8+ T cell differentiation. We hope that these questions can be resolved by CITE-seq analyses of tumor-infiltrating and naive CD8+ T cells in the context of host or tumor-specific E-cadherin deletion in our lung metastasis model.
+
+## Resource availability
+
+### Lead contact
+
+        Further information and requests for resources and reagents should be directed to and will be fulfilled by the lead contact, Jung-Hyun Park (parkhy@mail. nih. gov).
+
+### Materials availability
+
+        This study did not generate new unique reagents.
+
+### Data and code availability
+
+        This paper does not report any original code. The RNA-seq data and CITE-seq data have been deposited at Gene Expression Omnibus and are publicly available as of the date of publication with accession numbers listed in the key resources table. Any additional information required to reanalyze the data reported in this paper is available from the lead contact upon request.
+
+## Acknowledgments
+
+      This research was supported by the Intramural Research Program of the Center for Cancer Research, National Cancer Institute, US National Institutes of Health (NIH) (grants ZIA BC 011214 and ZIA BC 011215). The contributions of the NIH authors were made as part of their official duties as NIH federal employees, are in compliance with agency policy requirements, and are considered Works of the United States Government. However, the findings and conclusions presented in this paper are those of the authors and do not necessarily reflect the views of the NIH or the US Department of Health and Human Services. We thank the members of the Park Lab for their critical review of this manuscript.
+
+## Author contributions
+
+      C. L. designed and performed experiments, analyzed data, and contributed to the writing of the manuscript. D. L. L., D. L., H. R. K., M. A. L., and J.-Y. P. performed experiments, analyzed data, and edited the manuscript. B. C. and D. M. analyzed the CITE-seq data and commented on the manuscript. J.-H. P. directed the study and wrote the manuscript.
+
+## Declaration of interests
+
+      The authors declare no competing interests.
+
+## STAR★Methods
+
+### Key resources table
+
+
+[Table]
+REAGENT or RESOURCE | SOURCE | IDENTIFIER
+Antibodies
+Anti-mouse αVβ8 – FITC (clone S20011B) | BioLegend | Cat#: 114804; RRID: N/A
+Anti-mouse Bcl-2 – PE (clone 3F11) | BD Biosciences | Cat#: 556537; RRID: AB_396457
+Anti-human/mouse/rat/monkey Bcl-xL – PE (clone 54H6) | Cell Signaling Technology | Cat#: 13835S; RRID: AB_2798326
+Anti-BrdU – Alexa Fluor 647 (clone 3D4) | BD Biosciences | Cat#: 560209; RRID: AB_1645615
+Mouse CD1d tetramers loaded with PBS-57 – PE | NIH Tetramer Core Facility | N/A
+Mouse CD1d tetramers loaded with PBS-57 – BV421 | NIH Tetramer Core Facility | N/A
+Anti-mouse CD3 – APC-eFluor 780 (clone 17A2) | eBioscience | Cat#: 47-0032-82; RRID: AB_1272181
+Anti-mouse CD3ε – Alexa Fluor 594 (clone 500A2) | BioLegend | Cat#: 152318; RRID: AB_2715810
+Anti-mouse CD4 – APC-eFluor 780 (clone GK1.5) | eBioscience | Cat#: 47-0041-82; RRID: AB_11218896
+Anti-mouse CD4 – PE-Cy7 (clone GK1.5) | Tonbo Biosciences | Cat#: 60-0041-U100; RRID: N/A
+Anti-mouse CD8α – BV786 (clone 53-6.7) | BD Biosciences | Cat#: 563332; RRID: AB_2721167
+Anti-mouse CD8α – FITC (clone 53-6.7) | BD Biosciences | Cat#: 553030; RRID: AB_394568
+Anti-mouse CD8β – APC-eFluor 780 (clone eBioH35-17.2) | eBioscience | Cat#: 47-0083-82; RRID: AB_2573943
+Anti-mouse CD8β.2 – Pacific Blue (clone 53-5.8) | BioLegend | Cat#: 140414; RRID: AB_10641278
+Anti-mouse CD11c – APC (clone HL3) | BD Biosciences | Cat#: 550261; RRID: AB_398460
+Anti-mouse CD11c – PE (clone HL3) | BD Biosciences | Cat#: 553802; RRID: AB_395061
+Anti-mouse CD11c – PE-Cy7 (clone HL3) | BD Biosciences | Cat#: 558079; RRID: AB_647251
+Anti-mouse CD16/32 (clone 2.4G2) | BD Biosciences | Cat#: 553141; RRID: AB_394656
+Anti-mouse CD19 – APC (clone QA17A27) | BioLegend | Cat#: 159806; RRID: N/A
+Anti-mouse CD19 – APC-eFluor 780 (clone eBio1D3) | eBioscience | Cat#: 47-0193-82; RRID: AB_10853189
+Anti-mouse CD19 – FITC (clone QA17A27) | BioLegend | Cat#: 159808; RRID: N/A
+Anti-mouse CD19 – PE (clone 1D3/CD19) | BioLegend | Cat#: 152408; RRID: AB_2629817
+Anti-mouse CD25 – PE (clone PC61.5) | eBioscience | Cat#: 12-0251-83; RRID: AB_465608
+Anti-mouse CD31 – PE-Cy7 (clone 390) | BioLegend | Cat#: 102418; RRID: AB_830757
+Anti-mouse/human CD44 – BV421 (clone IM7) | BioLegend | Cat#: 103040; RRID: AB_2616903
+Anti-mouse/human CD44 – APC (clone IM7) | eBioscience | Cat#:17-0441-81; RRID: AB_469389
+Anti-mouse/human CD44 – FITC (clone IM7) | Tonbo Biosciences | Cat#: 35-0441-U500; RRID: N/A
+Anti-mouse CD45 – APC-eFluor 780 (clone 30-F11) | eBioscience | Cat#: 47-0451-82; RRID: AB_1548781
+Anti-mouse CD45 – BV786 (clone 30-F11) | BD Biosciences | Cat#: 564225; RRID: AB_2716861
+Anti-mouse CD45 – BV786 (clone I3/2.3) | BD Biosciences | Cat#: 752409; RRID: AB_2917424
+Anti-mouse CD45.1 – APC (clone A20) | BioLegend | Cat#: 110714; RRID: AB_313503
+Anti-mouse CD45.1 – APC-eFluor 780 (clone A20) | eBioscience | Cat#: 47-0453-82; RRID: AB_1582228
+Anti-mouse CD45.2 – eFluor 450 (clone 104) | eBioscience | Cat#: 48-0454-82; RRID: AB_11042125
+Anti-mouse CD49d – Alexa Fluor 647 (clone R1-2) | BioLegend | Cat#: 103614; RRID: AB_528837
+Anti-mouse CD49d – FITC (clone R1-2) | BioLegend | Cat#: 103606; RRID: AB_313037
+Anti-mouse CD62L (L-Selectin) – APC (clone MEL-14) | eBioscience | Cat#: 17-0621-83; RRID: AB_469411
+Anti-mouse CD62L (L-Selectin) – PE (clone MEL-14) | eBioscience | Cat#: 12-0621-83; RRID: AB_465722
+Anti-mouse CD69 – APC (clone H1.2F3) | BioLegend | Cat#: 104514; RRID: AB_492843
+Anti-mouse CD90.1 – FITC (clone OX-7) | BD Biosciences | Cat#: 554897; RRID: AB_395588
+Anti-mouse CD90.2 – FITC (clone 30-H12) | BD Biosciences | Cat#: 553013; RRID: AB_394551
+Anti-mouse CD90.2 (Thy1.2) – APC-eFluor 780 (clone 53-2.1) | eBioscience | Cat#: 17-0902-82; RRID: AB_469422
+Anti-mouse CD90.2 (Thy1.2) – FITC (clone 30-H12) | BioLegend | Cat#: 105306; RRID: AB_313176
+Anti-mouse CD90.2 (Thy1.2) – PE (clone 53-2.1) | BioLegend | Cat#: 140308; RRID: AB_10641145
+Anti-mouse CD103 – APC (clone 2E7) | eBioscience | Cat#: 17-1031-82; RRID: AB_1106992
+Anti-mouse CD103 – FITC (clone 2E7) | eBioscience | Cat#: 11-1031-82; RRID: AB_465176
+Anti-mouse CD103 – PE (clone 2E7) | eBioscience | Cat#: 12-1031-83; RRID: AB_465800
+Anti-mouse CD122 – FITC (clone TM-β1) | eBioscience | Cat#: 11-1222-85; RRID: AB_465190
+Anti-mouse CD122 – PE (clone TM-β1) | BD Biosciences | Cat#: 553362; RRID: A B_394809
+Anti-mouse CD122 – PE-Cy7 (clone TM-β1) | eBioscience | Cat#: 25-1222-82; RRID: AB_2573390
+Anti-mouse CD127 – FITC (clone A7R34) | eBioscience | Cat#: 11-1271-85; RRID: AB_465196
+Anti-mouse CD127 – PE (clone A7R34) | eBioscience | Cat#: 12-1271-83; RRID: AB_465845
+Anti-mouse CD172a (SIRPα) – PE-Cy7 (clone P84) | BioLegend | Cat#: 144008; RRID: AB_2563546
+Anti-mouse/human CD207 (Langerin) – PE (clone 4C7) | BioLegend | Cat#: 144204; RRID: AB_2561499
+Anti-mouse CD317 (BST2, PDCA-1) – eFluor 450 (clone eBio927) | eBioscience | Cat#: 48-3172-82; RRID: AB_2043879
+Anti-mouse CD317 (BST2, PDCA-1) – FITC (clone 927) | BioLegend | Cat#: 127008; RRID: AB_2028462
+Anti-mouse CD317 (BST2, PDCA-1) – PE-Cy7 (clone eBio927) | eBioscience | Cat#: 25-3172-82; RRID: AB_2573440
+Anti-mouse/dog/human CD324 (E-cadherin) – Biotin (clone DECMA-1) | eBioscience | Cat#: 13-3249-82; RRID: AB_1659688
+Anti-mouse/human CD324 (E-cadherin) – Alexa Fluor 647 (clone DECMA-1) | BioLegend | Cat#: 147308; RRID: AB_2563955
+Anti-mouse CXCR3 – PE (clone CXCR3-173) | eBioscience | Cat#: 12-1831-82; RRID: AB_1210734
+Anti-mouse CXCR3 – PE-Cy7 (clone CXCR3-173) | BioLegend | Cat#: 126516; RRID: AB_2245493
+Anti-mouse eomesodermin (Eomes) – eFluor 660 (clone Dan11mag) | eBioscience | Cat#: 50-4875-82; RRID: AB_2574227
+Anti-mouse Granzyme A – APC (clone GzA-3G8.5) | eBioscience | Cat#: 17-5831-82; RRID: AB_2573228
+Anti-mouse Granzyme B – eFluor 660 (clone NGZB) | eBioscience | Cat#: 50-8898-82; RRID: AB_11219679
+Anti-mouse/human Id2 – APC (clone ILCID2) | eBioscience | Cat#: 17-9475-82; RRID: AB_2735051
+Anti-mouse IFN-γ – APC (clone XMG1.2) | BioLegend | Cat#: 505810; RRID: AB_315404
+Anti-mouse IFN-γ – FITC (clone XMG1.2) | Tonbo Biosciences | Cat#: 35-7311-U100; RRID: N/A
+Anti-mouse IFN-γ – PE (clone XMG1.2) | BioLegend | Cat#: 505808; RRID: AB_315402
+Rabbit IgG Isotype control – Alexa Fluor 488 | Cell Signaling Technology | Cat#: 4340S; RRID: AB_561545
+Rabbit IgG XP Isotype control – PE (clone DA1E) | Cell Signaling Technology | Cat#: 5742S; RRID: AB_10694219
+Mouse IgG1κ Isotype control – Alexa Fluor 488 (clone MOPC-21) | BD Biosciences | Cat#: 557782; RRID: AB_396870
+Rat IgG1κ Isotype control – Alexa Fluor 647 (clone RTK2071) | BioLegend | Cat#: 400418; RRID: AB_389341
+Mouse IgG1κ Isotype control – APC (clone (P3.6.2.8.1)) | eBioscience | Cat#: 17-4714-82; RRID: AB_763649
+Mouse IgG1κ Isotype control – eFluor 660 (clone P3.6.2.8.1) | eBioscience | Cat#: 50-4714-82; RRID: AB_10597301
+Rat IgG2bλ Isotype – FITC | BioLegend | Cat#: 403808; RRID: N/A
+Anti-mouse IL-12/IL-23 p40 – eFluor 660 (clone C17.8) | eBioscience | Cat#: 50-7123-82; RRID: AB_11218493
+Anti-mouse/human integrin β7 – APC (clone FIB504) | BioLegend | Cat#: 321208; RRID: AB_571965
+Anti-mouse/human integrin β7 – PE (clone FIB504) | eBioscience | Cat#: 12-5867-42; RRID: AB_10853335
+Anti-mouse Ki-67 – PE (clone 16A8) | BioLegend | Cat#: 652404; RRID: AB_2561525
+Anti-mouse Ly-6A/E (Sca-1) – APC (clone D7) | eBioscience | Cat#: 17-5981-83; RRID: AB_469488
+Anti-mouse Ly-6A/E (Sca-1) – FITC (clone D7) | eBioscience | Cat#: 11-5981-85; RRID: AB_465334
+Anti-mouse Ly6C – APC (clone HK1.4) | eBioscience | Cat#: 17-5932-82; RRID: AB_1724153
+Anti-mouse Ly6C – Pacific Blue (clone HK1.4) | BioLegend | Cat#: 128014; RRID: AB_1732079
+Anti-mouse MHC Class II (I-A/I-E) – BV421 (clone 2G9) | BD Biosciences | Cat#: 743870; RRID: AB_2741821
+Anti-mouse MHC Class II (I-A/I-E) – eFluor 450 (clone M5/114.15.2) | eBioscience | Cat#: 48-5321-82; RRID: AB_1272204
+Anti-mouse NK1.1 – APC (clone PK136) | BioLegend | Cat#: 108710; RRID: AB_313396
+Anti-mouse NK1.1 – PE (clone PK136) | BioLegend | Cat#: 108708; RRID: AB_313395
+Anti-phospho-Akt (Thr308) – Alexa Fluor 488 (clone C31E5E) | Cell Signaling Technology | Cat#: 2918S; RRID: AB_2202785
+Anti-human/mouse/rat phospho-STAT5 (pY694) – Alexa Fluor 488 (clone 47/Stat5 (pY694)) | BD Biosciences | Cat#: 612598; RRID: AB_399881
+Anti-mouse podoplanin (gp38) – PE (clone 8.1.1) | BioLegend | Cat#: 127408; RRID: AB_2161928
+SIINFEKL (OVA 257–264)/H2-Kb-tetramers – PE | NIH Tetramer Core Facility | N/A
+SIINFEKL (OVA 257–264)/H2-Kb-tetramers – BV421 | NIH Tetramer Core Facility | N/A
+Streptavidin – Alexa Fluor 594 | eBioscience | Cat#: S11227; RRID: N/A
+Streptavidin – Alexa Fluor 647 | eBioscience | Cat#: S21374; RRID: N/A
+Anti-mouse/rhesus monkey/human T-bet – eFluor 660 (clone eBio4B10) | eBioscience | Cat#: 50-5825-82; RRID: AB_10596655
+Anti-mouse TCRβ – Alexa Fluor 594 (clone H57–597) | BioLegend | Cat#: 109238; RRID: AB_2563324
+Anti-mouse TCRβ – BV786 (clone H57–597) | BD Biosciences | Cat#: 568222; RRID: AB_2916850
+Anti-mouse TCRβ – FITC (clone H57–597) | eBioscience | Cat#: 11-5961-82; RRID: AB_465323
+Anti-mouse TCRβ – PE-Cy7 (clone H57–597) | eBioscience | Cat#: 25-5961-82; RRID: AB_2573507
+TotalSeq-B Mouse Myeloid Cocktail, V1.0 | BioLegend | Cat#: 199904; RRID: AB_3083143
+TotalSeq-B1465 anti-mouse/human CD324 (E-Cadherin) (clone DECMA-1) | BioLegend | Cat#: 147323; RRID: AB_3662416
+TruStain FcX PLUS (anti-mouse CD16/32) (clone S17011E) | BioLegend | Cat#: 156604; RRID: AB_2783138
+Anti-mouse/rat XCR1 – APC (clone ZET) | BioLegend | Cat#: 148206; RRID: AB_2563932
+Chemicals, Peptides, and Recombinant Proteins
+2-Mercaptoethanol | Sigma-Aldrich | Cat#: M3148-25ML
+5-Bromo-2′-deoxyuridine (BrdU) | Sigma-Aldrich | Cat#: 19-160
+ACK Lysing Buffer | Quality biological | Cat#: 118-156-101
+Akt/STAT5 Inhibitor | Calbiochem | Cat#: 124005
+Bovine Serum Albumin | Equitech-Bio | Cat#: BAC65
+Brefeldin A solution (1,000X) | eBioscience | Cat#: 00-4506-51
+Collagenase D | Sigma-Aldrich | Cat#: 11088866001
+Collagenase, Type IV | Invitrogen | Cat#: 17104019
+Complete Freund’s Adjuvant (CFA) | Invivogen | Cat#: vac-cfa-10
+CpG (ODN 1585) | Invivogen | Cat#: tlrl-1585-1
+Dimethyl disulfide | Sigma-Aldrich | Cat#: 471569-250ML
+DMEM, high glucose | Gibco | Cat#: 11965092
+DNase I | Sigma-Aldrich | Cat#: DN25
+Defined Fetal Bovine Serum (FBS) | HyClone | Cat#: SH30070.01
+Ghost dye Violet 510 | Tonbo Biosciences | Cat#: 13-0870-T500
+HBSS, no calcium, no magnesium, no phenol red | Gibco | Cat#: 14175095
+Ionomycin | Sigma-Aldrich | Cat#: 407950
+Lipopolysaccharides (LPS) | Sigma-Aldrich | Cat#: L2630-10MG
+OVA 257–264 peptides | Invivogen | Cat#: vac-sin
+PBS, pH 7.4 | Gibco | Cat#: 10010023
+PBS (10X), pH 7.4 | Gibco | Cat#: 70011044
+Penicillin-streptomycin | Gibco | Cat#: 15140122
+Percoll | GE Healthcare | Cat#: 17-0891-01
+Phorbol 12-myristate 13-acetate (PMA) | Sigma-Aldrich | Cat#: P8139
+Propidium iodide (PI) | Sigma-Aldrich | Cat#: P4170
+Recombinant mouse E-cadherin protein | R&D systems | Cat#: 8875-EC-050
+Recombinant mouse IFN-β1 | BioLegend | Cat#: 581302
+Recombinant mouse IFN-γ | BD Biosciences | Cat#: 554587
+Recombinant mouse IL-12 | R&D systems | Cat#: 419-ML-010/CF
+Recombinant mouse IL-15 | R&D systems | Cat#: 447-ML-010/CF
+Recombinant mouse IL-7 | R&D systems | Cat#: 407-ML-025/CF
+RPMI-1640 medium | Gibco | Cat#: 11875093
+Sodium azide | Sigma-Aldrich | Cat#: S2002-100G
+Standard Fetal Bovine Serum (FBS) | HyClone | Cat#: SH30088.02
+Trypsin-EDTA (0.25%), phenol red | Gibco | Cat#: 25200056
+Wortmannin | Sigma-Aldrich | Cat#: 12-338
+Critical Commercial Assays
+Annexin V Apoptosis Detection Kit | eBioscience | Cat#: 88-8007-72
+BD Cytofix/Cytoperm Plus Fixation/Permeabilization Kit | BD Biosciences | Cat#: 554715
+CaspGLOW Fluorescein active Caspase-3 staining Kit | Invitrogen | Cat#: 88-7004-42
+CellTrace Blue Cell Proliferation Kit | Invitrogen | Cat#: C34568
+CellTrace Violet Cell Proliferation Kit | Invitrogen | Cat#: C34557
+Foxp3 Fixation/Permeabilization concentrate | eBioscience | Cat#: 00-5123-43
+Foxp3 Fixation/Permeabilization diluent | eBioscience | Cat#: 00-5223-56
+IC fixation buffer | eBioscience | Cat#: 00-8222-49
+MojoSort Buffer (5X) | BioLegend | Cat#: 480017
+MojoSort Mouse anti-PE Nanobeads | BioLegend | Cat#: 480080
+Permeabilization buffer (10X) | eBioscience | Cat#: 00-8333-56
+QuantiTect reverse transcription kit | Qiagen | Cat#: 205313
+QuantiTect SYBR Green PCR kit | Qiagen | Cat#: 204145
+RNeasy Plus mini kit | Qiagen | Cat#: 74134
+Vybrant Cell Adhesion Assay Kit | Invitrogen | Cat#: V13181
+Deposited Data
+RNA-seq of memory CD8+ T cells from WT and CD103Tg mice | This paper | GEO: GSE295529
+RNA-seq of naive CD8+ T cells from WT and Itgae–/– mice | This paper | GEO: GSE295528
+CITE-seq | This paper | GEO: GSE295654
+RNA-seq of IL-12 treated activated CD8+ T cells | Agarwal et al. (Ref: 76) | GEO: GSE15930
+RNA-seq of IL-12 treated activated Pmel-1 TCR transgenic CD8+ T cells | Lisiero et al. (Ref: 77) | GEO: GSE22443
+RNA-seq of CD8+ T cells from WT and Stat4–/– mice | Gil et al. (Ref: 78) | GEO: GSE40666
+Experimental Models: Cell Lines
+B16-F10 | Gift from Dr. Z. Zhuang (NCI) | RRID: CVCL_0159
+B16-F10-OVA | Gift from Dr. P. Roche (NCI) | RRID: CVCL_0159
+Experimental Models: Organisms/Strains
+Mouse: C57BL/6 (C57BL/6NCrl) | Charles River Laboratories | Strain #:027
+Mouse: CD103Tg | In house | Keller et al. (Ref: 21)
+Mouse: CD11cCre | The Jackson Laboratory | Strain #:018967; Caton et al. (Ref: 79)
+Mouse: CD4Cre | The Jackson Laboratory | Strain #:017336; Sawada et al. (Ref: 80)
+Mouse: Cdh1fl/fl | Gift from Dr. A. Bass (Harvard University) | Zhang et al. (Ref: 81)
+Mouse: Germ-free C57BL/6 | Frederick National Laboratory for Cancer Research | N/A
+Mouse: Ifnar1–/– | The Jackson Laboratory | Strain #:028288
+Mouse: Ifnb1-EYFP | The Jackson Laboratory | Strain #:010818; Scheu et al. (Ref: 82)
+Mouse: Il15–/– | Gift from Dr. T. Waldmann (NCI) | Kennedy et al. (Ref: 34)
+Mouse: IL-15Tg | Gift from Dr. T. Waldmann (NCI) | Marks-Konczalik et al. (Ref: 33)
+Mouse: Itgae–/– | The Jackson Laboratory | Strain #:002964; Schön et al. (Ref: 11)
+Mouse: Ly5.1 C57BL/6 (CD45.1+) | Charles River Laboratories | Strain #:564
+Mouse: Ly5.1 OT-I | Gift from Dr. A. Singer (NCI) | N/A
+Mouse: OT-I (C57BL/6-Tg(TcraTcrb)1100Mjb/J) | The Jackson Laboratory | Strain #:003831; Hogquist et al. (Ref: 83)
+Mouse: Rag2–/– | The Jackson Laboratory | Strain #:008449; Hao and Rajewsky (Ref: 84)
+Mouse: Stat1fl/fl | The Jackson Laboratory | Strain #:032054-JAX; Wallner et al. (Ref: 85)
+Mouse: STAT5-CATg | Gift from Dr. M. Farrar (U. Minnesota) | Burchill et al. (Ref: 37)
+Mouse: Thy1.1 C57BL/6 | The Jackson Laboratory | Strain #:000406
+Oligonucleotides
+Primers for real-time qPCR, see Table S2 | This paper | N/A
+Software and Algorithms
+Canvas X | Canvas GFX | https://www.canvasgfx.com
+Flow cytometry software Active Control 4.2.0.7 | Division of Computer Research and Technology, EIB, NCI | N/A
+FlowJo software version 10.6.2 | FlowJo, LLC | https://www.flowjo.com
+GraphPad Prism 8 | GraphPad | https://www.graphpad.com
+GSEA v4.2.3 | UC San Diego/ Broad Institute | https://www.gsea-msigdb.org/gsea/index.jsp
+Image J | NIH | https://Imagej.nih.gov/ij
+IPA | Qiagen | https://www.qiagen.com/ingenuity
+R | R Core Team | https://www.r-project.org
+RStudio | RStudio | https://www.rstudio.com
+Other
+BD FACS LSRII | BD Biosciences | N/A
+BD FACS LSR Fortessa | BD Biosciences | N/A
+BD Fortessa X-20 | BD Biosciences | N/A
+BD FACSAria Fusion | BD Biosciences | N/A
+BD FACSAria II | BD Biosciences | N/A
+
+### Experimental model and study participant details
+
+#### Mice
+
+          C57BL/6 (B6) and Ly5.1 congenic C57BL/6 (CD45.1+) mice were obtained from the Charles River Laboratories. Thy1.1+ congenic C57BL/6, Rag2–/–, Itgae–/–, Stat1fl/fl, CD4Cre, Ifnar1–/–, OT-I, Ifnb1-EYFP, and CD11cCre mice were obtained from the Jackson Laboratory. Germ-free C57BL/6 mice were obtained from Frederick National Laboratory for Cancer Research, NCI. Il15–/– and IL-15Tg mice have been previously described and provided by Dr. T. Waldmann (NCI). (Ref: 33) (Ref: 34) Ly5.1 OT-I mice were provided by Dr. A. Singer (NCI). Cdh1fl/fl mice were provided by Dr. A. Bass (Harvard University). (Ref: 81)Cdh1fl/flCD11cCre (Cdh1ΔDC) mice were generated in this study by crossbreeding Cdh1fl/fl mice with CD11cCre mice. CD103Tg mice were previously described and maintained in-house. (Ref: 21)Il15–/–CD103Tg mice were generated in this study by crossbreeding Il15–/– mice with CD103Tg mice. OT-IItgae–/– mice were generated in this study by crossbreeding Itgae–/– mice with OT-I mice. Stat1fl/flCD4Cre (Stat1ΔT) mice were generated in this study by crossbreeding Stat1fl/fl mice with CD4Cre mice. Constitutively active STAT5 transgenic mice (STAT5-CATg) were provided by Dr. M. Farrar (University of Minnesota). (Ref: 37) For all experiments, adult mice of both sexes, ranging from 6 to 20 weeks of age were used. All mice were cared for in accordance with NIH guidelines under SPF conditions. Animals were housed in ventilated racks with an automatic watering system and ad libitum access to food on a 12-hour light/dark cycle under ambient conditions. At the end of the experiments, mice were euthanized by CO2 asphyxiation. All animal procedures reported in this study that were performed by NCI-CCR affiliated staff were approved by the NCI Animal Care and Use Committee (ACUC) and in accordance with federal regulatory requirements and standards. All components of the intramural NIH ACU program are accredited by AAALAC International.
+
+#### Cell lines
+
+          B16-F10 melanoma cells (ATCC, CRL-6475), a cell line derived from a tumor that developed in a male mouse, were provided by Dr. Z. Zhuang (NCI). (Ref: 86) OVA-expressing B16-F10 cells were provided by Dr. P. Roche (NCI). B16-F10 and B16-F10-OVA cells were grown and maintained in DMEM cell culture media (Gibco) supplemented with 10% heat-inactivated FBS (Cytiva) and 1% antibiotics (penicillin and streptomycin) in a humidified incubator at 37°C and 5% CO2. Research Resource Identifiers (RRIDs) for the cell lines used in this study are listed in the key resources table.
+
+### Method details
+
+#### Cell isolation
+
+          Single-cell suspensions from thymus, lymph nodes, and spleen were prepared as previously described. (Ref: 87) For lymphocyte enrichment from the liver, liver tissues were pressed through 70 μm cell strainers and washed with cold PBS, while for the isolation of lung lymphocytes, lung tissues were digested for 1 hour at 37°C in 10% FBS-RPMI-1640 containing collagenase D (1 mg/mL) and DNase I (50 μg/mL), after which the lymphocytes were enriched by using a 40/70% Percoll gradient as previously described. (Ref: 88) Single-cell suspensions from bone marrows were prepared by flushing the marrow from the femur and tibia with PBS. Red blood cells were lysed with ACK lysis buffer when necessary. For the isolation of DCs, (Ref: 89) peripheral lymph nodes (pLNs; comprising axillary, brachial, inguinal, and submandibular lymph nodes) were gently teased with forceps, and then digested in collagenase IV or collagenase D (1 mg/mL) and DNase I (40 μg/mL) for 30 min at 37°C before filtering through a 70 μm cell strainer. For stromal cell isolation, thymus and pLNs were digested in collagenase IV (1 mg/mL) and DNase I (40 μg/mL) for 30 min, followed by collagenase D (3.5 mg/mL) and DNase I (40 μg/mL) digestion for 15 min at 37°C before filtering through a 70 μm cell strainer. Cells were then resuspended in 10% FBS-RPMI-1640 and kept on ice until further analysis.
+
+#### Flow cytometry analysis and FACS sorting
+
+          For flow cytometry analysis, single-cell suspensions were stained with fluorescence-conjugated antibodies as previously described. (Ref: 87) Nuclear transcription factors were detected using the Foxp3 intracellular staining buffer kit (eBioscience), while cytosolic proteins were analyzed using an IC fixation kit (eBioscience), according to the manufacturers’ instructions. pSTAT5 and pAKT were assessed in cytokine-stimulated cells by methanol fixation and intracellular staining as previously described. (Ref: 90) For detecting cytokine production, T cells were stimulated with 50 ng/mL PMA (Sigma-Aldrich) and 1 μM ionomycin (Sigma-Aldrich) in the presence of 3 μg/mL brefeldin A (Invitrogen) for 2 hours, while DCs were cultured with 3 μg/mL brefeldin A in the presence or absence of 1 μg/mL LPS (Sigma-Aldrich) for 4 hours before analysis. To examine Ifnb1-EYFP expression, pLNs cells from Ifnb1-EYFP reporter mice were isolated and cultured at 37°C for 24 hours with or without 3 μg/mL CpG (ODN 1585, Invivogen) before analysis. For active caspase-3 and annexin V detection, freshly isolated cells were cultured for 4 hours at 37°C, followed by staining using CaspGLOW Fluorescein active Caspase-3 staining Kit (eBioscience) and Annexin V Apoptosis Detection Kit (eBioscience), respectively. For detecting iNKT cells or OT-I cells, freshly isolated cells were stained with fluorescence-conjugated CD1d tetramers or SIINFEKL (OVA 257-264)/H2-Kb-tetramers (NIH Tetramer Core Facility) at 4°C for 20 min, followed by the staining of other surface markers at 4°C for 40 min. Dead cells were excluded by propidium iodide (PI, Sigma-Aldrich) or Ghost dye Violet 510 staining (Tonbo Bioscience), and samples were filtered through 60 μm nylon mesh filters before flow cytometric analysis. Data were acquired on LSR II, LSR Fortessa, and Fortessa X-20 flow cytometers (BD Biosciences) and analyzed using FlowJo v10.6.2 software (FlowJo).
+          For FACS sorting of different CD8+ T cell subsets, CD8+ T cells from LN and/or spleen were enriched by magnetically depleting CD4+ T cells and B cells with rat anti-mouse CD4+ antibodies (clone GK1.5), followed by incubation with goat anti-rat IgG BioMag beads (Qiagen). For FACS sorting of different subsets of DCs, pLNs cells were isolated and stained with antibodies against the corresponding DC markers at 4°C for 40 min. Dead cells were excluded by PI staining and samples were filtered through 60 μm nylon mesh filters before acquisition. Cells were sorted on FACSAria Fusion and FACSAria II (BD Biosciences) under aseptic conditions and collected in RPMI-1640 media supplemented with 20% FBS.
+
+#### In vitro T cell stimulation
+
+          FACS-sorted LC. DN CD8+ T cells were stimulated in vitro with varying concentrations of IL-15 (0.1-1.0 μg/mL) in the presence or absence of an Akt inhibitor (50 nM, Wortmannin, Sigma-Aldrich) or Akt/STAT5 inhibitor (100 μM, Cat#124005, Calbiochem). Stimulated cells were collected for downstream real-time qPCR or flow cytometry analysis.
+
+#### Induction of Ly6C and CXCR3 expression in vitro
+
+          To assess the effect of cytokines on inducing Ly6C expression in vitro, FACS-sorted LC. DN CD8+ T cells were cultured in survival medium (10% FBS in RPMI-1640 supplemented with 0.5 ng/mL recombinant IL-7) alone or in survival medium containing recombinant IFN-β1 (0.1-10 ng/mL) or IFN-γ (10 ng/mL). Cells were harvested after 2 days and analyzed by flow cytometry for surface protein expression. To test the in vitro induction of Ly6C by pDCs or culture supernatants of activated pDCs, the pDC from pLNs of B6 mice were FACS-sorted, and 1.5 × 104 of cells were cultured in 96 well round-bottom plates in the presence of CpG (ODN 1585, 3 μg/mL, Invivogen). After 2 days, pDCs or supernatants of activated pDCs were collected and added to freshly FACS-sorted LC. DN CD8+ T cells (6 × 104 cells per well) in survival medium. Importantly, the LC. DN responder CD8+ T cells were made of a 1:1 mixture of sorted LC. DN CD8+ T cells from CD45.1+ WT and CD45.2+Ifnar1–/– mice. LC. DN CD8+ T cells cultured with survival medium containing CpG alone (3 μg/mL) or IFN-β1 alone (1 ng/mL) were set up as negative and positive controls, respectively. CD8+ T cells were harvested after 4 days and analyzed by flow cytometry. For the induction of both Ly6C and CXCR3 in vitro, FACS-sorted L. SP CD8+ T cells were cultured with survival medium containing recombinant IFN-β1 (0-5 ng/mL) alone or IFN-β1-supplemented survival medium containing recombinant IL-12 (100 ng/mL) or recombinant IL-15 (100 ng/mL). To test the IL-15-independent induction of Ly6C+CXCR3+ LC. DP CD8+ T cells by DCs, CD207 mDC, CD207+ mDC, and pDC from pLNs of Il15–/– mice were FACS-sorted, and 1 × 104 of cells from each group were cultured with 3 × 104 of L. SP CD8+ T cells in survival medium supplemented with recombinant IFN-β1 (0.1 ng/mL). Cells were harvested after 4 days and analyzed by flow cytometry.
+
+#### Adoptive transfer experiments
+
+          To examine the differentiation of L. SP cells in vivo, FACS-sorted LC. DN CD8+ T cells from pooled LN and spleen cells were tail vein injected into host mice, and donor T cells were analyzed after 7 or 14 days. Five groups of experiments were set up: 1) FACS-sorted LC. DN CD8+ T cells from CD45.1+ WT and CD45.2+Itgae–/– mice were mixed at 1:1 ratio to inject a total of 5 × 106 cells into Thy1.1+ host mice. Donor cells were analyzed after 14 days; 2) FACS-sorted LC. DN CD8+ T cells from CD45.1+ OT-I and CD45.2+ OT-IItgae–/– mice were mixed at 1:1 ratio to inject a total of 5 × 106 cells into Thy1.1+ host mice. Donor cells were analyzed after 7 days; 3) 5 × 106 of FACS-sorted LC. DN CD8+ T cells from CD45.1+ WT mice were injected into CD45.2+Cdh1WT or Cdh1ΔDC host mice. Donor cells were analyzed after 14 days; 4) FACS-sorted LC. DN CD8+ T cells from CD45.1+ WT and CD45.2+Ifnar1–/– mice were mixed at 1:1 ratio to inject a total of 5 × 106 cells into Thy1.1+ host mice. Donor cells were analyzed after 14 days; 5) FACS-sorted LC. DN CD8+ T cells from CD45.2+Itgae–/– or CD45.2+ CD103Tg mice were labeled with CellTrace Blue (CTB, Invitrogen) or CellTrace Violet (CTV, Invitrogen) respectively, and mixed with FACS-sorted LC. DN CD8+ T cells from CD45.1+ WT at a 1:1:1 ratio. A total of 9 × 106 cells was injected into CD45.2+Cdh1WT or Cdh1ΔDC host mice, and donor cells were analyzed after 14 days.
+          For antigen-specific activation of CD8+ T cells in vivo, 5 × 106 of FACS-sorted LC. DN CD8+ T cells from pooled LN and spleen cells of OT-I mice were intravenously injected into Thy1.1+ host mice, followed by footpad injection of 10 μg of OVA257-264 peptide (Invivogen) emulsified in Complete Freund’s Adjuvant (CFA, Invivogen) on the next day, and donor cells were recovered from draining LNs (inguinal and popliteal LNs) on day 7 post immunization.
+          For in vivo induction of LC. DP cells, FACS-sorted LC. DN CD8+ T cells from pooled LN and spleen cells of CD45.1+ WT and CD45.2+ CD103Tg mice were mixed at 1:1 and a total of 2 × 106 cells were intravenously injected into Rag2–/– mice, and donor cells were recovered from LNs on day 7 post transfer.
+
+#### BrdU cell proliferation assay
+
+          Cell proliferation was measured by BrdU incorporation. Mice were given intraperitoneal injections of BrdU dissolved in PBS (1 mg/mouse) and kept on BrdU-supplemented water (1 mg/mL) until further analysis. Single-cell suspensions of LN T cells or splenocytes were first stained for surface markers and then fixed and permeabilized with BD Cytofix/Cytoperm Plus Fixation/permeabilization Kit for intranuclear anti-BrdU staining according to the manufacturer’s protocol (BD Biosciences).
+
+#### Cell adhesion assay
+
+          Cell adhesion assay was performed using the Vybrant Cell Adhesion Assay kit (Invitrogen) according to the manufacturer’s instructions. Briefly, black/clear bottom 96-well plates (Corning) were coated overnight with 5 μg/mL recombinant E-cadherin protein (R&D Systems) and were blocked with 5% BSA at 37°C for 2 hours before seeding the cells. LC. DP CD8+ T cells from WT and CD103Tg mice were sorted and labeled with the fluorogenic dye calcein AM (5 μM), and 1 × 105 of cells from each group were added into E-cadherin coated or uncoated wells and incubated at 37°C for 90 min. Nonadherent cells were removed by gently washing the plates 3 times with prewarmed RPMI-1640 medium, and the fluorescence of adherent cells was measured by SpectraMax ID3 Multi-Mode Microplate Reader (Molecular Devices). The percentage of adherent cells was determined by dividing the corrected (background subtracted) fluorescence of adherent cells by the corrected fluorescence of total cells in each well.
+
+#### Tumor metastasis model
+
+          For the lung metastasis model, single-cell suspensions of B16-F10 cells were prepared in PBS, and 3 × 105 of cells were injected intravenously into recipient mice. After 14 days, the lungs were harvested, and total surface tumor nodules in the lungs were counted before isolating lymphocytes from the lungs for analysis. Occasionally, one lobe of lung from each mouse was collected and fixed in 4% PFA for paraffin embedding and hematoxylin and eosin (H&E) staining (Histoserv, Inc.). H&E staining slides were scanned using a Zeiss AxioObserver microscope for wide-field imaging at 5X magnification. Mosaics were processed and the tumor area was counted using Image J. Tumor burden was defined as the tumor-positive area divided by the total lung area. For testing anti-tumor activity of CD8+ T cells, FACS-sorted LC. DN OT-I CD8+ T cells from pooled LN and spleen cells were intravenously injected into host mice followed by intravenous injection of 5 × 105 B16-F10-OVA cells on day 7, and the lungs were harvested on day 28. Total surface tumor nodules in the lungs were counted, and lymphocytes from lungs were isolated and analyzed. Two groups of experiments were set up as in the following: 5 × 106 of FACS-sorted LC. DN CD8+ T cells from OT-I TCR transgenic mice were injected into Cdh1WT or Cdh1ΔDC host mice followed by inoculation of B16-F10-OVA cells; alternatively, 5 × 106 of FACS-sorted LC. DN CD8+ T cells from OT-I mice or OT-IItgae–/– mice were injected into Thy1.1+ host mice separately, followed by inoculation of B16-F10-OVA cells.
+
+#### CITE-seq
+
+          pLNs from 16-week-old female B6 mice (two samples with 14 mice per sample) were harvested and utilized for DC isolation by collagenase D digestion as described above. Cells were stained with PE anti-mouse CD90.2 (clone 53-2.1) and PE anti-mouse CD19 (clone 1D3/CD19) antibodies, and T and B cell populations were depleted using MojoSort anti-PE nanobeads (BioLegend) according to the manufacturer’s instructions. The remaining cells were stained with FITC anti-CD19 (clone QA17A27), BV421 anti-I-A/I-E (clone 2G9), APC anti-CD11c (clone HL3), A594 anti-CD3ε (clone 500A2), and BV786 anti-CD45 (clone I3/2.3) at 4°C for 40 min prior to FACS sorting. The CD11c+I-A/I-E+ cells among CD45+CD19CD3ε cells were collected for downstream CITE-seq analysis.
+          The CITE-seq experiment was performed by following the TotalSeq protocol (BioLegend). Briefly, 5 × 105 of cells from each sample were incubated with TruStain FcX PLUS (anti-mouse CD16/32) blocking reagent at 4°C for 10 min, followed by staining of TotalSeq-B Mouse Myeloid Cocktail with “spike-in” of TotalSeq-B1465 anti-mouse/human CD324 (E-cadherin) antibody at 4°C for 30 min. Cells from each sample were washed and submitted to Single Cell Analysis Facility (SCAF, NCI, NIH) for further analysis. Briefly, the samples were loaded in the lanes according to the 10x Genomics Chromium Next GEM Single Cell 3′ v4 (CG000732 Rev B) User Guide with a single capture lane per sample. The target recovery was 12,000 cells per lane. Cell partitioning was successfully completed with uniform emulsion consistency, and the reverse transcription PCR was run overnight. All subsequent steps of gene expression, FBC library preparation, and quality control were performed as described in the vendor-provided user guide. Libraries were sequenced on a NovaSeq X-Plus 1.5B 100-cycle flowcell.
+
+#### CITE-seq data preprocessing and analysis
+
+          Data preprocessing was done by bioinformatics analysts in SCAF (NCI, NIH). Briefly, base calling was performed using RTA 3.4.4, demultiplexing was performed using Cell Ranger v8.0.1 (Bcl2fastq 2.20.0), and alignment was performed using Cell Ranger v8.0.1 (STAR 2.7.2a). Reads were processed with Cell Ranger v8.0.1 with quality control and feature barcoding. RNA reads were aligned to a 10x Genomics provided mouse reference sequence (refdata-gex-GRCm39-2024-A) and antibody reads were mapped to known barcodes sequenced reads (Table S3).
+          The output from Cell Ranger was processed in R (v4.4.2) by following the Bioconductor workflow (for version 3.20). Briefly, the count matrices were imported into R using the DropletUtils (1.26.0) package, and doublets were detected using the scDblFinder (1.20.0) package and removed. Low quality cells having log-library sizes more than 3 median absolute deviations (MADs) below the median log-library size, or log-transformed number of expressed genes more than 3 MADs below the median log-transformed number of expressed genes, or proportion of mitochondrial genes more than 3 MADs above the median percentage of mitochondrial genes were removed. RNA reads were log-normalized using the multiBatchNorm function, and antibody-derived tag (ADT) data were normalized by defining control-based size factors using isotype controls and performing log-transformation using logNormCounts function from scran package. The two replicates (rep 1: 9,304 cells; rep 2: 9,040 cells) were integrated with correction of batch effects using the fastMNN function (Ref: 91) from batchelor package. The normalized RNA and ADT data were integrated by combining the log-abundance ADT matrix with the matrix of PCs derived from the log-expression RNA matrix via the rescaleByNeighbors function from mumosa (1.14.0) package. The clustering of cells on combined data was done by using clusterCells function from scran package with a two-step clustering method (first: k-means clustering to assign cells into 1,000 initial clusters; second: building a nearest-neighbor graph using top 20 neighbors for each cell (k=20) followed by Walktrap function from igraph (2.1.1) package), which resulted in 7 clusters in total. The UMAP dimensionality reduction was performed by using runUMAP function from scater (1.34.0) package. The SingleR (2.8.0) package (Ref: 92) was used for cell-type annotation of the cells using as reference samples from the Immunologic Genome Project (ImmGen) (Ref: 46) mouse RNA-seq dataset. A cluster annotated with “NK/ILC1 cells” was removed from further analysis. Afterwards the remaining 14,820 cells were re-clustered using the two-step clustering method described above with k = 10, resulting in 9 clusters. Feature genes for each cluster were identified using the findMarkers function from scran package. The expression pattern of lineage markers, top 10 differentially expressed genes (DEGs), top informative ADTs, indicated integrins and cytokines was visualized by using plotUMAP, plotHeatmap, plotGroupedHeatmap, or plotExpression from scater package.
+
+#### Bulk RNA sequencing
+
+          For RNA-seq of LC. DN cells, total RNA of FACS-sorted LC. DN CD8+ T cells from LN of WT and Itgae–/– mice (3 samples for each group) was isolated by using RNeasy Plus Mini kit (Qiagen). The quality of total RNA samples was checked on Agilent 2200 TapeStation system in the CCR Genomics Core (NCI, NIH). Samples with RNA integrity number (RIN) value > 8.0 were shipped to CCR Sequencing Facility (NCI, NIH) for RNA sequencing. Briefly, RNA-seq libraries were prepared from total RNA using Illumina TruSeq Stranded mRNA Ligation Preparation Kits according to the manufacturer’s protocol, and all mRNA-seq samples were pooled and sequenced on NextSeq 2000 P2 using Illumina Stranded mRNA Ligation Prep and paired-end sequencing.
+          For RNA-seq of LC. DP cells, total RNA of FACS-sorted LC. DP CD8+ T cells from LN of WT and CD103Tg mice (4 samples for each group) was isolated by using RNeasy Plus Mini kit (Qiagen). The quality of total RNA samples was checked on Agilent 2200 TapeStation system in the CCR Genomics Core (NCI, NIH). Samples with RNA integrity number (RIN) value > 8.0 were shipped to CCR Sequencing Facility (NCI, NIH) for RNA sequencing. Briefly, RNA-seq libraries were prepared from total RNA using Clonetech SMART-Seq v4 Ultra Low Input RNA and Nextera XT DNA Library Prep Kits according to the manufacturer’s protocol, and all mRNA-seq samples were pooled and sequenced on NextSeq 2000 P2 using Illumina Stranded mRNA Ligation Prep and paired-end sequencing.
+
+#### RNA-seq data processing and analysis
+
+          For RNA-seq of LC. DN cells, paired-end reads of samples were trimmed to remove adapters and low-quality bases using Cutadapt 1.18. The trimmed reads were aligned to the mouse GRCm38 reference genome (mm10) using STAR 2.7.0f. The unique alignment is above 86% with a 97% average mapping rate of all samples. Gene read counts were generated using STAR/RSEM tools, and genes with very low counts across all samples were filtered out before analysis. DEGs were identified using the edgeR (Ref: 93) R package with fold change (FC) of 1.5 and adjusted P value < 0.05. STAT1-associated gene sets were obtained from Molecular Signatures Database (MSigDB) and analyzed using Gene Set Enrichment Analysis (GSEA). (Ref: 94) (Ref: 95)
+          For RNA-seq of LC. DP cells, paired-end reads of samples were trimmed to remove adapters and low-quality bases using Cutadapt 1.18. The trimmed reads were aligned to the mouse GRCm38 reference genome (mm10) using STAR 2.7.0f. The unique alignment is above 83% with a 96% average mapping rate of all samples. Gene read counts were generated using STAR/RSEM tools, and genes with very low counts across all samples were filtered out before analysis. Principal component analysis (PCA) was performed using the plotPCA function in DESeq2 (Ref: 96) R package and visualized using ggplot2, and the Pearson correlation matrix was performed using pheatmap (Ref: 97) packages in R. DEGs were identified using the edgeR R package with FC of 1.5 and adjusted P value < 0.01. Molecular and cellular functions of DEGs were analyzed by using Ingenuity pathway analysis (IPA), and Gene Ontology (GO) enrichment analysis for biological processes on DEGs was performed using the Database for Annotation Visualization and Integrated Discovery (DAVID). (Ref: 98) (Ref: 99) Apoptosis associated gene sets were obtained from MSigDB and analyzed using GSEA. (Ref: 94) (Ref: 95) IL-12-STAT4 signature related gene sets were built by reanalyzing online GEO databases (GSE15930, GSE22443, GSE40666) and selecting top 200 DEGs from each database, and then analyzed using fgsea R package and visualized using enrichplot R package. Analysis and visualization of DEGs involved in cell survival pathway were performed using heatmap3. Visualization of DEGs in volcano plots and enriched pathways in bubble plot and bar chart were done using the ggplot2 R package. The potential upstream activated cytokines were identified by IPA Upstream Regulator Analysis.
+
+#### Quantitative real-time PCR
+
+          Total RNA was isolated using RNeasy Plus Mini kit (Qiagen). RNA was reverse transcribed into cDNA by Oligo(dT) priming with the QuantiTect reverse transcription kit (Qiagen). qRT-PCR was performed with the QuantiTect SYBR Green PCR kit (Qiagen) and analyzed on an ABI PRISM 7900HT (Life Technologies). Primer sequences are available in the Key resources table.
+
+### Quantification and statistical analysis
+
+        Data are shown as means ± S. E. M. All data sets were tested for normality using the Shapiro-Wilk normality test. Where data were normally distributed, comparison between two groups was determined using a two-tailed Student’s t test, and comparison between three or more groups was determined using one-way ANOVA with Tukey’s multiple comparison correction. Where data was not normally distributed, comparison between two groups was determined using Mann-Whitney U test, and comparison between three or more groups was determined using Kruskal-Wallis test with Dunn’s multiple comparison correction. Two-way ANOVA with Šídák’s multiple comparisons were used to compare values across two categorical variables. P-value < 0.05 was considered statistically significant. N. S., not significant. Number of experimental repeats is indicated in each figure legend. All statistical data analyses were performed using GraphPad Prism 8 software (GraphPad).
+
+## Supplemental information (5)
+
+      PDF (3.03 MB)Document S1. Figures S1–S7Spreadsheet (9.84 KB)Table S1. Top five molecular and cellular functions, related to Figure 5Spreadsheet (10.15 KB)Table S2. Excel spreadsheet containing primers for real-time qPCRSpreadsheet (11.74 KB)Table S3. Excel spreadsheet containing CITE-seq ADT barcodesPDF (27.96 MB)Document S2. Article plus supplemental information
+
+## Figures (7)
+ -
+    - 0Citations8CapturesView detailsopens in a new tab
+
+## Supplemental information (5)
+
+  Document S1. Figures S1–S7
+  Table S1. Top five molecular and cellular functions, related to Figure 5
+  Table S2. Excel spreadsheet containing primers for real-time qPCR
+  Table S3. Excel spreadsheet containing CITE-seq ADT barcodes
+  Document S2. Article plus supplemental information
+
+## Related Articles
+
+
+================================================================================
+FIGURES
+================================================================================
+
+
+### Figure 1: Characterization of CD103neg CD8+ T cells
+
+(A) CD103 expression on thymocyte subsets (left) and CD4+ and CD8+ LN T cells (right) of C57BL/6 WT mice.
+
+(B) Expression of memory T cell markers on WT CD8+ LN T cells. CD103neg CD8+ T cells are identified by red boxes.
+
+(C) Frequencies of BrdU+ cells and IFN-γ+ cells in CD103neg and CD103+ WT CD8+ LN T cells.
+
+(D) CD103 expression on CD44loCD122lo versus CD44hiCD122hi WT CD8+ LN T cells.
+
+(E) Identification of three distinct CD8+ T cell subsets based on Ly6C versus CXCR3 (left): 1. Ly6CCXCR3 (LC.DN); 2. Ly6CintCXCR3 (L.SP); 3. Ly6ChiCXCR3+ (LC.DP). CD44, CD122, T-bet, and Eomes expression in LC.DN, L.SP, and LC.DP CD8+ LN T cells (right).
+
+(F) Frequencies of IFN-γ+ cells in LC.DN, L.SP, and LC.DP WT CD8+ LN T cells.
+
+(G) Frequencies and numbers of LC.DP CD8+ LN T cells in SPF and GF mice.
+
+(H) CD103 and β7 expression on LC.DN, L.SP, and LC.DP WT CD8+ LN T cells.
+
+(I and J) CD103 mRNA (I) and protein expression (J) in LC.DN CD8+ T cells after overnight (I) or 5–7 days of culture (J) with recombinant IL-15.
+
+(K) CD103 and Bcl-2 mRNA expression in LC.DN CD8+ T cells after overnight stimulation with recombinant IL-15 in the presence or absence of an Akt inhibitor (wortmannin) or a STAT5/Akt dual inhibitor (cat#124005, Calbiochem).
+
+(L) CD103 and β7 expression on LC.DN CD8+ LN T cells of WT and STAT5-CATg mice.
+
+Data are representative (A, B, D, E, and J) of, or pooled (C, F–I, K, and L) from 2–5 independent experiments (n = 4–8/group). Error is expressed as ± SEM. Paired (C, I) and unpaired Student’s t test (G, L), one-way ANOVA (F, H, and K for CD103), and Kruskal-Wallis test (K for Bcl-2) were used. N.S., not significant.
+
+See also Figures S1 and S2.
+
+
+### Figure 2: Identification and characterization of E-cadherin-expressing DCs
+
+(A and B) Frequencies and numbers of CXCR3-gated CD44lo L.SP cells (A), and Ly6C expression on CXCR3-gated L.SP cells (B) in WT and Itgae–/– mice.
+
+(C) Schematic for adoptive transfer of Itgae–/– and CD45.1+ WT LC.DN cells into Thy1.1+ host mice (top), and the frequency and relative number of Thy1.2+ donor L.SP CD8+ T cells in pLNs of Thy1.1+ mice (right).
+
+(D and E) E-cadherin expression on thymic and pLN stromal cells (D), or pLN rDCs, mDCs, and pDCs (E) of WT mice.
+
+(F) Frequencies of mDCs, pDCs, and non-mDC/pDCs among E-cad+ DCs (top), and subpopulations of E-cad+ mDCs (bottom) in pLNs of WT mice.
+
+(G) UMAP plot of single-cell clusters after excluding contaminating NK/ILC1 cells. Clusters are color-coded.
+
+(H) Feature plots of ADT and gene expression of E-cadherin (CD324) in single-cell clusters from panel G.
+
+(I) Heatmap of transcripts for the indicated phenotypic markers in single-cell clusters from G. For some surface markers, expression of ADTs is also shown.
+
+Data are representative (D) of, or pooled (A–C, E, and F) from 2–3 independent experiments (n = 4–6/group). Error is expressed as ± SEM. Unpaired (A and B) and paired Student’s t test (C), and one-way ANOVA (E and F) were used. N.S., not significant.
+
+See also Figures S2 and S3.
+
+
+### Figure 3: E-cad+ DCs induce L.SP CD8+ T cells by providing type I IFN signaling
+
+(A and B) E-cadherin expression on rDCs, mDCs, and pDCs (A), and frequencies and numbers of CD44lo L.SP CD8+ T cells (B) in pLNs of Cdh1WT and Cdh1ΔDC mice.
+
+(C) Schematic for the adoptive transfer of CD45.1+ WT LC.DN cells into Cdh1WT or Cdh1ΔDC host mice, and the frequencies and numbers of donor L.SP CD8+ T cells in pLNs of indicated host mice.
+
+(D) GSEA of STAT1 signaling-related signature genes using RNA-seq data of WT and Itgae–/– LC.DN CD8+ T cells.
+
+(E) Frequencies and numbers of CD44lo L.SP CD8+ T cells in pLNs of Stat1WT and Stat1ΔT mice.
+
+(F) Frequencies of L.SP cells after 2 days of in vitro culture of LC.DN CD8+ T cells in survival medium (+IL-7) with or without IFN-β or IFN-γ.
+
+(G) Schematic for the adoptive transfer of CD45.2+Ifnar1–/– and CD45.1+ WT LC.DN cells into Thy1.1+ host mice, and the frequencies and relative numbers of L.SP cells in pLNs of Thy1.1+ mice.
+
+(H) CD44lo L.SP cells among pLN CXCR3 CD8+ T cells of PBS-injected Cdh1WT and Cdh1ΔDC mice, and IFN-β-injected Cdh1ΔDC mice after 24 h of injection. Bar graphs show the frequency of L.SP cells and the abundance of Ly6C proteins on L.SP cells.
+
+(I) Frequencies of Ifnb1-EYFP+ cells among E-cadherin-expressing CD207 mDCs, CD207+ mDCs, and pDCs after in vitro stimulation of CpG for 24 h.
+
+(J and K) L.SP cell differentiation upon 4 days of in vitro culture of LC.DN CD8+ T cells from CD45.1+ WT and CD45.2+Ifnar1–/– mice in survival medium with or without CpG, IFN-β, CpG-stimulated pDC (J), or supernatants from CpG-stimulated pDC (K).
+
+Data are representative (A) of, or pooled (B, C, and E–K) from 2–3 independent experiments (n = 4–6/group). Error is expressed as ± SEM. Unpaired (B, C, E, J, and K) and paired (G) Student’s t test, and one-way ANOVA (F, H, and I) were used. N.S., not significant.
+
+See also Figure S4.
+
+
+### Figure 4: CD103 controls the size and composition of the MP CD8+ T cell pool
+
+(A) Schematic and experimental results of B16-F10-OVA melanoma lung metastasis in Cdh1WT and Cdh1ΔDC mice with adoptive transfer of LC.DN OT-I cells. Scale bar, 1 cm.
+
+(B) IFN-γ and GzmA expression in donor OT-I cells from the lung of B16-F10-OVA cell-inoculated Cdh1WT and Cdh1ΔDC mice with adoptive transfer of LC.DN OT-I cells.
+
+(C) Frequencies and relative numbers of L.SP cells among donor cells from pLNs of Thy1.1+ host mice with adoptive transfer of 1:1 mixed CD45.1+ OT-I and CD45.2+ OT-IItgae–/– LC.DN cells.
+
+(D and E) Lung metastasis (D) and IFN-γ expression in donor OT-I cells (E) of B16-F10-OVA cell-inoculated Thy1.1+ host mice with adoptive transfer of OT-I or OT-IItgae–/– LC.DN cells.
+
+(F) CD103 expression on CD8+ LN T cells and the frequency of CD8+ LN T cells in WT and CD103Tg mice.
+
+(G) CD8+ T cell numbers in LNs and spleens of WT and CD103Tg mice.
+
+(H and I) Contour plots (H), and frequencies and numbers (I) of LC.DN, L.SP, and LC.DP CD8+ T cells in LNs and spleens of WT and CD103Tg mice.
+
+(J) CD103 expression on LC.DN, L.SP, and LC.DP CD8+ LN T cells of WT and CD103Tg mice.
+
+(K) Ly6C expression on CXCR3-gated L.SP CD8+ LN and spleen T cells of WT and CD103Tg mice.
+
+(L) Schematic for the adoptive transfer of unlabeled CD45.1+ WT, CTB-labeled Itgae–/–, and CTV-labeled CD103Tg LC.DN CD8+ T cells into Cdh1WT or Cdh1ΔDC host mice, and the CD103 expression on donor CD8+ T cells and frequencies of donor L.SP CD8+ T cells in pLNs of indicated mice.
+
+Data are representative (H) of, or pooled (A–G and I–L) from 2–10 independent experiments (n = 3–16/group). Error is expressed as ±SEM. Unpaired (A, B, and D–F for CD103 ΔMFI, G, I, and J) and paired Student’s t test (C), Mann-Whitney test (F for CD8+ frequency), and two-way ANOVA (K and L) were used. N.S., not significant.
+
+See also Figure S5.
+
+
+### Figure 5: CD103 overexpression promotes the survival of MP CD8+ T cells
+
+(A) Pearson correlation matrix of RNA-seq datasets of LC.DP CD8+ T cells from WT and CD103Tg mice (left). Volcano plot shows DEGs that are either significantly upregulated (red), significantly downregulated (blue), or not significantly altered (gray).
+
+(B) Frequencies of BrdU+ cells among LC.DN, L.SP, and LC.DP CD8+ T cells of WT and CD103Tg mice.
+
+(C) Frequencies of active caspase-3+Annexin V+ cells among LN and splenic LC.DP CD8+ T cells of WT and CD103Tg mice.
+
+(D) Bubble plot of significantly enriched pathways involved in cell death and survival identified from the RNA-seq data of LC.DP cells (CD103Tg/WT). Each bubble represents a pathway, and the x axis shows the activation z-score of each pathway calculated by IPA. Color and size of the bubbles correspond to the −log10 adjusted p value and number of genes enriched in the pathway, respectively.
+
+(E) GSEA demonstrates significant enrichment in gene sets associated with apoptosis (left), and heatmap shows the expression of DEGs involved in cell survival (right).
+
+(F and G) Bcl-2, Bcl-xL, and Id2 mRNA (F) and protein expression (G) in LC.DP CD8+ LN T cells of WT and CD103Tg mice.
+
+(H) Frequencies of L.SP and LC.DP CD8+ LN T cells, and LC.DP versus L.SP cell ratios in WT and CD103Tg mice.
+
+(I) Schematic for adoptive transfer experiments, and frequencies of donor LC.DP CD8+ T cells in LNs of Rag2–/– host mice.
+
+(J) E-cadherin-mediated cell adhesion assay of LC.DP CD8+ LN T cells from WT and CD103Tg mice.
+
+Data are pooled (B, C, and F–J) from 2–10 independent experiments (n = 4–16/group). Error is expressed as ± SEM. Unpaired Student’s t test (B, C, and F–I) and two-way ANOVA (J) were used. N.S., not significant.
+
+See also Figure S5; Table S1.
+
+
+### Figure 6: E-cad+ DC-derived IL-12 drives MP CD8+ T cell differentiation
+
+(A and B) Representative contour plots (A), and frequencies and numbers of LC.DP CD8+ T cells (B) in LNs and spleens of WT, Il15–/–, and Il15–/–CD103Tg mice.
+
+(C) Frequencies of L.SP and LC.DP CD8+ LN T cells, and LC.DP versus L.SP cell ratios in Il15–/– and Il15–/–CD103Tg mice.
+
+(D) Frequencies of L.SP and LC.DP cells after 4 days of coculturing L.SP CD8+ T cells with E-cadherin-expressing pDCs, CD207+ mDCs, or CD207 mDCs from Il15–/– mice in IFN-β-supplemented survival medium.
+
+(E) Heatmap of indicated cytokine expression in the potential E-cadherin-expressing single-cell clusters, and violin plots of Il12b and Il15 expression in all single-cell clusters (from Figure 2G).
+
+(F) Frequencies of IL-12-producers among E-cad+ DCs (CD207+ mDC, CD207 mDC, and pDC) after 4 h of brefeldin A (BFA) treatment in the presence or absence of LPS.
+
+(G) IL-12Rβ1 versus IL-12Rβ2 mRNA expression in LC.DN, L.SP, and LC.DP CD8+ T cells.
+
+(H) GSEA showing the enrichment of IL-12-STAT4 signaling-related genes in RNA-seq data of LC.DP cells (CD103Tg/WT). Ly6a (indicated by the black line) was one of the top-ranked genes.
+
+(I) Ly6A expression on LC.DP CD8+ LN T cells of WT and CD103Tg mice.
+
+(J) Frequencies of LC.DP cells after 4 days of culture of L.SP CD8+ T cells in IFN-β-supplemented survival medium with or without IL-12 or IL-15.
+
+Data are representative (A, D) of, or pooled (B, C, F, G, I, and J) from 2–12 independent experiments (n = 6–15/group). Error is expressed as ± SEM. One-way ANOVA (B, J), unpaired Student’s t test (C, I), and two-way ANOVA (F) were used. N.S., not significant.
+
+See also Figures S6 and S7.
+
+
+### Figure 7: CD103 overexpression promotes CD8+ T cell effector function independently of IL-15
+
+(A) Bubble plot of effector function-related genes. Each bubble represents a gene (x axis), and the y axis shows the log2FC in gene expression identified by RNA-seq analysis of LC.DP cells (CD103Tg/WT). The color and size of bubbles correspond to the −log10 adjusted p value and average expression (AveExpr) of the gene, respectively.
+
+(B) Real-time qPCR analysis of indicated genes in LC.DP CD8+ T cells of Il15–/– and Il15–/–CD103Tg mice.
+
+(C and D) Frequencies of IFN-γ-producing cells (C) and Id2 expression (D) in LC.DP CD8+ LN T cells of WT, Il15–/–, and Il15–/–CD103Tg mice.
+
+(E) Schematic illustration of B16-F10 melanoma metastasis and experimental results from WT, Il15–/–, and Il15–/–CD103Tg mice (top). Bar graph shows the number of metastatic nodules on day 14 after tumor inoculation (bottom). Scale bar, 1 cm.
+
+(F) H&E staining of B16-F10 melanoma metastatic nodules in lungs of WT, Il15–/–, and Il15–/–CD103Tg mice (left). Bar graph (right) shows the tumor burden as percent tumor area. Scale bar, 500 μm.
+
+(G–I) GzmB expression (G), and frequencies of IFN-γ-producing cells (H) and GzmA-producing cells (I) in lung CD8+ T cells of B16-F10 melanoma-inoculated WT, Il15–/–, and Il15–/–CD103Tg mice.
+
+Data are pooled (B–I) from 3–4 independent experiments (n = 4–10/group). Error is expressed as ± SEM. Unpaired Student’s t test (B) and one-way ANOVA (C–I) were used. N.S., not significant.
+
+See also Figure S7.
+
+Open table in a new tab
+
+
+================================================================================
+REFERENCES
+================================================================================
+
+1. Makaroff, L.E. ∙ Hendricks, D.W. ∙ Niec, R.E. ... Postthymic maturation influences the CD8 T cell response to antigen Proc. Natl. Acad. Sci. USA. 2009; 106 :4799-4804
+2. Jameson, S.C. ∙ Lee, Y.J. ∙ Hogquist, K.A. Innate memory T cells Adv. Immunol. 2015; 126 :173-213
+3. Kwesi-Maliepaard, E.M. ∙ Jacobs, H. ∙ van Leeuwen, F. Signals for antigen-independent differentiation of memory CD8(+) T cells Cell. Mol. Life Sci. 2021; 78 :6395-6408
+4. Quinn, K.M. ∙ Fox, A. ∙ Harland, K.L. ... Age-Related Decline in Primary CD8(+) T Cell Responses Is Associated with the Development of Senescence in Virtual Memory CD8(+) T Cells Cell Rep. 2018; 23 :3512-3524
+5. Haluszczak, C. ∙ Akue, A.D. ∙ Hamilton, S.E. ... The antigen-specific CD8+ T cell repertoire in unimmunized mice includes memory phenotype cells bearing markers of homeostatic expansion J. Exp. Med. 2009; 206 :435-448
+6. Omilusik, K.D. ∙ Goldrath, A.W. Remembering to remember: T cell memory maintenance and plasticity Curr. Opin. Immunol. 2019; 58 :89-97
+7. Lee, S.W. ∙ Lee, G.W. ∙ Kim, H.O. ... Shaping Heterogeneity of Naive CD8(+) T Cell Pools Immune Netw. 2023; 23 :e2
+8. Huang, W. ∙ August, A. The signaling symphony: T cell receptor tunes cytokine-mediated T cell differentiation J. Leukoc. Biol. 2015; 97 :477-485
+9. Cepek, K.L. ∙ Shaw, S.K. ∙ Parker, C.M. ... Adhesion between epithelial cells and T lymphocytes mediated by E-cadherin and the alpha E beta 7 integrin Nature. 1994; 372 :190-193
+10. Higgins, J.M. ∙ Mandlebrot, D.A. ∙ Shaw, S.K. ... Direct and regulated interaction of integrin alphaEbeta7 with E-cadherin J. Cell Biol. 1998; 140 :197-210
+11. Schön, M.P. ∙ Arya, A. ∙ Murphy, E.A. ... Mucosal T lymphocyte numbers are selectively reduced in integrin alpha E (CD103)-deficient mice J. Immunol. 1999; 162 :6641-6649
+12. Pauls, K. ∙ Schön, M. ∙ Kubitza, R.C. ... Role of integrin alphaE(CD103)beta7 for tissue-specific epidermal localization of CD8+ T lymphocytes J. Invest. Dermatol. 2001; 117 :569-575
+13. Suffia, I. ∙ Reckling, S.K. ∙ Salay, G. ... A role for CD103 in the retention of CD4+CD25+ Treg and control of Leishmania major infection J. Immunol. 2005; 174 :5444-5455
+14. Huehn, J. ∙ Siegmund, K. ∙ Lehmann, J.C.U. ... Developmental stage, phenotype, and migration distinguish naive- and effector/memory-like CD4+ regulatory T cells J. Exp. Med. 2004; 199 :303-313
+15. Adachi, K. ∙ Kawana, K. ∙ Yokoyama, T. ... Oral immunization with a Lactobacillus casei vaccine expressing human papillomavirus (HPV) type 16 E7 is an effective strategy to induce mucosal cytotoxic lymphocytes against HPV16 E7 Vaccine. 2010; 28 :2810-2817
+16. El-Asady, R. ∙ Yuan, R. ∙ Liu, K. ... TGF-beta-dependent CD103 expression by CD8(+) T cells promotes selective destruction of the host intestinal epithelium during graft-versus-host disease J. Exp. Med. 2005; 201 :1647-1657
+17. Egawa, T. ∙ Tillman, R.E. ∙ Naoe, Y. ... The role of the Runx transcription factors in thymocyte differentiation and in homeostasis of naive T cells J. Exp. Med. 2007; 204 :1945-1957
+18. Grueter, B. ∙ Petter, M. ∙ Egawa, T. ... Runx3 regulates integrin alpha E/CD103 and CD4 expression during development of CD4-/CD8+ T cells J. Immunol. 2005; 175 :1694-1705
+19. Milner, J.J. ∙ Toma, C. ∙ Yu, B. ... Runx3 programs CD8(+) T cell residency in non-lymphoid tissues and tumours Nature. 2017; 552 :253-257
+20. Yarmus, M. ∙ Woolf, E. ∙ Bernstein, Y. ... Groucho/transducin-like Enhancer-of-split (TLE)-dependent and -independent transcriptional regulation by Runx3 Proc. Natl. Acad. Sci. USA. 2006; 103 :7384-7389
+21. Keller, H.R. ∙ Ligons, D.L. ∙ Li, C. ... The molecular basis and cellular effects of distinct CD103 expression on CD4 and CD8 T cells Cell. Mol. Life Sci. 2021; 78 :5789-5805
+22. McFarland, R.D. ∙ Douek, D.C. ∙ Koup, R.A. ... Identification of a human recent thymic emigrant phenotype Proc. Natl. Acad. Sci. USA. 2000; 97 :4215-4220
+23. Akue, A.D. ∙ Lee, J.Y. ∙ Jameson, S.C. Derivation and maintenance of virtual memory CD8 T cells J. Immunol. 2012; 188 :2516-2523
+24. White, J.T. ∙ Cross, E.W. ∙ Burchill, M.A. ... Virtual memory T cells develop and mediate bystander protective immunity in an IL-15-dependent manner Nat. Commun. 2016; 7, 11291
+25. White, J.T. ∙ Cross, E.W. ∙ Kedl, R.M. Antigen-inexperienced memory CD8(+) T cells: where they come from and why we need them Nat. Rev. Immunol. 2017; 17 :391-400
+26. Ku, C.C. ∙ Murakami, M. ∙ Sakamoto, A. ... Control of homeostasis of CD8+ memory T cells by opposing cytokines Science. 2000; 288 :675-678
+27. Lee, J.Y. ∙ Hamilton, S.E. ∙ Akue, A.D. ... Virtual memory CD8 T cells display unique functional properties Proc. Natl. Acad. Sci. USA. 2013; 110 :13498-13503
+28. Hänninen, A. ∙ Maksimow, M. ∙ Alam, C. ... Ly6C supports preferential homing of central memory CD8+ T cells into lymph nodes Eur. J. Immunol. 2011; 41 :634-644
+29. Hussain, T. ∙ Quinn, K.M. Similar but different: virtual memory CD8 T cells as a memory-like cell population Immunol. Cell Biol. 2019; 97 :675-684
+30. Gebhardt, T. ∙ Wakim, L.M. ∙ Eidsmo, L. ... Memory T cells in nonlymphoid tissue that provide enhanced local immunity during infection with herpes simplex virus Nat. Immunol. 2009; 10 :524-530
+31. Mackay, L.K. ∙ Rahimpour, A. ∙ Ma, J.Z. ... The developmental pathway for CD103(+)CD8+ tissue-resident memory T cells of skin Nat. Immunol. 2013; 14 :1294-1301
+32. Berard, M. ∙ Brandt, K. ∙ Bulfone-Paus, S. ... IL-15 promotes the survival of naive and memory phenotype CD8+ T cells J. Immunol. 2003; 170 :5018-5026
+33. Marks-Konczalik, J. ∙ Dubois, S. ∙ Losi, J.M. ... IL-2-induced activation-induced cell death is inhibited in IL-15 transgenic mice Proc. Natl. Acad. Sci. USA. 2000; 97 :11445-11450
+34. Kennedy, M.K. ∙ Glaccum, M. ∙ Brown, S.N. ... Reversible defects in natural killer and memory CD8 T cell lineages in interleukin 15-deficient mice J. Exp. Med. 2000; 191 :771-780
+35. Park, J.H. ∙ Adoro, S. ∙ Lucas, P.J. ... 'Coreceptor tuning': cytokine signals transcriptionally tailor CD8 coreceptor expression to the self-specificity of the TCR Nat. Immunol. 2007; 8 :1049-1059
+36. Arneja, A. ∙ Johnson, H. ∙ Gabrovsek, L. ... Qualitatively different T cell phenotypic responses to IL-2 versus IL-15 are unified by identical dependences on receptor signal strength and duration J. Immunol. 2014; 192 :123-135
+37. Burchill, M.A. ∙ Goetz, C.A. ∙ Prlic, M. ... Distinct effects of STAT5 activation on CD4+ and CD8+ T cell homeostasis: development of CD4+CD25+ regulatory T cells versus CD8+ memory T cells J. Immunol. 2003; 171 :5853-5864
+38. Kutlesa, S. ∙ Wessels, J.T. ∙ Speiser, A. ... E-cadherin-mediated interactions of thymic epithelial cells with CD103+ thymocytes lead to enhanced thymocyte cell proliferation J. Cell Sci. 2002; 115 :4505-4515
+39. Lee, M.G. ∙ Sharrow, S.O. ∙ Farr, A.G. ... Expression of the homotypic adhesion molecule E-cadherin by immature murine thymocytes and thymic epithelial cells J. Immunol. 1994; 152 :5653-5659
+40. Borkowski, T.A. ∙ Van Dyke, B.J. ∙ Schwarzenberger, K. ... Expression of E-cadherin by murine dendritic cells: E-cadherin as a dendritic cell differentiation antigen characteristic of epidermal Langerhans cells and related cells Eur. J. Immunol. 1994; 24 :2767-2774
+41. Siddiqui, K.R.R. ∙ Laffont, S. ∙ Powrie, F. E-cadherin marks a subset of inflammatory dendritic cells that promote T cell-mediated colitis Immunity. 2010; 32 :557-567
+42. Kuroishi, T. ∙ Bando, K. ∙ Bakti, R.K. ... Migratory dendritic cells in skin-draining lymph nodes have nickel-binding capabilities Sci. Rep. 2020; 10, 5050
+43. Romani, N. ∙ Clausen, B.E. ∙ Stoitzner, P. Langerhans cells and more: langerin-expressing dendritic cell subsets in the skin Immunol. Rev. 2010; 234 :120-141
+44. Dorner, B.G. ∙ Dorner, M.B. ∙ Zhou, X. ... Selective expression of the chemokine receptor XCR1 on cross-presenting dendritic cells determines cooperation with CD8+ T cells Immunity. 2009; 31 :823-833
+45. Stoeckius, M. ∙ Hafemeister, C. ∙ Stephenson, W. ... Simultaneous epitope and transcriptome measurement in single cells Nat. Methods. 2017; 14 :865-868
+46. Heng, T.S.P. ∙ Painter, M.W., Immunological, Genome, Project Consortium The Immunological Genome Project: networks of gene expression in immune cells Nat. Immunol. 2008; 9 :1091-1094
+47. Canel, M. ∙ Serrels, A. ∙ Frame, M.C. ... E-cadherin-integrin crosstalk in cancer invasion and metastasis J. Cell Sci. 2013; 126 :393-401
+48. Miller, J.C. ∙ Brown, B.D. ∙ Shay, T. ... Deciphering the transcriptional network of the dendritic cell lineage Nat. Immunol. 2012; 13 :888-899
+49. Eisenbarth, S.C. Dendritic cell subsets in T cell programming: location dictates function Nat. Rev. Immunol. 2019; 19 :89-103
+50. Arbelaez, C.A. ∙ Palle, P. ∙ Charaix, J. ... STAT1 signaling protects self-reactive T cells from control by innate cells during neuroinflammation JCI Insight. 2022; 7, e148222
+51. Shuai, K. ∙ Horvath, C.M. ∙ Huang, L.H. ... Interferon activation of the transcription factor Stat91 involves dimerization through SH2-phosphotyrosyl peptide interactions Cell. 1994; 76 :821-828 Abstract
+52. Darnell, Jr., J.E. ∙ Kerr, I.M. ∙ Stark, G.R. Jak-STAT pathways and transcriptional activation in response to IFNs and other extracellular signaling proteins Science. 1994; 264 :1415-1421
+53. Prigge, J.R. ∙ Hoyt, T.R. ∙ Dobrinen, E. ... Type I IFNs Act upon Hematopoietic Progenitors To Protect and Maintain Hematopoiesis during Pneumocystis Lung Infection in Mice J. Immunol. 2015; 195 :5347-5357
+54. Liu, Y.J. IPC: professional type 1 interferon-producing cells and plasmacytoid dendritic cell precursors Annu. Rev. Immunol. 2005; 23 :275-306
+55. Mani, V. ∙ Bromley, S.K. ∙ Äijö, T. ... Migratory DCs activate TGF-beta to precondition naive CD8(+) T cells for tissue-resident memory fate Science. 2019; 366, eaav5728
+56. Kim, H.R. ∙ Park, J.S. ∙ Fatima, Y. ... Potentiating the Antitumor Activity of Cytotoxic T Cells via the Transmembrane Domain of IGSF4 That Increases TCR Avidity Front. Immunol. 2020; 11, 591054
+57. Judge, A.D. ∙ Zhang, X. ∙ Fujii, H. ... Interleukin 15 controls both proliferation and survival of a subset of memory-phenotype CD8(+) T cells J. Exp. Med. 2002; 196 :935-946
+58. Prlic, M. ∙ Lefrancois, L. ∙ Jameson, S.C. Multiple choices: regulation of memory CD8 T cell generation and homeostasis by interleukin (IL)-7 and IL-15 J. Exp. Med. 2002; 195 :F49-F52
+59. Bezman, N.A. ∙ Kim, C.C. ∙ Sun, J.C. ..., Immunological, Genome, Project Consortium Molecular definition of the identity and activation of natural killer cells Nat. Immunol. 2012; 13 :1000-1009
+60. Cannarile, M.A. ∙ Lind, N.A. ∙ Rivera, R. ... Transcriptional regulator Id2 mediates CD8+ T cell immunity Nat. Immunol. 2006; 7 :1317-1325
+61. Klebanoff, C.A. ∙ Finkelstein, S.E. ∙ Surman, D.R. ... IL-15 enhances the in vivo antitumor activity of tumor-reactive CD8+ T cells Proc. Natl. Acad. Sci. USA. 2004; 101 :1969-1974
+62. Cheng, L. ∙ Du, X. ∙ Wang, Z. ... Hyper-IL-15 suppresses metastatic and autochthonous liver cancer by promoting tumour-specific CD8+ T cell responses J. Hepatol. 2014; 61 :1297-1303
+63. Xiao, R. ∙ Mansour, A.G. ∙ Huang, W. ... Adipocytes: A Novel Target for IL-15/IL-15Ralpha Cancer Gene Therapy Mol. Ther. 2019; 27 :922-932
+64. Sadeghalvad, M. ∙ Khijakadze, D. ∙ Orangi, M. ... Flow cytometric analysis of innate lymphoid cells: challenges and solutions Front. Immunol. 2023; 14, 1198310
+65. Behr, F.M. ∙ Beumer-Chuwonpad, A. ∙ Kragten, N.A.M. ... Circulating memory CD8(+) T cells are limited in forming CD103(+) tissue-resident memory T cells at mucosal sites after reinfection Eur. J. Immunol. 2021; 51 :151-166
+66. Jameson, S.C. ∙ Masopust, D. Understanding Subset Diversity in T Cell Memory Immunity. 2018; 48 :214-226
+67. Sheridan, B.S. ∙ Lefrançois, L. Regional and mucosal memory T cells Nat. Immunol. 2011; 12 :485-491
+68. Fung, H.Y. ∙ Teryek, M. ∙ Lemenze, A.D. ... CD103 fate mapping reveals that intestinal CD103(-) tissue-resident memory T cells are the primary responders to secondary infection Sci. Immunol. 2022; 7, eabl9925
+69. von Hoesslin, M. ∙ Kuhlmann, M. ∙ de Almeida, G.P. ... Secondary infections rejuvenate the intestinal CD103(+) tissue-resident memory T cell pool Sci. Immunol. 2022; 7, eabp9553
+70. Wakim, L.M. ∙ Woodward-Davis, A. ∙ Bevan, M.J. Memory T cells persisting within the brain after local infection show functional adaptations to their tissue of residence Proc. Natl. Acad. Sci. USA. 2010; 107 :17872-17879
+71. Zhang, N. ∙ Bevan, M.J. Transforming growth factor-beta signaling controls the formation and maintenance of gut-resident memory T cells by regulating migration and retention Immunity. 2013; 39 :687-696
+72. Hardenberg, J.B. ∙ Braun, A. ∙ Schön, M.P. A Yin and Yang in Epithelial Immunology: The Roles of the alpha(E)(CD103)beta(7) Integrin in T Cells J. Invest. Dermatol. 2018; 138 :23-31
+73. Sosinowski, T. ∙ White, J.T. ∙ Cross, E.W. ... CD8alpha+ dendritic cell trans presentation of IL-15 to naive CD8+ T cells produces antigen-inexperienced T cells in the periphery with memory phenotype and function J. Immunol. 2013; 190 :1936-1947
+74. Da Costa, A.S. ∙ Graham, J.B. ∙ Swarts, J.L. ... Regulatory T cells limit unconventional memory to preserve the capacity to mount protective CD8 memory responses to pathogens Proc. Natl. Acad. Sci. USA. 2019; 116 :9969-9978
+75. Ju, Y.J. ∙ Lee, S.W. ∙ Kye, Y.C. ... Self-reactivity controls functional diversity of naive CD8(+) T cells by co-opting tonic type I interferon Nat. Commun. 2021; 12, 6059
+76. Agarwal, P. ∙ Raghavan, A. ∙ Nandiwada, S.L. ... Gene regulation and chromatin remodeling by IL-12 and type I IFN in programming for CD8 T cell effector function and memory J. Immunol. 2009; 183 :1695-1704
+77. Lisiero, D.N. ∙ Soto, H. ∙ Liau, L.M. ... Enhanced sensitivity to IL-2 signaling regulates the clinical responsiveness of IL-12-primed CD8(+) T cells in a melanoma model J. Immunol. 2011; 186 :5068-5077
+78. Gil, M.P. ∙ Ploquin, M.J.Y. ∙ Watford, W.T. ... Regulating type 1 IFN effects in CD8 T cells during viral infections: changing STAT4 and STAT1 expression for function Blood. 2012; 120 :3718-3728
+79. Caton, M.L. ∙ Smith-Raska, M.R. ∙ Reizis, B. Notch-RBP-J signaling controls the homeostasis of CD8- dendritic cells in the spleen J. Exp. Med. 2007; 204 :1653-1664
+80. Sawada, S. ∙ Scarborough, J.D. ∙ Killeen, N. ... A lineage-specific transcriptional silencer regulates CD4 gene expression during T lymphocyte development Cell. 1994; 77 :917-929 Abstract
+81. Zhang, H. ∙ Schaefer, A. ∙ Wang, Y. ... Gain-of-Function RHOA Mutations Promote Focal Adhesion Kinase Activation and Dependency in Diffuse Gastric Cancer Cancer Discov. 2020; 10 :288-305
+82. Scheu, S. ∙ Dresing, P. ∙ Locksley, R.M. Visualization of IFNbeta production by plasmacytoid versus conventional dendritic cells under specific stimulation conditions in vivo Proc. Natl. Acad. Sci. USA. 2008; 105 :20416-20421
+83. Hogquist, K.A. ∙ Jameson, S.C. ∙ Heath, W.R. ... T cell receptor antagonist peptides induce positive selection Cell. 1994; 76 :17-27 Abstract
+84. Hao, Z. ∙ Rajewsky, K. Homeostasis of peripheral B cells in the absence of B cell influx from the bone marrow J. Exp. Med. 2001; 194 :1151-1164
+85. Wallner, B. ∙ Leitner, N.R. ∙ Vielnascher, R.M. ... Generation of mice with a conditional Stat1 null allele Transgen. Res. 2012; 21 :217-224
+86. Cui, J. ∙ Zhou, J. ∙ He, W. ... Targeting selenoprotein H in the nucleolus suppresses tumors and metastases by Isovalerylspiramycin I J. Exp. Clin. Cancer Res. 2022; 41, 126
+87. Li, C. ∙ Kim, H.K. ∙ Prakhar, P. ... Chemokine receptor CCR9 suppresses the differentiation of CD4(+)CD8alphaalpha(+) intraepithelial T cells in the gut Mucosal Immunol. 2022; 15 :882-895
+88. Park, J.Y. ∙ Won, H.Y. ∙ DiPalma, D.T. ... In vivo availability of the cytokine IL-7 constrains the survival and homeostasis of peripheral iNKT cells Cell Rep. 2022; 38, 110219
+89. Merad, M. ∙ Sathe, P. ∙ Helft, J. ... The dendritic cell lineage: ontogeny and function of dendritic cells and their subsets in the steady state and the inflamed setting Annu. Rev. Immunol. 2013; 31 :563-604
+90. Hong, C. ∙ Luckey, M.A. ∙ Ligons, D.L. ... Activated T cells secrete an alternatively spliced form of common gamma-chain that inhibits cytokine signaling and exacerbates inflammation Immunity. 2014; 40 :910-923
+91. Haghverdi, L. ∙ Lun, A.T.L. ∙ Morgan, M.D. ... Batch effects in single-cell RNA-sequencing data are corrected by matching mutual nearest neighbors Nat. Biotechnol. 2018; 36 :421-427
+92. Aran, D. ∙ Looney, A.P. ∙ Liu, L. ... Reference-based analysis of lung single-cell sequencing reveals a transitional profibrotic macrophage Nat. Immunol. 2019; 20 :163-172
+93. Robinson, M.D. ∙ McCarthy, D.J. ∙ Smyth, G.K. edgeR: a Bioconductor package for differential expression analysis of digital gene expression data Bioinformatics. 2010; 26 :139-140
+94. Subramanian, A. ∙ Tamayo, P. ∙ Mootha, V.K. ... Gene set enrichment analysis: a knowledge-based approach for interpreting genome-wide expression profiles Proc. Natl. Acad. Sci. USA. 2005; 102 :15545-15550
+95. Mootha, V.K. ∙ Lindgren, C.M. ∙ Eriksson, K.F. ... PGC-1alpha-responsive genes involved in oxidative phosphorylation are coordinately downregulated in human diabetes Nat. Genet. 2003; 34 :267-273
+96. Love, M.I. ∙ Huber, W. ∙ Anders, S. Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2 Genome Biol. 2014; 15, 550
+97. Kolde, R. (2012) Pheatmap: Pretty Heatmaps. R Package Version 1, 726.
+98. Sherman, B.T. ∙ Hao, M. ∙ Qiu, J. ... DAVID: a web server for functional enrichment analysis and functional annotation of gene lists (2021 update) Nucleic Acids Res. 2022; 50 :W216-W221
+99. Huang da, W. ∙ Sherman, B.T. ∙ Lempicki, R.A. Systematic and integrative analysis of large gene lists using DAVID bioinformatics resources Nat. Protoc. 2009; 4 :44-57

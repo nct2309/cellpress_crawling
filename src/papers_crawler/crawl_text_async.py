@@ -57,7 +57,6 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
         str: Concatenated plain text content with section headers, or None if extraction fails
     """
     try:
-        print(f"🔍 Starting text extraction from: {fulltext_url}", flush=True)
         logger.info(f"📖 Navigating to full-text page: {fulltext_url}")
         await page.goto(fulltext_url, timeout=30000)
         await page.wait_for_timeout(2000)
@@ -125,29 +124,11 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             "open table in a new tab",
             "view abstract",
             "supplementary information",
-            "open crossref in new tab",
-            "open scopus in new tab",
-            "open pubmed in new tab",
-            "open google scholar in new tab",
-            "open full text in new tab",
-            "aria-label",
         )
 
         def clean_reference_entry(tag: Tag) -> str:
-            """Extract clean text from a reference entry, excluding UI elements and links."""
-            # Create a copy to avoid modifying the original
-            tag_copy = tag.__copy__() if hasattr(tag, '__copy__') else tag
-            
-            # Remove external links section if present (contains Crossref, Scopus, etc.)
-            for elem in tag_copy.find_all(class_="external-links"):
-                elem.decompose()
-            
-            # Also remove any anchor tags (which contain links)
-            for elem in tag_copy.find_all("a"):
-                elem.decompose()
-            
             fragments: List[str] = []
-            for string in tag_copy.stripped_strings:
+            for string in tag.stripped_strings:
                 fragment = clean_text(str(string))
                 if not fragment:
                     continue
@@ -159,7 +140,7 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                 return ""
             combined = " ".join(fragments)
             combined = re.sub(r"\s+", " ", combined).strip()
-            # Keep the reference number - don't strip it
+            combined = re.sub(r"^\d+(\.|:)?\s*", "", combined)
             combined = combined.replace(" ,", ",")
             return combined
 
@@ -233,32 +214,26 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             return identifiers
 
         def build_footnote_map() -> None:
-            """Build a map of footnotes, excluding actual bibliography references."""
             selectors = [
-                # Only look for true footnotes, not bibliography references
-                '[id^="fn"]',  # Footnotes
-                'div[role="doc-footnote"]',  # Document footnotes
-                # Note: removed bib/ref selectors as those are bibliography references
+                'a[id^="bib"]',
+                'a[id^="ref"]',
+                'a[name^="bib"]',
+                'a[name^="ref"]',
+                '[id^="bib"]',
+                '[id^="ref"]',
+                'li.reference',
+                'li.bibliography__item',
             ]
             seen_ids: Set[str] = set()
             for selector in selectors:
                 for candidate in soup.select(selector):
-                    # Skip if this is inside the references section
-                    if references_section and references_section in candidate.parents:
-                        continue
-                    
                     fid = candidate.get("id") or candidate.get("name")
                     if not fid:
                         anchor = candidate.find("a", id=True) or candidate.find("a", attrs={"name": True})
                         if anchor:
                             fid = anchor.get("id") or anchor.get("name")
-                    ids_to_process: List[str]
                     if not fid:
                         candidates = extract_candidate_ids(candidate)
-                        if not candidates:
-                            descendant_with_id = candidate.find(id=True)
-                            if descendant_with_id and descendant_with_id.get("id"):
-                                candidates = [descendant_with_id.get("id")]
                         if not candidates:
                             continue
                         ids_to_process = candidates
@@ -287,84 +262,30 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                         mark_footnote_elements(container)
 
         def get_reference_entries() -> List[str]:
-            """Extract reference entries from the references section.
-            
-            Handles Cell.com's specific HTML structure where each reference is in:
-            <div role="listitem">
-                <div class="citations">
-                    <div class="citation">
-                        <div class="citation-content"> ... </div>
-                        <div class="external-links"> ... (ignore this) </div>
-                    </div>
-                </div>
-            </div>
-            """
             entries: List[str] = []
             seen_text: Set[str] = set()
-            
             if references_section:
-                # First try Cell.com structure with role="listitem"
-                role_list = references_section.find(attrs={"role": "list"})
-                if role_list:
-                    for list_item in role_list.find_all(attrs={"role": "listitem"}, recursive=False):
-                        # Look for the citations div which contains the full reference
-                        citations_div = list_item.find("div", class_="citations")
-                        if citations_div:
-                            # Extract from citation-content only (not external-links)
-                            citation_content = citations_div.find("div", class_="citation-content")
-                            if citation_content:
-                                text = clean_reference_entry(citation_content)
-                            else:
-                                # Fallback: clean the entire citations div
-                                text = clean_reference_entry(citations_div)
-                        else:
-                            # Fallback: clean the entire listitem
-                            text = clean_reference_entry(list_item)
-                        
-                        if not text:
-                            continue
-                        lower_text = text.lower()
-                        if lower_text in seen_text:
-                            continue
-                        seen_text.add(lower_text)
-                        entries.append(text)
-                    if entries:
-                        return entries
-
-                # Try traditional <li> structure
-                for list_item in references_section.find_all("li"):
-                    text = clean_reference_entry(list_item)
-                    if not text:
-                        continue
-                    lower_text = text.lower()
-                    if lower_text in seen_text:
-                        continue
-                    seen_text.add(lower_text)
-                    entries.append(text)
-
-                if entries:
-                    return entries
-
-                # Last resort: find div/p elements
-                for candidate in references_section.find_all(["div", "p"]):
-                    if candidate.find_parent(["li"]) or candidate.get("role") == "listitem":
-                        continue
-                    # Skip if this is a citation-content div (already handled above)
-                    if "citation-content" in candidate.get("class", []):
-                        continue
+                # Try to find list items first (most common structure)
+                candidates = references_section.find_all('li', recursive=False)
+                
+                # Also look for div[role="listitem"] (Cell Press format)
+                if not candidates:
+                    candidates = references_section.find_all('div', {'role': 'listitem'})
+                
+                if not candidates:
+                    # Fallback: find direct children that are divs or paragraphs
+                    candidates = [child for child in references_section.children 
+                                 if isinstance(child, Tag) and child.name in {'div', 'p'}]
+                
+                for candidate in candidates:
                     text = clean_reference_entry(candidate)
-                    if not text:
-                        continue
                     lower_text = text.lower()
-                    if lower_text in seen_text:
+                    if not text or lower_text in seen_text:
                         continue
                     seen_text.add(lower_text)
                     entries.append(text)
-
                 if entries:
                     return entries
-                    
-            # Handle footnotes if no references found
             if footnote_map:
                 ordered_ids = sorted(
                     (fid for fid, in_refs in footnote_in_refs.items() if in_refs),
@@ -389,22 +310,108 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                     entries.append(text)
             return entries
 
-        def collect_inline_references(container: Tag) -> str:
-            """Collect reference citations and format them as (Ref: 1, 2, 3)."""
-            ref_numbers = []
-            seen_refs = set()
+        def collect_inline_footnotes(container: Tag) -> List[str]:
+            if not footnote_map:
+                return []
+            collected: List[str] = []
+            seen_ids: Set[str] = set()
+            for sup in container.find_all("sup"):
+                candidate_ids = extract_candidate_ids(sup)
+                if not candidate_ids:
+                    for anchor in sup.find_all("a"):
+                        candidate_ids.extend(extract_candidate_ids(anchor))
+                for candidate_id in candidate_ids:
+                    normalized = normalize_identifier(candidate_id)
+                    if not normalized or normalized in seen_ids:
+                        continue
+                    if footnote_in_refs.get(normalized):
+                        continue
+                    note_text = footnote_map.get(normalized)
+                    if not note_text:
+                        continue
+                    seen_ids.add(normalized)
+                    collected.append(note_text)
+            return collected
+
+        def extract_text_with_refs(element):
+            """Recursively extract text, inserting (Ref: N) where citations appear.
+            Handles superscripts properly (no space before +, -, etc.)
+            Groups consecutive references like (Ref: 1, 2, 3) instead of (Ref: 1), (Ref: 2), (Ref: 3)
+            """
+            parts = []
+            pending_refs = []  # Collect consecutive reference numbers
             
-            # Find all links with role="doc-biblioref" (these are reference citations)
-            for anchor in container.find_all("a", attrs={"role": "doc-biblioref"}):
-                # Extract the reference number from the link
-                ref_text = anchor.get_text(strip=True)
-                if ref_text and ref_text not in seen_refs:
-                    seen_refs.add(ref_text)
-                    ref_numbers.append(ref_text)
+            def flush_refs():
+                """Output collected references as a single (Ref: X, Y, Z) annotation."""
+                nonlocal pending_refs
+                if pending_refs:
+                    parts.append(f" (Ref: {', '.join(pending_refs)})")
+                    pending_refs = []
             
-            if ref_numbers:
-                return f" (Ref: {', '.join(ref_numbers)})"
-            return ""
+            for child in element.children:
+                if isinstance(child, NavigableString):
+                    text = str(child)
+                    # Skip whitespace-only text between references
+                    if text.strip():
+                        # Flush any pending refs before adding text
+                        flush_refs()
+                        parts.append(text)
+                    # Don't flush refs for whitespace - might be between citations
+                
+                elif isinstance(child, Tag):
+                    # Skip dropdown citation blocks
+                    if child.name == "div" and "dropBlock__holder" in child.get("class", []):
+                        continue
+                    
+                    # Handle reference citations - collect for grouping
+                    if child.name == "a" and child.get("role") == "doc-biblioref":
+                        # Extract reference number from sup tag
+                        sup = child.find("sup")
+                        if sup:
+                            ref_num = sup.get_text(strip=True)
+                            pending_refs.append(ref_num)
+                        continue
+                    
+                    # Handle sup/sub tags (separators or other superscripts)
+                    if child.name in {"sup", "sub"}:
+                        # Check if this is a separator between references
+                        sup_text = child.get_text(strip=True)
+                        if sup_text in {",", ";", "and", "&", "–", "-"}:
+                            # It's a separator between refs, keep collecting
+                            continue
+                        
+                        # Check if this is NOT a reference citation (those are handled above)
+                        parent_is_ref = child.parent.name == "a" and child.parent.get("role") == "doc-biblioref"
+                        if not parent_is_ref:
+                            # Flush pending refs before adding superscript
+                            flush_refs()
+                            if sup_text:
+                                parts.append(sup_text)
+                        continue
+                    
+                    # Skip other inline formatting tags but process their children
+                    if child.name in {"span", "strong", "em", "i", "b"}:
+                        # Peek at child content to see if it's just a separator
+                        child_parts = extract_text_with_refs(child)
+                        # Check if child contains only separators (comma, semicolon, etc.)
+                        child_text = "".join(str(p) for p in child_parts).strip()
+                        if child_text in {",", ";", "and", "&", "–", "-"}:
+                            # It's a separator, keep collecting refs
+                            continue
+                        elif child_text:
+                            # Not a separator and has content, flush refs
+                            flush_refs()
+                            parts.extend(child_parts)
+                        # If empty, skip it
+                        continue
+                    
+                    # For other tags, flush refs and recurse
+                    flush_refs()
+                    parts.extend(extract_text_with_refs(child))
+            
+            # Flush any remaining refs at the end
+            flush_refs()
+            return parts
 
         def clean_text(value: str) -> str:
             if not value:
@@ -482,22 +489,20 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             for idx, item in enumerate(items, 1):
                 bullet = f"{idx}. " if list_tag.name == "ol" else "- "
                 
-                # Collect all text including superscripts inline
-                full_text = clean_text(item.get_text(" ", strip=True))
+                # Collect all text including superscripts inline using extract_text_with_refs
+                text_parts = extract_text_with_refs(item)
+                full_text = "".join(text_parts).strip()
+                full_text = re.sub(r' +', ' ', full_text)
                 
                 # Remove nested list text temporarily
                 nested_lists = item.find_all(["ul", "ol"], recursive=False)
                 for nested in nested_lists:
-                    nested_text = nested.get_text(" ", strip=True)
+                    nested_parts = extract_text_with_refs(nested)
+                    nested_text = "".join(nested_parts).strip()
                     full_text = full_text.replace(nested_text, "")
                 
                 full_text = clean_text(full_text)
                 
-                # Add reference citations inline
-                ref_text = collect_inline_references(item)
-                if ref_text and full_text:
-                    full_text = f"{full_text}{ref_text}"
-
                 if full_text:
                     append_line(f"{bullet}{full_text}", indent=indent, allow_repeat=True)
                 else:
@@ -509,103 +514,41 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
 
             ensure_paragraph_break()
 
-        def append_role_list(list_tag: Tag, indent: int) -> None:
-            items = [child for child in list_tag.find_all(attrs={"role": "listitem"}, recursive=False)]
-            if not items:
-                return
-
-            next_indent = min(indent + indent_step, max_indent)
-
-            for item in items:
-                label_node = item.find(class_="label")
-                label_text = clean_text(label_node.get_text(" ", strip=True)) if label_node else ""
-                if label_text and len(label_text) <= 4:
-                    bullet = f"{label_text} "
-                else:
-                    bullet = "- "
-
-                content_node = item.find(class_="content") or item
-
-                # Remove nested list text to avoid duplication
-                nested_direct_lists = content_node.find_all(attrs={"role": "list"}, recursive=False)
-                nested_html_lists = content_node.find_all(["ul", "ol"], recursive=False)
-                nested_texts = [clean_text(nested.get_text(" ", strip=True)) for nested in (nested_direct_lists + nested_html_lists)]
-
-                full_text = clean_text(content_node.get_text(" ", strip=True))
-                for nested_text in nested_texts:
-                    if nested_text:
-                        full_text = full_text.replace(nested_text, "").strip()
-
-                # Add reference citations inline
-                ref_text = collect_inline_references(content_node)
-                if ref_text and full_text:
-                    full_text = f"{full_text}{ref_text}"
-
-                if full_text:
-                    append_line(f"{bullet}{full_text}", indent=indent, allow_repeat=True)
-                else:
-                    append_line(bullet.strip(), indent=indent, allow_repeat=True)
-
-                for nested in nested_direct_lists:
-                    append_role_list(nested, next_indent)
-                for nested in nested_html_lists:
-                    append_list(nested, next_indent)
-
-            ensure_paragraph_break()
-
         def append_table(table_tag: Tag, indent: int) -> None:
             rows = []
-            max_cols = 0
-            
             for tr in table_tag.find_all("tr"):
                 cells = []
                 for cell in tr.find_all(["th", "td"]):
-                    # Make a copy to handle reference links
-                    cell_copy = cell.__copy__() if hasattr(cell, '__copy__') else cell
-                    
-                    # Replace reference links with (Ref: N) format
-                    for ref_link in cell_copy.find_all("a", attrs={"role": "doc-biblioref"}):
-                        ref_num = ref_link.get_text(strip=True)
-                        if ref_num:
-                            ref_link.replace_with(f" (Ref: {ref_num})")
-                    
-                    cell_text = clean_text(cell_copy.get_text(" ", strip=True))
+                    # Use extract_text_with_refs for proper superscript/reference handling
+                    cell_parts = extract_text_with_refs(cell)
+                    cell_text = "".join(cell_parts).strip()
+                    # Normalize whitespace and clean up the text
+                    cell_text = re.sub(r'\s+', ' ', cell_text)
+                    cell_text = re.sub(r'\s*\|\s*', ' ', cell_text)  # Remove any pipe characters from cell content
                     cells.append(cell_text)
-                    
                 if any(cell for cell in cells):
                     rows.append(cells)
-                    max_cols = max(max_cols, len(cells))
 
             if not rows:
                 return
 
-            # Add a table header
-            table_id = table_tag.get("id", "")
-            table_label = f"[Table{' ' + table_id if table_id else ''}]"
-            append_line(table_label, indent=indent, allow_repeat=True)
-            append_line("-" * 80, indent=indent, allow_repeat=True)
+            # Add table marker
+            text_parts.append("\n")
+            text_parts.append("[Table]\n")
             
-            # Format and append each row
+            # Output each row on its own line
             for row in rows:
-                # Pad row to max_cols if needed
-                while len(row) < max_cols:
-                    row.append("")
-                line = " | ".join(cell for cell in row)
-                if line:
-                    append_line(line, indent=indent, allow_repeat=True)
-                    
-            append_line("-" * 80, indent=indent, allow_repeat=True)
-            ensure_paragraph_break()
+                # Join cells with pipe separator
+                line = " | ".join(row)
+                if line.strip():
+                    text_parts.append(line + "\n")
+            
+            text_parts.append("\n")
 
         def append_content(node, indent: int = 0) -> None:
-            """Recursively extract text content from HTML nodes.
-            
-            Block-level elements like <p>, <h1>, etc. extract their text using get_text()
-            which automatically includes inline element text, preventing newlines in
-            superscripts/subscripts. We skip inline element tags to prevent them from
-            being processed separately, but their text is included via parent's get_text().
-            """
             if isinstance(node, NavigableString):
+                text = clean_text(str(node))
+                append_line(text, indent=indent)
                 return
 
             if not isinstance(node, Tag):
@@ -614,16 +557,6 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             name = node.name.lower()
 
             if node in footnote_elements:
-                return
-
-            role_attr = (node.get("role") or "").lower()
-
-            if role_attr == "list":
-                append_role_list(node, indent)
-                return
-            if role_attr == "listitem":
-                return
-            if role_attr == "doc-footnote":
                 return
 
             if name in skip_names:
@@ -638,17 +571,24 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
 
             # Handle figures - but extract tables if they're inside
             if name == "figure" or (node.get("data-component") or "").lower() == "figure":
-                # Check if this figure contains a table
-                table = node.find("table")
+                # Check if this figure contains a table (search all descendants)
+                table = node.find("table", recursive=True)
                 if table:
-                    # Extract the table
                     append_table(table, indent)
                 return
 
             classes = [cls.lower() for cls in node.get("class", [])]
+            
+            # Handle div.figure-wrap which may contain tables
+            if any("figure-wrap" in cls for cls in classes):
+                table = node.find("table", recursive=True)
+                if table:
+                    append_table(table, indent)
+                return
+            
             if any("figure" in cls for cls in classes):
-                # Check if this element contains a table
-                table = node.find("table")
+                # Check if this element contains a table (search all descendants)
+                table = node.find("table", recursive=True)
                 if table:
                     append_table(table, indent)
                 return
@@ -659,36 +599,59 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             if name in {"aside", "div", "section"} and any("footnote" in cls for cls in classes):
                 return
 
-            # Skip inline formatting elements - their text is extracted by parent paragraphs via get_text()
-            # This prevents PD-L1<sup>hi</sup> from becoming "PD-L1\n\nhi"
-            if name in {"sup", "sub", "span", "a", "strong", "em", "i", "b", "br"}:
+            # Skip inline elements like sup, sub, span - they're handled by parent
+            if name in {"sup", "sub", "span", "a", "strong", "em", "i", "b"}:
+                return
+
+            if name == "br":
+                # Don't break on <br> inside inline elements - just treat as space
                 return
 
             if name in heading_tags:
-                heading_text = clean_text(node.get_text(" ", strip=True))
+                # Extract heading text with proper superscript handling
+                text_parts = extract_text_with_refs(node)
+                heading_text = "".join(text_parts)
+                heading_text = re.sub(r' +', ' ', heading_text).strip()
                 if heading_text:
                     append_heading(min(int(name[1]), 6), heading_text)
                 return
 
-            # Handle paragraphs: both <p> tags and <div role="paragraph">
-            if name in {"p", "blockquote"} or role_attr == "paragraph":
-                # Process paragraph by converting reference links to (Ref: N) inline
-                # Clone the node to avoid modifying the original
-                from copy import copy
-                node_copy = copy(node)
-                
-                # Find all reference citation links and replace them with text
-                for ref_link in node_copy.find_all("a", attrs={"role": "doc-biblioref"}):
-                    ref_num = ref_link.get_text(strip=True)
-                    if ref_num:
-                        # Replace the entire <a> tag with " (Ref: N)"
-                        ref_link.replace_with(f" (Ref: {ref_num})")
-                
-                # Now extract the text with references replaced
-                paragraph = clean_text(node_copy.get_text(" ", strip=True))
-                if paragraph:
-                    append_line(paragraph, indent=indent)
+            # Check for role="paragraph" attribute
+            role_attr = (node.get("role") or "").lower()
+            
+            # Skip doc-footnotes
+            if role_attr == "doc-footnote":
                 return
+            
+            # Handle paragraphs and blockquotes
+            # BUT: Skip paragraph handling if this element contains a table - let it process children normally
+            if name in {"p", "blockquote"} or role_attr == "paragraph":
+                # Check if this paragraph contains a table (anywhere in descendants)
+                if node.find("table", recursive=True):
+                    # This paragraph contains a table, so process children normally instead
+                    pass  # Fall through to child processing
+                else:
+                    # Normal paragraph - extract text with inline references
+                    text_parts = extract_text_with_refs(node)
+                    
+                    # Join and normalize whitespace
+                    paragraph = "".join(text_parts)
+                    # Normalize multiple spaces to single space, but preserve the structure
+                    paragraph = re.sub(r' +', ' ', paragraph).strip()
+                    # Clean up space before punctuation
+                    paragraph = re.sub(r'\s+([.,;:!?])', r'\1', paragraph)
+                    # Ensure space after punctuation
+                    paragraph = re.sub(r'([.,;:!?])([A-Za-z])', r'\1 \2', paragraph)
+                    
+                    # Find footnote citations if any
+                    inline_notes = collect_inline_footnotes(node)
+                    if inline_notes:
+                        notes_text = "; ".join(inline_notes)
+                        paragraph = f"{paragraph} (Footnote: {notes_text})"
+                    
+                    if paragraph:
+                        append_line(paragraph, indent=indent, allow_repeat=True)
+                    return
 
             if name in {"ul", "ol"}:
                 append_list(node, indent)
@@ -850,13 +813,35 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             for idx, fig in enumerate(figures, 1):
                 caption = fig.find("figcaption")
                 if caption:
-                    # Get figure label and title
+                    # Remove only the dropdown blocks with full reference details
+                    # Keep the citation links (a[role="doc-biblioref"]) so extract_text_with_refs can find them
+                    for dropdown in caption.find_all("div", class_="dropBlock__holder"):
+                        dropdown.decompose()
+                    
+                    # Also remove any span.dropBlock that contains the full citation text
+                    # but NOT the citation links themselves
+                    for ref_detail in caption.find_all("span", class_="dropBlock"):
+                        # Only remove if it contains full reference text, not if it's just a citation link
+                        if ref_detail.find("a", role="doc-biblioref") is None:
+                            ref_detail.decompose()
+                    
+                    # Get figure label and title (with citation refs preserved)
                     fig_label = caption.find("span", class_="label")
                     fig_title = caption.find("span", class_="figure__title__text")
                     
                     if fig_label or fig_title:
-                        label_text = fig_label.get_text(strip=True) if fig_label else f"Figure {idx}"
-                        title_text = fig_title.get_text(strip=True) if fig_title else ""
+                        if fig_label:
+                            label_parts = extract_text_with_refs(fig_label)
+                            label_text = "".join(label_parts).strip()
+                        else:
+                            label_text = f"Figure {idx}"
+                        
+                        if fig_title:
+                            title_parts = extract_text_with_refs(fig_title)
+                            title_text = "".join(title_parts).strip()
+                        else:
+                            title_text = ""
+                        
                         text_parts.append(f"\n### {label_text}")
                         if title_text:
                             text_parts.append(f": {title_text}")
@@ -881,14 +866,21 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                             if para.find_parent(['span']) and 'label' in str(para.find_parent(['span']).get('class', [])):
                                 continue
                             
-                            para_text = para.get_text(separator=" ", strip=True)
+                            # Use extract_text_with_refs for proper superscript/reference handling
+                            para_parts = extract_text_with_refs(para)
+                            para_text = "".join(para_parts).strip()
+                            para_text = re.sub(r' +', ' ', para_text)
+                            
                             if para_text and len(para_text) > 10:  # Skip very short text fragments
                                 # Remove button text like "Hide caption" or "Figure viewer"
                                 if para_text not in ['Hide caption', 'Figure viewer', 'Show caption', 'Collapse', 'Expand']:
                                     text_parts.append(f"{para_text}\n\n")
                     else:
                         # Fallback: get all text from caption
-                        caption_text = caption.get_text(separator=" ", strip=True)
+                        caption_parts = extract_text_with_refs(caption)
+                        caption_text = "".join(caption_parts).strip()
+                        caption_text = re.sub(r' +', ' ', caption_text)
+                        
                         if caption_text:
                             # Clean up button text
                             caption_text = caption_text.replace('Hide caption', '').replace('Figure viewer', '')
@@ -903,11 +895,9 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             text_parts.append("REFERENCES\n")
             text_parts.append("=" * 80 + "\n\n")
             for idx, entry in enumerate(reference_entries, 1):
-                # Remove leading reference number if present (e.g., "1. " or "1 ")
-                cleaned_entry = re.sub(r'^\d+\.\s*', '', entry)
-                text_parts.append(f"{idx}. {cleaned_entry}\n")
+                text_parts.append(f"{idx}. {entry}\n")
         
-        full_text = "\n".join(text_parts)
+        full_text = "".join(text_parts)
         
         if full_text.strip():
             logger.info(f"✅ Successfully extracted {len(full_text)} characters of text")

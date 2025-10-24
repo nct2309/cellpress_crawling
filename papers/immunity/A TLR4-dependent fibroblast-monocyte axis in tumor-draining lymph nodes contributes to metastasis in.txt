@@ -1,0 +1,835 @@
+================================================================================
+ARTICLE HEADER
+================================================================================
+
+# A TLR4-dependent fibroblast-monocyte axis in tumor-draining lymph nodes contributes to metastasis in triple-negative breast cancer
+
+Authors: Greta Mattavelli, Moutaz Helal, Ana Cetkovic, Maximilian J. Krämer, Saskia-Laureen Herbert, Kilian Mielert, Tanja Schlaiß, Anna Frank, Emily Riemer, Mara John, Josefina del Pilar Martinez Vasquez, Laura Kindl, Jonathan J. Swietlik, Benedikt O. Gansen, Marion Krafft, Emilia Stanojkovska, Hanna Fischer, Ute-Susann Albert, Jonas Bauer, Murilo Delgobo, Arpa Aintablian, Haisam Alattar, Manfred B. Lutz, Felix Meissner, Thordur Oskarsson, Leo Rasche, Gustavo Ramos, Andreas Rosenwald, Achim Wöckel, Angela Riedel
+Journal: Immunity
+DOI: 10.1016/j.immuni.2025.08.015
+Keywords: tumor-draining lymph node; fibroblastic reticular cells; triple-negative breast cancer; metastasis; pre-metastatic niche; immunosuppressive monocytes; immunotherapy; single-cell sequencing; spatial transcriptomics; tumor microenvironment
+
+
+================================================================================
+ARTICLE CONTENT
+================================================================================
+
+## Highlights
+
+    •TNBC-draining lymph nodes show increased frequencies of iNOS+ and PD-L1+ monocytes•Fibroblastic reticular cells support homing of monocytes via a CCL2-CCL7-CCR2 axis•TNBC-induced endogenous TLR4 ligands elicited CCL2-CCL7 expression•Blocking TLR4-signaling in combination with PD-1 blockade limited distant metastasis
+
+## Summary
+
+    Tumor-draining lymph nodes (TDLNs) are sites of anti-tumor immune priming as well as metastases. Here, we examined how the cellular networks within TDLNs are reorganized in triple-negative breast cancer (TNBC). We found that the frequencies of programmed death ligand 1 high (PD-L1hi) monocytes increased in TDLNs of metastatic TNBC mouse tumors. Fibroblastic reticular cell (FRC) subtypes heightened the expression of the chemokines CCL2 and CCL7, supporting the homing of CCR2+ monocytes. These monocytes suppressed T cells in vitro via PD-L1 and inducible nitric oxide synthase (iNOS). Spatial transcriptomics revealed immunosuppressive FRC-monocyte niches in vascularized and T cell areas. Tumor-associated Toll-like receptor (TLR) 4 ligands induced CCL2 and CCL7 expression by FRCs to promote monocyte recruitment. Localized TLR4 inhibition in combination with anti-programmed cell death protein 1 (αPD-1) therapy reduced monocyte homing and boosted T cell function, ultimately attenuating lung metastases. Monocytes accumulate in human TNBC TDLNs, with evidence of a FRC-monocyte axis, and a TLR4 ligand signature is predictive of poor survival outcomes in TNBC patients. Thus, metastatic TNBC can reprogram lymph nodes (LNs) to facilitate PD-L1-mediated immune evasion and metastasis.
+
+## Graphical abstract
+
+## Keywords
+
+  1. tumor-draining lymph node
+  2. fibroblastic reticular cells
+  3. triple-negative breast cancer
+  4. metastasis
+  5. pre-metastatic niche
+  6. immunosuppressive monocytes
+  7. immunotherapy
+  8. single-cell sequencing
+  9. spatial transcriptomics
+  10. tumor microenvironment
+
+## Introduction
+
+      Triple-negative breast cancer (TNBC) is characterized by higher risks of relapse or metastatic disease and a poor 5-year survival in comparison with other breast cancer (BC) subtypes. (Ref: 1) Neoadjuvant immune checkpoint blockade (ICB) in combination with chemotherapy in early TNBC increases pathological complete responses and prolonged event-free survival of patients. (Ref: 2) (Ref: 3) However, a deeper understanding of the mechanisms that regulate responsiveness to combination therapy is much needed. Patients often experience innate or acquired resistance that is independent of programmed death-ligand 1 (PD-L1) expression at the primary tumor site, suggesting that activation of the programmed cell death protein 1 (PD-1)-PD-L1 axis in T cells prior to entry into the tumor are critical for ICB efficacy. (Ref: 3) This T cell priming occurs in the tumor-draining lymph nodes (TDLNs). (Ref: 4) Naive CD8+ T cells are primed in the lymph nodes (LNs) and then traffic to the tumor microenvironment, where they acquire effector function via co-stimulation with dendritic cells (DCs). (Ref: 5) Indeed, DCs at the TDLN and primary tumor site are critical for T cell activation and ICB efficacy. (Ref: 6) (Ref: 7) Myeloid-derived suppressor cells (MDSCs) can interfere with this process by inhibiting cytotoxic T cell activity or DC function via PD-L1 or inducible nitric oxide synthase (iNOS) at the primary tumor site. (Ref: 8) (Ref: 9) TDLNs are essential for ICB-induced tumor regression and immune infiltration in melanoma models. (Ref: 10) (Ref: 11) Targeted administration of PD-L1-blocking antibodies to TDLNs is superior to systemic therapy in promoting robust anti-tumor immune responses, (Ref: 12) while blocking T cell egress from TDLNs via S1PR1-blockade abrogates ICB efficacy. (Ref: 10) (Ref: 13) Thus, ICB does not exclusively act by reactivating T cells locally at the primary tumor site. (Ref: 12)
+      TNBC metastasis is the cause of ∼70% of BC-related deaths and LN metastases are a strong indicator of distant metastases. (Ref: 14) (Ref: 15) Furthermore, TDLN metastases, in principle, can precede and seed distant metastases. (Ref: 16) (Ref: 17) (Ref: 18) LN colonization may additionally promote metastatic seeding to distant sites by inducing a tolerogenic immune response, including antigen-specific T regulatory cells. (Ref: 19) The TDLN thus sits at the crossroads between anti-tumor immunity and metastasis. (Ref: 20)
+      The LN harbors well-organized cellular networks, including stromal cells such as fibroblastic reticular cells (FRCs), interacting with T and B cells to mount effective immune responses. In the tumor context, these stromal cells can be reprogrammed to support pre-metastatic niche formation. (Ref: 21) (Ref: 22) Here, we examined how these cellular networks are reorganized in TNBC to support metastasis. Using TNBC mouse models and patient samples, we found that TDLN-FRCs recruit immunosuppressive monocytes, resulting in T cell suppression via PD-L1 and iNOS. Specifically, monocytes were recruited by FRCs in a CC chemokine ligand 2 and 7 (CCL2/CCL7)-CC chemokine receptor 2 (CCR2) axis-dependent manner driven by tumor-induced endogenous TLR4 ligands. Local inhibition of PD-1-PD-L1 at the TDLN site was additive with TLR4 inhibition to reduce distant metastasis in mice. High expression of this endogenous TLR4 ligand signature predicted poor survival outcomes for TNBC patients, with implications for patient stratification in achieving the goal of more effective ICB therapy.
+
+## Results
+
+### TDLNs of aggressive TNBC mouse tumors harbor PD-L1+ monocytes
+
+        To gain insight into the LN environment in TNBC, we compared the TDLN response in multiple orthotopic syngeneic mouse models of TNBC. To exclude strain and cell line specificity, we used two multi-metastatic mouse tumor cell lines, 4T1 and AT3, in two distinct strains, BALB/c and C57BL/6, respectively, and a non-metastatic mouse tumor cell line, 67NR (Figure 1A), in BALB/c. All cell lines produced tumors that grew to a similar size at the time of analysis (Figure S1A) and drained to the axillary LN (axLN) rather than the nearby brachial LN (brLN), as indicated by an increase in cellularity in comparison with resting (control [CTRL]) LNs (Figure 1B). We thus considered the axLN as the primary TDLN. Of note, the multi-metastatic 4T1 and AT3 cell lines were in their pre-metastatic growth phase at the time of analysis, as evidenced by the absence of tumor cells in TDLNs (Figure S1B). Using multicolor flow cytometry, we found PD-L1 expression more pronounced in monocytes (CD11b+Ly6ChiLy6G−) in TDLNs of 4T1 and AT3 tumors in comparison with other myeloid cell populations, including DCs and macrophages, B cells, T cells, and even tumor cells at the primary site (Figures 1C–1F and S1C). Monocytes are short-lived cells likely recruited from the blood to the LN, where they can transdifferentiate into macrophages along a dynamic spectrum, characterized by intermediate states. We therefore confirmed a clear monocyte staining and differentiated between monocytes, macrophages, neutrophils, and lymphocytes (Figure 1G). TDLN monocytes had similar expression of PD-L1 to monocytes from the primary tumor or bone marrow of the 4T1 model, indicating that this phenotype was not exclusively induced within TDLNs (Figure S1D). There were higher frequencies of CD11b+ myeloid cells, monocytes (Ly6ChiLy6G−), and neutrophils (Ly6GhiLy6Clo) in the TDLNs of the 4T1 and AT3 models at endpoint in comparison with resting LNs. In contrast, the 67NR model, although significant, induced milder changes in monocyte frequencies, while neutrophil frequencies were increased (Figures 1I, 1J, S1E, and S1F). We also observed mild changes in macrophage populations in the 4T1 TDLN at endpoint (Figure S1G). The frequencies of the same populations increased during tumor development in 4T1 and 67NR tumor models compared with the CTRL mice in blood, spleen, and tumor but remained similar over the timeline between the two tumor models (Figures S1H–S1J). In TDLNs, monocyte PD-L1 expression increased in all tumor models compared with non-tumor-bearing CTRL mice (Figure 1J). In conclusion, a higher proportion of monocytes with elevated PD-L1 expression was observed in the TDLNs of all models but was higher in metastatic TNBCs models.
+
+### TDLN cellular networks are reorganized to support PD-L1+ monocytes via cytokine secretion from local FRCs
+
+        To investigate how monocytes are directed to TDLNs, we performed single-cell RNA sequencing (scRNA-seq) of the major LN-resident cell populations, including T cells, myeloid cells, and stromal cell populations from CTRL LNs, and from TDLNs of 67NR and 4T1 tumor-bearing mice at 18 days after tumor cell injection. Unsupervised clustering and uniform manifold approximation and projection (UMAP) revealed distinct cell subsets that were annotated based on canonical markers (Figures 2A and S2A). Using intercellular communication networks from scRNA-seq data, (Ref: 25) (Ref: 26) we observed an increase in interactions between the FRCs and macrophages and monocytes between 4T1 and the CTRL communication networks (Figures 2B and S2B), which was not observed between 67NR and the CTRL communication network (Figure S2C). We analyzed chemokine ligand pathway networks (Figure S2D) and found that genes encoding for Ccl2, Ccl7, Csf1, and Cxcl1 were expressed at high levels by FRCs. Simultaneously, their cognate receptors Ccr2 and Csf1r were detected in monocytes, macrophages, and DCs, while Cxcr2 was observed in neutrophils (Figure 2C). We further subclustered stromal cell populations and annotated them based on reported markers (Ref: 27) (Ref: 28) (Ref: 29) (Figures 2D and S2E–S2H). Increased expression of the chemokines Ccl2 and Ccl7 in TDLNs was restricted to CD34+ stromal cells (CD34_SC_1) that are mostly enriched around high endothelial venules and blood vessels, medullary reticular cells (MedRCs) found in the medullary region, and T cell reticular cells (TRCs) found in T cell-rich areas of LNs. The upregulation of Cxcl1 was only found in TRCs. However, both Cxcl1 and Csf1 were also more heterogeneously expressed in endothelial cell populations, such as ceiling lymphatic endothelial cells (cLECs), floor LECs (fLECs), and capillary- and arterial-associated blood endothelial cells (BECs; Figure 2E). We further found an increased expression of Ccl2 and Ccl7 in FRCs isolated from AT-3 TDLNs in comparison with matched CTRL (C57BL/6) LNs (Figure S2I). This upregulation of chemokine expression was tumor specific, as LPS and poly(I: C) injections did not affect their expression in these stromal populations (Figure S2J). We confirmed the upregulation of Ccl2, Ccl7, and Cxcl1 in 4T1 TDLN-FRCs via RT-qPCR and protein levels of interstitial fluids but not at endpoint in 67NR TDLNs (Figures 2F, S2K, and S2L). Monocytes within TDLNs exhibited high expression of the cognate receptor CCR2 in comparison with monocytes of the blood, spleen, and tumor (Figure 2G). Furthermore, monocytes of donor spleens of 4T1 tumor-bearing mice homed more effectively into 4T1 TDLNs in comparison with monocytes isolated from CTRL spleens (Figures 2H and S2M). Immunofluorescence (IF) confirmed the co-localization of FRCs and monocytes in CTRL, 67NR, and 4T1 TDLNs (Figure S3A). These results indicated that TDLN-FRCs can create attractive niches for monocyte homing.
+
+### TNBC-derived monocytes in TDLNs are immunosuppressive
+
+        Monocytes are recognized for their immunosuppressive role during metastasis and play a role in resistance mechanisms to ICB. (Ref: 9) (Ref: 30) (Ref: 31) (Ref: 32) (Ref: 33) (Ref: 34) (Ref: 35) To analyze their function in TDLNs, we extracted both monocytes and macrophages from the scRNA-seq data and annotated their subsets based on their properties (Figure 3A). Monocytes typically transdifferentiate into macrophages. Confirming this, we observed several intermediate (Macro_Mono) populations and calculated pseudotime analysis (Figures 3A and 3B). Additionally, 4T1 TDLN-derived monocytes exhibited a higher score for monocytic MDSCs (mMDSCs), (Ref: 36) with high expression levels of S100a8, S100a9, Wfdc21, and Wfdc17 when compared with monocytes from the LNs of CTRL and 67NR (Figures 3C and 3D). iNOS plays a crucial role in suppressing either DC function or T cell proliferation. (Ref: 6) (Ref: 7) Indeed, 4T1 and, to a lesser extent, 67NR TDLN-derived monocytes expressed high levels of iNOS (Figures 3E and S3B). Sorted 4T1 TDLN-derived monocytes (Ly6Chi), but not neutrophils (Ly6Clo) or macrophages (Ly6C−), suppressed T cell proliferation in co-culture assays, as indicated by reduced cellular divisions and decreased numbers of CD4+ and CD8+ T cells (Figures 3F and S3C–S3F). This inhibition of proliferation could be reversed by the iNOS inhibitor NG-methyl-L-arginine acetate salt (L-NMMA) (Figures 3G, S3G, and S3H). Comparing T cell subpopulations between the different conditions, we found less CD4+ effector memory cells and more CD4+-activated memory in 4T1 TDLNs (Figures 3H and S3I). Within the CD4+ effector memory T cells, genes associated with apoptosis, such as Tox, Pdcd1, Btla, and Ctla4, increased while cell survival genes and genes associated with migration, such as S1pr1 and Vasp, decreased (Figures 3I–3K). We further found differences within the CD4+-activated memory specific for 4T1 and 67NR TDLNs (Figure S4A). We furthermore observed a slight expansion of a subset of regulatory T cells (Tregs_2) in 4T1 and 67NR TDLNs that were annotated according to a published signature (Figures S4B and S4C). (Ref: 19) In summary, 4T1 TDLN-derived monocytes and, to a lesser degree, 67NR TDLN-derived monocytes had an immunosuppressive phenotype and could suppress T cell proliferation and survival through iNOS-dependent nitric oxide (NO) production.
+
+### Spatial transcriptomics reveals immunosuppressive FRC-monocyte niches in TDLNs
+
+        To investigate the spatial niche, we performed untargeted spatial transcriptomics using 10× Visium in combination with IF. IF indicated an enrichment of CD11b+ cells in 4T1 TDLNs compared with 67NR and CTRL LNs (Figures 4A and S4D). The spatial spots of the transcriptomics data underwent quality CTRL, followed by cell type deconvolution using Cell2location. (Ref: 34) (Ref: 35) (Ref: 37) We established a scRNA-seq atlas of axLNs from BALB/c mice (Figure S4E) and performed cell type annotation (Figure S4F). Estimated cell type abundance as input for Leiden clustering separated the spots into 8 clusters (Figures 4B and S4G). Each cluster showed enrichment for different cell types (Figure 4C). Our spatial analysis precisely mapped light-zone germinal center B cells (LZ_GZ_Bcells), CD4+ naive T cells (CD4_Naive), and follicular DCs (FDCs) to their expected anatomical locations (Figures 4D and S4H). Non-negative matrix factorization (NMF) on the estimated cell abundance identified factors that group colocalized cell types. Indeed, in 4T1 and 67NR TDLNs, monocytes co-occurred with TRCs, MedRCs, and CD4+ effector memory cells (fact_4 and fact_8; Figure 4E, highlighted in orange). Spatially, monocytes, TRCs, MedRCs, and CD4+ effector memory cells showed an overlapping abundance in 4T1 TDLNs (Figures 4F, S4I, and S4J). IF confirmed the co-localization of monocytes, T cells, and FRCs (Figure 4G). The same spatial niches depicted a high mMDSC signature score (Figure 4H). In summary, immunosuppressive monocytes co-occurred with TRCs, MedRCs, and CD4+ effector memory cells mostly in the medullary and T cell region of 4T1 TDLNs.
+
+### TLR4 ligands induce Ccl2 and Ccl7 expression in FRCs in vitro
+
+        We next wanted to identify factors that induce Ccl2 and Ccl7 in FRCs and established in vitro culture assays using CTRL-conditioned medium (CCM) or tumor-conditioned medium (TCM) on murine FRCs (Figure 5A). Indeed, stimulation of FRCs with TCM from the two multi-metastatic lines, 4T1 and AT3, led to an upregulation of the expression of Ccl2 and Ccl7, whereas 67NR TCM had no effect (Figures 5B and 5C). We performed bulk RNA-seq analysis of FRCs treated with CCM, 67NR TCM, or 4T1 TCM (Figure 5D). Ingenuity pathway analysis (IPA) on the significant differentially expressed genes between 4T1 TCM and CCM in the upstream regulatory module revealed LPS-response-associated gene regulation (Figure 5E). As LPS is a TLR4 ligand, we wanted to verify whether endogenous TLR4 ligands were present in our in vivo system. Indeed, proteomic profiling of interstitial fluids from TDLNs and tumors identified several endogenous TLR4 ligands, including SAA1, SPP1, FN1, and S100A9, (Ref: 38) most of which showed elevated abundance in 4T1 samples (Figures 5F–5H and S5A–S5C). Recombinant proteins of SAA1, S100A9, or FN1, and, to a lesser extent, platelet-derived growth factor BB (PDGF-BB) or tenascin C (TNC), induced the gene expression of Ccl2 and Ccl7 in in vitro-cultured FRCs (Figure 5I). Furthermore, CCL2 protein levels were elevated in the medium of FRCs stimulated with 4T1 TCM in comparison with vehicle- or CCM-treated FRCs (Figure 5J), and CCL2 and CCL7 caused the transmigration of sorted monocytes through a semipermeable membrane (Figure 5K). Inhibiting TLR4 using either the small-molecule inhibitor TAK-242 or the MyD88 inhibitor TJ-M2010 in in vitro-cultured FRCs treated with either CCM or 4T1 TCM reduced the upregulation of Ccl2 and Ccl7 (Figures 5L and S5D) and the transmigration of monocytes toward FRCs (Figures 5M and S5E). FRCs in vivo and in vitro robustly expressed TLR4 and to a greater extent than other myeloid or stromal cells (Figures S5F–S5I). Taken together, we identified a molecular link between endogenous, tumor-induced TLR4 ligands and the heightened expression of Ccl2 and Ccl7 in FRCs to promote the recruitment of monocytes.
+
+### Co-targeting monocytes and PD-1 reduces lung metastasis
+
+        We next evaluated whether targeting FRCs via TLR4 (TLR4 inhibitor [TLR4i], TAK-242) or MyD88 (MyD88i, TJ-M2010) inhibition in vivo is feasible. We adapted a protocol for locoregional administration of monoclonal antibodies and inhibitors into the skin of the forelimb for drainage specifically to the axLN (subcutaneous, local). (Ref: 11) (Ref: 39) (Ref: 40) This route of injection led to a reduction in tumor weights and metastatic burden in the lung after primary tumor removal in mice treated with anti-mPD-1 (αPD-1, clone RMP1-14) in comparison with vehicle (immunoglobulin G [IgG] + DMSO)-treated mice or mice injected intraperitoneally (i. p., systemic) with αPD-1 (Figures S5J–S5L). Following this protocol, we administered TLR4i or MyD88i (Figure 6A). Indeed, Ccl2 and Ccl7 expression decreased in MedRCs and TRCs after treatment with TLR4i, as well as in FRCs after treatment with MyD88i, compared with vehicle-treated mice, revealed by scRNA-seq (Figures 6B and S5M). Furthermore, monocyte numbers were reduced (Figure 6C). Moreover, the number of CFSE-labeled monocytes homing into the 4T1 TDLNs of mice treated with TLR4i and MyD88i was decreased compared with mice treated with the vehicle (DMSO; Figure 6D). The monocyte phenotype was not impacted by TLR4i, as analyzed by scRNA-seq (Figures S5N and S5O). To assess the therapeutic benefit of targeting LN FRCs to reduce monocyte recruitment, we treated mice with inhibitors of either TLR4 or MyD88 alone or in combination with αPD-1 using the local administration route and set a pre-metastatic time point and a metastatic time point (after primary tumor removal; Figure 6E). αPD-1 and combination treatment groups (either αPD-1 + TLR4i or αPD-1 + MyD88i) reduced tumor growth and weight in comparison with vehicle-treated tumors (Figures 6F, 6G, and S6A). At pre-metastatic time points, monocyte numbers were reduced in the TLR4i and αPD-1 + TLR4i treatment groups in comparison with vehicle but not in the αPD-1 treatment group (Figures 6H and S6B), while neutrophil numbers remained unchanged (Figure S6C). Frequencies of other myeloid cells, DCs, and T cells (including CD4+, CD8+, and regulatory T cells) in TDLNs remained similar to the vehicle-treated group, whereas eosinophils and B cells slightly changed in all αPD-1-treated groups (Figures S6D–S6K). LN cellularity overall increased with αPD-1 treatment (Figure 6I). Spleen, lung, and primary tumors indicated only minor differences among the main immune populations during the course of treatments (Figures S6L–S6AI).
+        As we found that monocytes suppress T cell function and proliferation in vitro, we wanted to determine whether reducing monocyte numbers (with TLR4i) or targeting their immunosuppressive function (by blocking PD-L1-PD-1 interactions) would improve T cell function in vivo. Indeed, TLR4i and the combination treatment (αPD-1 + TLR4i) increased the number of activated CD44+ICOS+CD8+ T cells (Figure 6J, left), while αPD-1 and the combination treatment increased the number of activated CD44+ICOS+CD4+ T cells (Figure 6J, right). Additional 5′ scRNA-seq confirmed this observation (Figures S6AJ–S6AK). TLR4i treatment of tumor-bearing mice increased the proportion of CD8+ effector-resident memory (C2) T cells, whereas αPD-1 treatment increased CD8+ cytotoxic (C4) T cells in comparison with the vehicle treatment in TDLNs. As for the flow cytometry data, the combination had an additive effect, leading to an increase in both CD8+ effector-resident memory (C2) and CD8+ cytotoxic (C4) T cells in comparison with the vehicle in TDLNs (Figure 6K). For the CD4+ T cells, TLR4i treatment slightly increased the proportion of CD4+ effector memory (C3) T cells, whereas αPD-1 and αPD-1 + TLR4i treatment increased CD4+-activated memory (C4) T cells in comparison with vehicle treatment in TDLNs (Figure 6L). Furthermore, TLR4i treatment led to a decrease in most previously shown apoptosis markers of CD4+ effector memory cells (Figure S6AL).
+        At the metastatic time point, distant lung metastases in all treatment groups involving the αPD-1 therapy were reduced, which was further enhanced by co-targeting of TLR4 (Figures 6M, S6AM, and S6AN), while LN metastases were not affected (Figure S6AO). Monocytes in LNs were reduced and their PD-L1 expression was reduced in the αPD-1 and αPD-1 + TLR4i-treated in comparison with the vehicle-treated group (Figures 6N and 6O). CD11b+ myeloid cells, neutrophils, DCs, and Tregs in all treatment groups in TDLNs were decreased at the metastatic time point in comparison with vehicle-treated mice (Figures S7A–S7H). Finally, in the metastatic LNs of the vehicle-treated group, we still found the highest PD-L1 expression in monocytes (Figure S7I). Taken together, we find that the FRC-monocyte network supports tumor growth and the initiation of lung metastasis in mice.
+
+### In human TNBC patient samples, TDLNs exhibit high monocyte numbers and CCL2 expression in FRCs
+
+        Next, we assessed whether the preclinical TNBC mouse models translate to human disease. Indeed, exclusively metastatic TNBC cell lines promoted an upregulation of Ccl2 and Ccl7 by FRCs (Figure 7A). (Ref: 41) Furthermore, axillary TDLNs of TNBC patients harbored higher numbers of myeloid cells (CD11B+), human leukocyte antigen DR-isotype+ (HLA-DR+) CD11B+ myeloid cells, and HLA-DR+, CD11B+, and CD14+ monocytes in comparison with luminal BC patients without (w/o) or with micro (<3% EPCAM+ of live cells) metastasis (Figures 7B, 7C, and S7K). IF analysis confirmed a close interaction of collagen 1+ FRCs, CD11b+ myeloid cells, and pan-cytokeratin+ tumor cells in the TDLNs of TNBC patients (Figure S7JA). HLA-DR+CD11B+ myeloid cells and monocytes of TDLNs expressed higher levels of PD-L1 in comparison with tumor cells (EPCAM+) from the primary tumor and TDLNs (Figures 7D and 7E). Next, we performed scRNA-seq of 10 LN tissues from 8 patients (including 4 TNBC and 4 luminal A axLN patient samples) with different degrees of metastasis—w/o metastasis, with micro-metastasis (<20 epithelial cells), and with macro-metastasis (>20 epithelial cells)—analyzing 7 different cell types (T cells, B cells, natural killer [NK] cells, myeloid cells, fibroblasts, endothelial cells, and epithelial cells). After integrating all samples, we removed any patient-derived batch effect and performed clustering and dimensionality reduction with UMAP followed by annotation using canonical markers (Figures 7F, 7G, S7L, and S7M). Monocytes were enriched in TNBC over luminal A BC samples (Figure S7N). The FRC cluster (C17) exhibited high CCL2 expression, whereas the monocyte cluster (C8) exhibited high expression of its receptor CCR2 (Figure 7H). FRCs were more abundant in the pre-metastatic (w/o) and micro-metastatic stages in comparison with the macro-metastatic stages (Figure 7I). Furthermore, CCL2 expression was higher in TNBC FRCs compared with luminal A FRCs (Figure 7J). LN1 classical monocytes, exhibiting the highest immunosuppressive signature, were highest in the pre-metastatic (w/o) LNs (Figure 7K). BC LN monocytes were next integrated with healthy bone-marrow-derived monocytes (Ref: 42) (Figures S7O and S7P). In fact, LN monocytes scored higher than the bone marrow monocytes using the mMDSC signature score (Ref: 36) (Figure 7L). T cell subsets seemed similar in micro- and macro-metastatic stages over LNs w/o metastasis (Figure S7Q). Finally, a signature of endogenous TLR4 ligands (SAA1, SAA2, FN1, S100A9, and TNC) predicted worse survival of basal and estrogen receptor (ER)-negative BC patients (Figures 7M and S7R). Thus, LN FRCs and immunosuppressive monocytes seem to also play a role in human TNBC disease, which will need to be corroborated by further clinical investigations.
+
+## Discussion
+
+      Here, we demonstrated by utilizing three TNBC mouse models and human patient samples that aggressive tumors can reprogram the TDLN pre-metastatic niche to support immune evasion and metastasis by altering resident fibroblasts, FRCs, to recruit immunosuppressive monocytes. Supporting our data, other studies have found altered myeloid cell populations in TDLNs. (Ref: 43) (Ref: 44) Furthermore, our data indicated that LN monocytes, but not neutrophils, were capable of actively suppressing T cell proliferation, identifying this functional monocyte state as similar to that reported for mMDSCs employing PD-L1- and iNOS-dependent mechanisms for suppression. (Ref: 36)
+      Both LN endothelial cells and FRCs can interact with various myeloid cell populations. LN endothelial cells can communicate with macrophages and monocytes via colony-stimulating factor 1 (CSF-1) production to CTRL subcapsular and medullary sinus macrophage homeostasis. (Ref: 45) Our scRNA-seq data indicated that FRCs, mainly MedRCs, TRCs and CD34+ adventitial cells, but not endothelial cells, were the main producers of CCL2-CCL7 in LNs and communicated with the cognate receptor CCR2 on macrophages and monocytes. This is consistent with other studies indicating that FRCs communicate via these molecules with monocytes. (Ref: 23) Furthermore, genetic ablation of FRCs in mouse models results in a loss of macrophages and monocytes from LNs, in part mediated by CSF-1-CSF-1R expression. (Ref: 24)
+      Gong et al. showed that CCL2-CCL7 increase expression along with Ptgs2 after stimulation with neutrophil-secreted interleukin (IL)-1β in pre-metastatic lungs in BC, which supports our observation that tumors can indeed induce fibroblast expression of CCL2-CCL7 in the pre-metastatic niche. (Ref: 46) Although IL-1β is a potential candidate to also induce FRC CCL2-CCL7 expression in vivo in TDLNs, IL-1β was not present in the conditioned media from all tumor cell types tested (data not shown). However, in vivo, both IL-1β and TLR4 ligands may have additive effects on CCL2-CCL7 induction, although this remains to be explored. Of note, both IL-1β and TLR4 ligands may not only be secreted by tumors but also induced by them at both the primary tumor and TDLN site. (Ref: 47) Furthermore, also in vitro, factors other than endogenous TLR4 ligands of TCM may have CCL2-CCL7-inducing capacity, as TLR4 inhibition did not lead to a complete ablation of Ccl2-Ccl7 induction.
+      Reticker-Flynn et al. highlight that LN metastases induce antigen-specific Tregs that impair LN NK cells to promote distant metastasis. Although we identified the same subpopulation of Tregs that showed a mild expansion in TDLNs compared with CTRL LNs, cell-cell communication analyses did not reveal major changes in Treg signaling pathways. Furthermore, in our human scRNA-seq dataset, Treg populations remained stable across metastatic stages. Still, a key role for Tregs in systemic immunity and associated metastasis formation cannot be neglected. The primary tumor microenvironment in TNBC has been extensively studied to understand why only a subset of tumors respond to ICB in BC. (Ref: 48) (Ref: 49) (Ref: 50) However, many of these studies have limitations, such as the use of samples from patients treated with αPD-1 monotherapy, and did not exclusively include TNBC patients, (Ref: 49) or included only patients with high PD-L1 expression in the primary tumor, (Ref: 50) or examined datasets from patients treated with αPD-L1 (atezolizumab) in combination with neoadjuvant chemotherapy in metastatic TNBC. (Ref: 48) (Ref: 50) Nevertheless, single-cell profiling of immune populations within primary BCs treated with chemotherapy or chemotherapy plus anti-PD-L1, including responders and non-responders, shows that T cell expansion, and, in particular, baseline expansion of CXCL13+ T cells in the TME, is predictive of effective responses to ICB. (Ref: 48) Spatial analysis by imaging mass cytometry of patients treated with the same regimen indicates that Ki67+ CD8+ TCF1+ T cells are predictive of therapeutic response. (Ref: 50) Because LN responses may influence tumor T cell infiltration, these studies may, in fact, support our findings.
+      Our data show that LN-targeted therapy was sufficient to reduce lung metastasis in TNBC mouse models. Similarly, in melanoma, local targeting of immunotherapies to the TDLNs reduced systemic site effects and increased efficacy and tumor infiltration of T cells. (Ref: 10) (Ref: 11) (Ref: 12) (Ref: 51) Thus a LN-targeted approach of therapies should be considered but needs further validation.
+
+### Limitations of the study
+
+        A technical limitation of human scRNA-seq analyses is that a substantial quantity of material is required to obtain high-quality data. Human patient material of TNBC-TDLNs is limited due to disease occurrence and tissue availability. Furthermore, we cannot exclude the possibility that immunosuppressive monocytes also interact with cells other than T cells and influence systemic immunity by this mechanism. It is not possible to conclude with certainty whether the combinatorial treatment, the monocyte-FRC axis, or the TLR4 ligand signature is beneficial or predictive of clinical response in TNBC.
+
+## Resource availability
+
+### Lead contact
+
+        Requests for further information, resources, and reagents should be directed to, and will be fulfilled by, the lead contact, Angela Riedel (angela. riedel@uni-wuerzburg. de).
+
+### Materials availability
+
+        This study did not generate new unique reagents.
+
+### Data and code availability
+
+        RNA-seq (mouse) and scRNA-seq (mouse) count expression data generated during this study have been deposited at GEO (https://www. ncbi. nlm. nih. gov/geo/) and are publicly available as of the date of publication. Accession numbers are listed in the key resources table. The 5′ single-cell RNA-sequencing datasets supporting this study will be made available by the corresponding author upon request.
+        Due to strict patient privacy protection regulations, human raw sequencing data cannot be deposited in a public repository. Requests for access to the raw human single-cell data must be made to the lead contact for subsequent referral to the institutional ethics committee.
+        The mass spectrometry proteomics data have been deposited to the ProteomeXchange Consortium (http://proteomecentral. proteomexchange. org) via the PRIDE partner repository with the dataset identifier PRIDE: PXD066773.
+        This paper does not report original code.
+
+## Acknowledgments
+
+      We are grateful to patients who donated tissue for this study. We thank Kai Kretzschmar and his lab for discussions and suggestions. We thank Matthias Bozza and Richard Harbottle for the GFP episomal construct, Elmar Wolf and Pranjali Bhandare for help with sequencing, and Jacqueline Shields for providing the FRCs. We thank the staff of the animal facilities, the Core Unit FACS of the Interdisciplinary Center for Clinical Research (IZKF) Würzburg (Z-12), the Core Unit Systems Medicine (IZKF Z-6), and the Core Unit Fluorescence Imaging of the University Hospital Würzburg for technical support and advice.
+      This work was supported by funding from the German Cancer Aid (MSNZ Würzburg/NG2 to A. R.), from the IZKF Würzburg (project C-524 to A. R.), and from the Else Kröner-Fresenius-Stiftung (2022_EKEA.76 to A. R.). G. M. and M. H. were supported by funds from the Bavarian State Ministry of Science and the Arts and the Graduate School of Life Sciences (GSLS) of the University of Würzburg. H. A. was supported by the Egyptian Ministry of Higher Education and Scientific Research.
+
+## Author contributions
+
+      A. Riedel conceived the study, designed experiments, and interpreted data. G. M. performed the majority of experiments and analyses. M. H. performed all bioinformatics analysis. A. C., M. J. K., E. R., A. F., E. S., M. K., H. F., M. J., J. d. P. M. V., and M. H. supported experimental work. G. M., E. R., A. F., M. J. K., and L. K. processed clinical samples. U.-S. A. and T. S. provided clinical material. A. W., S.-L. H., and A. Rosenwald aided with collection of clinical material. A. Rosenwald and K. M. provided histopathological reviews. J. J. S. and F. M. performed proteomics analysis. M. D. and G. R. aided with the LN atlas. A. A. performed the T cell assays and H. A. performed the cytospin assay under M. B. L. A. W., T. O., and L. R. contributed to data interpretation. G. M., M. H., and A. Riedel prepared the figures and wrote the manuscript. A. Riedel supervised the study and acquired funding. All authors contributed to editing of the manuscript and critical review.
+
+## Declaration of interests
+
+      The authors declare no competing interests.
+
+## STAR★Methods
+
+### Key resources table
+
+
+[Table]
+REAGENT or RESOURCE | SOURCE | IDENTIFIER
+Antibodies
+FCM: anti-mouse CD45 BV510 (rat monoclonal 30-F11) | BioLegend | Cat#103137; RRID:AB_2561392
+FCM: anti-mouse CD45 PE (rat monoclonal 30-F11) | BioLegend | Cat#103106; RRID:AB_312971
+FCM: anti-mouse CD45 APC (rat monoclonal 30-F11) | BioLegend | Cat#103112; RRID:AB_312977
+FCM: anti-mouse CD3e FITC (Syrian hamster monoclonal 500A2) | BioLegend | Cat#152303; RRID:AB_2632666
+FCM: anti-mouse CD3e APC-Cy7 (Syrian hamster monoclonal 500A2) | BioLegend | Cat#152323; RRID:AB_2894632
+FCM: anti-mouse CD3e AF700 (Syrian hamster monoclonal 500A2) | BioLegend | Cat#152315; RRID:AB_2632712
+FCM: anti-mouse CD11b BV605 (rat monoclonal M1/70) | BioLegend | Cat#101237; RRID:AB_11126744
+FCM: anti-mouse CD11b PE (rat monoclonal M1/70) | BioLegend | Cat#101207; RRID:AB_312790
+FCM: anti-mouse CD11b FITC (rat monoclonal M1/70) | BioLegend | Cat#101205; RRID:AB_312788
+FCM: anti-mouse CD11c AF647 (Armenian hamster monoclonal N418) | BioLegend | Cat#117314; RRID:AB_492850
+FCM: anti-mouse CD11c AF700 (Armenian hamster monoclonal N418) | BioLegend | Cat#117319; RRID:AB_528735
+FCM: anti-mouse CD11c PE-Cy7 (Armenian hamster monoclonal N418) | BioLegend | Cat#117317; RRID:AB_493569
+FCM: anti-mouse Ly6C AF700 (mouse monoclonal HK1.4) | BioLegend | Cat#128023; RRID:AB_10640119
+FCM: anti-mouse Ly6C BV421 (mouse monoclonal HK1.4) | BioLegend | Cat#128031; RRID:AB_2562177
+FCM: anti-mouse Ly6C APC (mouse monoclonal HK1.4) | BioLegend | Cat#128016; RRID:AB_1732076
+FCM: anti-mouse Ly6G PerCP-Cy5.5 (rat monoclonal 1A8) | BioLegend | Cat#127615; RRID:AB_1877272
+FCM: anti-mouse PD-L1 PE-Cy7 (mouse monoclonal 10F.9G2) | BioLegend | Cat#124313; RRID:AB_10639934
+FCM: anti-mouse Ccr2 PE (rat monoclonal 475301) | R&D Systems | Cat#FAB5538P; RRID:AB_10718414
+FCM: anti-mouse B220 PE-Dazzle (rat monoclonal RA3-6B2) | BioLegend | Cat#103258; RRID:AB_2564053
+FCM: anti-mouse B220 APC-Cy7 (rat monoclonal RA3-6B2) | BioLegend | Cat#103223; RRID:AB_313006
+FCM: anti-mouse TLR4 PE (rat monoclonal SA15-21) | BioLegend | Cat#145403; RRID:AB_2561873
+FCM: anti-mouse PDPN PerCP-Cy5.5 (Syrian hamster monoclonal 8.1.1) | BioLegend | Cat#127421; RRID:AB_2814015
+FCM: anti-mouse PDPN APC (Syrian hamster monoclonal 8.1.1) | BioLegend | Cat#127409; RRID:AB_10612940
+FCM: anti-mouse PDGFRa APC (rat monoclonal APA5) | Thermo Fisher Scientific | Cat#17-1401-81; RRID:AB_529482
+FCM: anti-mouse CD31 FITC (rat monoclonal MEC13.3) | BioLegend | Cat#102506; RRID:AB_312913
+FCM: anti-mouse CD31 APC (rat monoclonal MEC13.3) | BioLegend | Cat#102509; RRID:AB_312916
+FCM: anti-mouse EpCAM BV605 (rat monoclonal G8.8) | BioLegend | Cat#118227; RRID:AB_2563984
+FCM: anti-mouse CD279 (PD-1) BV421 (rat monoclonal 29F.1A12) | BioLegend | Cat#135217; RRID:AB_10900085
+FCM: anti-mouse CD279 (PD-1) PE/Cyanine7 (rat monoclonal 29F.1A12) | BioLegend | Cat#135215; RRID:AB_10696422
+FCM: anti-mouse CD8 PE (rat monoclonal 53-6.7) | BioLegend | Cat# 100707; RRID:AB_312746
+FCM: anti-mouse CD8 BV510 (rat monoclonal 53-6.7) | BioLegend | Cat#100751; RRID:AB_2561389
+FCM: anti-mouse CD8 FITC (rat monoclonal 53-6.7) | BioLegend | Cat#100705; RRID:AB_312744
+FCM: anti-mouse CD8 APC-Cy7 (rat monoclonal 53-6.7) | BioLegend | Cat#100713; RRID:AB_312752
+FCM: anti-mouse CD4 BV650 (rat monoclonal GK1.5) | BioLegend | Cat#100469; RRID:AB_2783035
+FCM: anti-mouse CD4 APC-Cy7 (rat monoclonal GK1.5) | BioLegend | Cat#100413; RRID:AB_312698
+FCM: anti-mouse CD4 APC (rat monoclonal GK1.5) | BioLegend | Cat#100411; RRID:AB_312696
+FCM: anti-mouse TCRb PE | BioLegend | Cat#109207; RRID:AB_313430
+FCM: anti-mouse CD44 APC (rat monoclonal IM7) | BioLegend | Cat#103011; RRID:AB_312962
+FCM: anti-mouse CD44 BV510 (rat monoclonal IM7) | BioLegend | Cat#103043; RRID:AB_2561391
+FCM: anti-mouse CD134 (OX-40) PerCP/Cyanine5.5 (rat monoclonal OX-86) | BioLegend | Cat#119424; RRID:AB_2715994
+FCM: anti-mouse CD278 (ICOS) PE/Cyanine7 (rat monoclonal 7E.17G9) | BioLegend | Cat#117421; RRID:AB_2860636
+FCM: anti-mouse CD154 (CD40L) FITC (rat monoclonal SA047C3) | BioLegend | Cat#157005; RRID:AB_2814085
+FCM: anti-mouse iNOS AF700 (rat monoclonal CXNFT) | BioLegend | Cat#56-5920-80; RRID:AB_2848473
+FCM: anti-human CD45 BV605 (mouse monoclonal 2D1) | BioLegend | Cat#368523; RRID:AB_2715825
+FCM: anti-human CD45 AF488 (mouse monoclonal 2D1) | BioLegend | Cat#368535; RRID:AB_2721363
+FCM: anti-human EPCAM APC (mouse monoclonal 9C4) | BioLegend | Cat#324207; RRID:AB_756081
+FCM: anti-human ECAD APC (mouse monoclonal 67A4) | BioLegend | Cat#324108; RRID:AB_756070
+FCM: anti-human PD-L1 PerCP-efluo 710 (mouse monoclonal MIH1) | Thermo Fisher Scientific | Cat#46-5983-41; RRID:AB_11042473
+FCM: anti-human PD-L1 PerCP-Cy5.5 (monoclonal mouse 29E.2A3) | BioLegend | Cat#329738; RRID:AB_2617010
+FCM: anti-human CD14 PE-Cy7 (mouse monoclonal HCD14) | BioLegend | Cat#325618; RRID:AB_830691
+FCM: anti-human CD16 SB645 (mouse monoclonal CB16) | Thermo Fisher Scientific | Cat#64-0168-42; RRID:AB_2688210
+FCM: anti-human CD11b APC-Cy7 (mouse monoclonal ICRF44) | BioLegend | Cat#301341; RRID:AB_2563371
+FCM: anti-human CD11c BV510 (mouse monoclonal S-HCL-3) | BioLegend | Cat#371514; RRID:AB_2650797
+FCM: anti-human CD56 PE (mouse monoclonal MEM-188) | Thermo Fisher Scientific | Cat#MHCD5604; RRID:AB_10372062
+FCM: anti-human CD3 PE (recombinant human monoclonal REA613) | Miltenyi Biotech | Cat#130-113-701; RRID:AB_2726242
+FCM: anti-human CD31 PE-Cy7 (mouse monoclonal HIT3a) | BioLegend | Cat#303116; RRID:AB_1877151
+FCM: anti-human CD19 PE (mouse monoclonal HIB19) | BioLegend | Cat#302208; RRID:AB_314238
+FCM: anti-human HLA-DR BV711 (mouse monoclonal L243) | BioLegend | Cat#307643; RRID:AB_11218794
+FCM: anti-human PDPN PE (rat monoclonal NC-08) | BioLegend | Cat#337004; RRID:AB_1595457
+FCM: anti-human PDGFRa PE (mouse monoclonal 16A1) | BioLegend | Cat#323506; RRID:AB_2268113
+FCM: anti-human PDGFRb PE (mouse monoclonal 18A2) | BioLegend | Cat#323605; RRID:AB_2268113
+FCM: anti-human THY1 PE (mouse monoclonal 5E10) | BioLegend | Cat#328109; RRID:AB_893442
+FCM: anti-human CD31 PerCP-Cy5.5 (mouse monoclonal WM59) | BioLegend | Cat#303131; RRID:AB_2566174
+FCM: anti-human CD31 PE (mouse monoclonal WM59) | BioLegend | Cat#303106; RRID:AB_314332
+FCM: Tag-it Violet | BioLegend | Cat#425101
+FCM: CFSE Cell Division Tracker Kit | BioLegend | Cat#423801
+FCM: efluo 780 Viability Dye | eBioscience | Cat#65-0865-14
+FCM: Zombie NIR™Fixable Viability Dye | BioLegend | Cat#423106
+FCM: Human TruStain FcX™ (Fc Receptor Blocking Solution) | BioLegend | Cat#422301
+FCM: Purified Rat Anti-Mouse CD16/CD32 (Mouse Fc Block™) (rat monoclonal 93) | BioLegend | Cat#101320; RRID:AB_1574975
+IF: anti-mouse Collagen I (rabbit, polyclonal) | NeoBiotech | Cat#NB-47-00368
+IF: anti-mouse CD3e (Syrian hamster, monoclonal 500A2) | BioLegend | Cat#152302; RRID:AB_2650621
+IF: anti-mouse/ human CD11b (rat, monoclonal M1/70) | BioLegend | Cat# 01201; RRID:AB_312784
+IF: anti-human Collagen (rabbit, polyclonal) | Thermo Fisher Scientific | Cat#PA1-26204; RRID:AB_2260734
+IF: anti-human pan-Cytokeratin (mouse monoclonal AE-1/AE-3) | BioLegend | Cat#914204; RRID:AB_2616960
+IF: AF488 anti-hamster IgG (goat, polyclonal) | Thermo Fisher Scientific | Cat#A-21110; RRID:AB_2535759
+IF: AF555 anti-rat IgG (donkey, polyclonal) | Thermo Fisher Scientific | Cat#A48270; RRID:AB_2896336
+IF: AF647 anti-rabbit IgG (donkey, polyclonal) | Thermo Fisher Scientific | Cat#A-31573; RRID:AB_2536183
+IF: AF555 anti-guinea pig IgG (goat, polyclonal) | Thermo Fisher Scientific | Cat#A-21435; RRID:AB_2535856
+IF: AF488 anti-mouse IgG (goat, polyclonal) | Thermo Fisher Scientific | Cat#A-11001; RRID:AB_2534069
+IF: DAPI (4',6-Diamidino-2-Phenylindole, Dihydrochloride) | Invitrogen | N/A
+InVivoMAb anti mouse PD-1 (rat monoclonal RMP1-14) | Bio X Cell | Cat#BE0146; RRID:AB_10949053
+InVivoMAb rat IgG1 isotype control, anti-horseradish peroxidase (clone HRPN) | Bio X Cell | Cat#BE0088; RRID:AB_1107775
+Ultra-LEAF™ Purified anti-mouse CD3ε Antibody (monoclonal armenian hamster 145-2C11) | BioLegend | Cat#100339; RRID:AB_11150783
+Ultra-LEAF™ Purified anti-mouse CD28 Antibody (monoclonal mouse E18) | BioLegend | Cat#122021; RRID:AB_2810370
+TotalSeq-B0301 anti-mouse Hashtag 1 (monoclonal rat M1/42 + 30-F11) | BioLegend | Cat#155831; RRID:AB_2814067
+TotalSeq-B0302 anti-mouse Hashtag 2 (monoclonal rat M1/42 + 30-F11) | BioLegend | Cat#155833; RRID:AB_2814068
+TotalSeq-B0303 anti-mouse Hashtag 3 (monoclonal rat M1/42 + 30-F11) | BioLegend | Cat#155835; RRID:AB_2814069
+TotalSeq-B0304 anti-mouse Hashtag 4 (monoclonal rat M1/42 + 30-F11) | BioLegend | Cat#155837; RRID:AB_2814070
+TotalSeq-A0301 anti-mouse Hashtag 1 (monoclonal rat M1/42 + 30-F11) | BioLegend | Cat#155801; RRID:AB_2750032
+TotalSeq-A0302 anti-mouse Hashtag 2 (monoclonal rat M1/42 + 30-F11) | BioLegend | Cat#155803; RRID:AB_2750033
+TotalSeq-A0303 anti-mouse Hashtag 3 (monoclonal rat M1/42 + 30-F11) | BioLegend | Cat#155805; RRID:AB_2750034
+TotalSeq-A0304 anti-mouse Hashtag 4 (monoclonal rat M1/42 + 30-F11) | BioLegend | Cat#155807; RRID:AB_2750035
+TotalSeq-A anti-mouse CD11c (monoclonal armenian hamster N418) | BioLegend | Cat#117355; RRID:AB_2750352
+TotalSeq-A anti-mouse Ly-6G (monoclonal rat 1A8) | BioLegend | Cat#127655; RRID:AB_2749962
+TotalSeq-A anti-mouse Ly-6C (monoclonal rat HK1.4) | BioLegend | Cat#128047; RRID:AB_2749961
+TotalSeq-A anti-mouse MHC-II (monoclonal rat M5/114.15.2) | BioLegend | Cat#107653; RRID:AB_2750505
+TotalSeq-A anti-mouse CX3CR1 (monoclonal mouse SA011F11) | BioLegend | Cat#149041; RRID:AB_2783121
+TotalSeq-A anti-mouse CD103 (monoclonal armenian hamster 2E7) | BioLegend | Cat#121437; RRID:AB_2750349
+TotalSeq-A anti-mouse PDPN(monoclonal syrian hamster 8.1.1) | BioLegend | Cat#127427; RRID:AB_2860666
+TotalSeq-A anti-mouse CR2/CR1 (monoclonal rat 7E9) | BioLegend | Cat#123427; RRID:AB_2750540
+TotalSeq-A anti-mouse CD31 (monoclonal rat 390) | BioLegend | Cat#102437; RRID:AB_2810335
+TotalSeq-A anti-mouse CD34 (monoclonal armenian hamster HM34) | BioLegend | Cat#128619; RRID:AB_2810392
+TotalSeq-A anti-mouse CD3 (monoclonal rat 17A2) | BioLegend | Cat#100251; RRID:AB_2750533
+TotalSeq-A anti-mouse CD4 (monoclonal rat RM4-5) | BioLegend | Cat#100569; RRID:AB_2749956
+TotalSeq-A anti-mouse CD8 (monoclonal rat 53-6.7) | BioLegend | Cat#100773; RRID:AB_2734151
+TotalSeq-A anti-mouse CD62L (monoclonal rat MEL-14) | BioLegend | Cat#104451; RRID:AB_2750364
+TotalSeq-A anti-mouse CD25 (monoclonal rat PC61) | BioLegend | Cat#102055; RRID:AB_2749982
+TotalSeq-A anti-mouse CD44 (monoclonal rat IM7) | BioLegend | Cat#103045, RRID:AB_2734154
+TotalSeq-A anti-mouse PD-1 (monoclonal rat RMP1-30) | BioLegend | Cat#109123; RRID:AB_2734169
+TotalSeq-A anti-mouse CXCR5 (monoclonal rat L138D7) | BioLegend | Cat#145535; RRID:AB_2800681
+TotalSeq-A anti-mouse TCRgd (monoclonal armenian hamster GL3) | BioLegend | Cat#118137; RRID:AB_2749988
+TotalSeq-A anti-mouse CD127 (monoclonal rat A7R34) | BioLegend | Cat#135045; RRID:AB_2750009
+TotalSeq-A anti-mouse NKp46 (monoclonal rat 29A1.4) | BioLegend | Cat#137633; RRID:AB_2734199
+TotalSeq-A anti-mouse CD19 (monoclonal rat 6D5) | BioLegend | Cat#115559; RRID:AB_2749981
+TotalSeq-A anti-mouse CD21 (monoclonal rat 7E9) | BioLegend | Cat#123427; RRID:AB_2750540
+TotalSeq-A anti-mouse IgM(monoclonal rat RMM-1) | BioLegend | Cat#406535; RRID:AB_2783322
+TotalSeq-A anti-mouse IgD (monoclonal rat 11-26c.2a) | BioLegend | Cat#405745; RRID:AB_2783321
+TotalSeq-A anti-mouse CD23 (monoclonal rat B3B4) | BioLegend | Cat#101635; RRID:AB_2750358
+TotalSeq-A anti-mouse CD2 (monoclonal rat RM2-5) | BioLegend | Cat#100117; RRID:AB_2810312
+TotalSeq-B0251 anti-human Hashtag 1 (monoclonal mouse LNH-94 + 2M2) | BioLegend | Cat#394631; RRID:AB_2814347
+TotalSeq-B0252 anti-human Hashtag 2 (monoclonal mouse LNH-94 + 2M2) | BioLegend | Cat#394633; RRID:AB_2814348
+TotalSeq-B0253 anti-human Hashtag 3 (monoclonal mouse LNH-94 + 2M2) | BioLegend | Cat#394635; RRID:AB_2814349
+TotalSeq-B0254 anti-human Hashtag 4 (monoclonal mouse LNH-94 + 2M2) | BioLegend | Cat#394637; RRID:AB_2814350
+Biological samples
+Non-metastatic and metastatic axillary lymph node tissue | University Hospital Würzburg, Würzburg, Germany | N/A
+Tumor breast tissue | University Hospital Würzburg, Würzburg, Germany | N/A
+Chemicals, peptides, and recombinant proteins
+RPMI-1640 Medium | Sigma Aldrich | Cat#R8758
+Fetal Bovine Serum (FBS) | Sigma Aldrich | Cat#F7524
+Penicillin-Streptomycin (10,000 U/mL) | Thermo Fisher Scientific | Cat#15140122
+HEPES (1M) | Thermo Fisher Scientific | Cat#15630056
+β-mercaptoethanol | Thermo Fisher Scientific | Cat#21985023
+DMEM, high glucose, pyruvate | Thermo Fisher Scientific | Cat#41966052
+DMEM, advanced F12 | Thermo Fisher Scientific | Cat#12634010
+MEM Non-Essential Amino Acids Solution | Thermo Fisher Scientific | Cat#11140035
+GlutaMAX™ Supplement | Thermo Fisher Scientific | Cat#35050061
+Sodium pyruvate | Thermo Fisher Scientific | Cat#11360-070
+Lipofectamine™ 3000 Transfection Reagent | Thermo Fisher Scientific | Cat#L3000008
+Opti-MEM™ I Reduced Serum Medium | Thermo Fisher Scientific | Cat#31985070
+Trypsin-EDTA solution | Sigma Aldrich | Cat#T4049
+Trypan blue | Thermo Fisher Scientific | Cat#T10282
+Corning® Matrigel® Growth Factor Reduced (GFR) | Corning | Cat#354230
+Insulin solution human | Sigma Aldrich | Cat#I9278
+Phosphate buffered saline (PBS) | Sigma Aldrich | Cat#P2272
+CryoStor® CS10 cell cryopreservation media | Sigma Aldrich | Cat#C2874
+Tissue-Tek® O.C.T. Compound | Sakura Finetek USA | Cat#4583
+Bovine Serum Albumin (BSA) | Sigma Aldrich | Cat#9048-46-8
+Fluoromount-G® | SouthernBiotech | Cat#0100-01
+Donkey serum | Merck Millipore | Cat#S30-100ML
+Acid black 2 (India Ink) | Angene | Cat#8005-03-6
+Formaldehyde Solution 16%, Methanol free | Thermo Fisher Scientific | Cat#28908
+Acetic acid 100% | Carl Roth | Cat#6755.1
+TLR4i (TAK-242) | Sigma Aldrich | Cat#614316-5MG
+MYD88i (TJ-M2010-5) | MedChemExpress | Cat#HY-139397
+Collagenase A (from Clostridium histolyticum) | Sigma Aldrich | Cat#10103578001
+Collagenase D (from Clostridium histolyticum) | Sigma Aldrich | Cat#11088858001
+DNase I (grade II, from bovine pancreas) | Sigma Aldrich | Cat#10104159001
+EDTA, 500mM solution | Merck Millipore | Cat#324504
+ACK Lysing Buffer | Thermo Fisher Scientific | Cat#A10492-01
+Bovine Serum Albumin Fraction V | Merck | Cat#10735086001
+Lipopolysaccharides (LPS, from Escherichia coli O127:B8) | Sigma Aldrich | Cat#L4516
+Recombinant Mouse Interferon Gamma (rm IFN-gamma) | Immunotools | Cat#12343534
+NG-Methyl-L-arginine acetate salt (L-NMMA) | Sigma Aldrich | Cat#M7033
+S100A9 recombinant mouse | R&D Systems | Cat#2065-S9
+Fibronectin | Sigma Aldrich | Cat#F2518
+Recombinant Mouse CCL7 (MCP-3) (carrier-free) | Biolegend | Cat#86102
+Recombinant Mouse CCL2 (MCP-1) (carrier-free) | Biolegend | Cat#578402
+Recombinant Human Apo-SAA1 | Peprotech | Cat#300-53
+Recombinant Murine PDGF-BB | Peprotech | Cat#315-18
+Recombinant Mouse NGAL (Lipocalin-2) (carrier-free) | Biolegend | Cat#588002
+Recombinant Mouse Biglycan Protein, CF | Biotechne/RnD | Cat#8128-CM-050
+Mouse Tenascin C (TNC) Protein 10 ug | Hölzel | Cat#abx168355-10
+Recombinant Mouse Osteopontin (carrier-free) | Biolegend | Cat#763604
+TWEEN® 20 | Sigma Aldrich | Cat#P1379
+Ethanol | Sigma Aldrich | Cat#32205-M
+Isoflurane | Cp pharma | Cat#1214
+Critical commercial assays
+RNeasy micro kit | Qiagen | Cat#74004
+First Strand cDNA Synthesis Kit | Thermo Fisher Scientific | Cat#K1612
+TaqMan™ Fast Advanced Master Mix | Thermo Fisher Scientific | Cat#4444554
+FOXP3 Fix/Perm Buffer Set | BioLegend | Cat#421403
+Chromium Next GEM Single Cell 3ʹ Kit v3.1 | 10x Genomics | Cat#PN-1000123
+Dual Index Kit TT Set A, 96 rxns | 10x Genomics | Cat#PN-1000215
+Dual Index Kit NT Set A, 96 rxns | 10x Genomics | Cat#PN-1000242
+Chromium Next GEM Chip G Single Cell Kit | 10x Genomics | Cat#PN-1000120
+Library Construction Kit | 10x Genomics | Cat#PN-1000190
+Chromium GEM-X Single Cell 5’ GEM Kit v3 4 rxns | 10x Genomics | Cat#PN-1000697
+Library Construction Kit C | 10x Genomics | Cat#PN- 1000689
+5' Gel Bead Kit v3 4-plex | 10x Genomics | Cat#PN-1000750
+5' OCM Chip & Gaskets | 10x Genomics | Cat#PN- 2001100
+High Sensitivity DNA Kit | Agilent | Cat#5067-4626
+The NEBNext Poly(A) mRNA Magnetic Isolation Module | New England Biolabs | Cat#E7490
+NEBNext Ultra II Directional RNA Library Prep Kit for Illumina | New England Biolabs | Cat#E7760
+SuperScript™ IV Single Cell/Low-Input cDNA PreAmp Kit | Thermo Fisher Scientific | Cat#11752096
+Mouse MCP-1 ProQuantum Immunoassay Kit | Thermo Fisher Scientific | Cat#A44837
+HAEMA – Quick-Stain LT-SYS ® (Diff-Quick) | LT-SYS | Cat#LT 005
+Deposited data
+Raw data – bulkRNA-seq (mouse) | This paper | GEO: GSE267533
+Raw data – spatial transcriptomics (mouse) | This paper | GEO: GSE267534
+Raw data – scRNA-seq (mouse) | This paper | GEO: GSE267535
+Human GRCh38 (GENCODE v44/Ensembl110 annotations) | 10x Genomics | https://www.10xgenomics.com/support/software/cell-ranger/latest/release-notes/cr-reference-release-notes#2020-a
+Mouse GRCm39 (GENCODE vM33/Ensembl110 annotations) | 10x Genomics | https://www.10xgenomics.com/support/software/cell-ranger/latest/release-notes/cr-reference-release-notes#2020-a
+Human Healthy Bone Marrow | Zhang et al. (Ref: 42) | https://www.nature.com/articles/s41590-024-01782-4
+Experimental models: Cell lines
+Mouse: 67NR cell line | Fred Miller | N/A
+Mouse: 4T1 cell line | Fred Miller | N/A
+Mouse: AT-3 cell line | ATCC | N/A
+Mouse: FRC cell line | Jacqueline Shields | N/A
+Human: HCC10806 cell line |  | N/A
+Human: MDA-MB-231 cell line | ATCC | N/A
+Human: MDA-MB-468 cell line |  | N/A
+Human: Hs578T cell line |  | N/A
+Human: MCF7 cell line |  | N/A
+Human: T47D cell line |  | N/A
+Experimental models: Organisms/strains
+C57BL/6J mice | Envigo Laboratory | Cat#5705F
+BALB/c OlaHsd | Envigo Laboratory | Cat#16205F
+Oligonucleotides
+Taqman Probe for mouse Ccl7 | Thermo Fisher Scientific | Mm00443113_m1
+Taqman Probe for mouse Ccl2 | Thermo Fisher Scientific | Mm00441242_m1
+Taqman Probe for mouse Cxcl1 | Thermo Fisher Scientific | Mm04207460_m1
+Taqman Probe for mouse Actb | Thermo Fisher Scientific | Mm00607939_s1
+Recombinant DNA
+Episomal GFP | Matthias Bozza | N/A
+Software and algorithms
+GraphPad Prism (version 8.1.0) | GraphPad software | https://www.graphpad.com/features
+FlowJo (version 10.7.2) | TreeStar Inc | https://www.flowjo.com/
+Fiji | NIH | https://imagej.nih.gov/ij/
+R (4.3.2) | The R Foundation | https://www.r-project.org/
+RStudio (2023.12.1+402) | RStudio | https://posit.co/
+PyCharm (2023.2.5) | JetBrains s.r.o. | https://www.jetbrains.com/pycharm/
+Python 3.11 | Python | https://www.python.org/
+Anaconda3 (2023.09.0) | Anaconda, Inc | https://www.anaconda.com/
+Seurat R package (4.3.0) | Hao et al. (Ref: 37) | https://satijalab.org/seurat/
+ClusterProfiler R package | Wu et al. (Ref: 52) | https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html
+CellChat R package (v2) | Jin et al. (Ref: 26) | https://github.com/sqjin/CellChat
+Cell2location (0.1.3) | Kleshchevnikov et al. (Ref: 35) | https://cell2location.readthedocs.io/en/latest/
+Deseq2 R package (1.42.1) | Love et al. (Ref: 53) | https://bioconductor.org/packages/release/bioc/html/DESeq2.html
+ggplot2 R package (3.3.6) | Wilkinson (Ref: 54) | https://ggplot2.tidyverse.org
+Monocle3 R package (1.3.4) | Cao et al. (Ref: 55) | https://cole-trapnell-lab.github.io/monocle3/
+Rsubreads R package (2.16.1) | Liao et al. (Ref: 56) | https://bioconductor.org/packages/release/bioc/html/Rsubread.html
+EnhancedVolcano R package (1.22.0) | Blighe et al. (Ref: 57) | https://bioconductor.org/packages/release/bioc/html/EnhancedVolcano.html
+Umap R package (0.2.10) | McInnes et al. (Ref: 58) | https://github.com/tkonopka/umap
+CytoTree R package (1.0.3) | Dai (Ref: 59) | https://github.com/JhuangLab/CytoTree
+RColorBrewer (1.1-3) | Cran.r-project (Ref: 60) | https://cran.r-project.org/web/packages/RColorBrewer/index.html
+cell ranger (7.0.0) | 10x Genomics | https://www.10xgenomics.com/support/software/cell-ranger/downloads/previous-versions
+Spaceranger (1.3.1) | 10x Genomics | https://www.10xgenomics.com/support/software/space-ranger/downloads/previous-versions
+DoubletFinder R package () | McGinnis et al. (Ref: 61) | https://github.com/chris-mcginnis-ucsf/DoubletFinder
+SCPubr R package (1.1.2) | Blanco-Carmona (Ref: 62) | https://github.com/enblacar/SCpubr
+scCsutomize R package (2.1.2) | Marsh et al. (Ref: 63) | https://samuel-marsh.github.io/scCustomize/
+Loupe Browser 6 | 10x Genomics | https://www.10xgenomics.com/support/software/loupe-browser/downloads/previous-versions
+Scanpy (1.10.0) | Wolf et al. (Ref: 64) | https://scanpy.readthedocs.io/en/stable/
+Other
+BD FACSAria™ II | BD Bioscience | RRID:SCR_018934
+Attune NxT Flow Cytometer | Thermo Fisher Scientific | RRID:SCR_019590
+Olympus SlideView VS200 | Olympus | RRID:SCR_024783
+Applied biosystems StepOne Real-Time PCR system | Thermo Fisher Scientific | RRID:SCR_023455
+Invitrogen Countess automatic cell counter | Thermo Fisher Scientific | RRID:SCR_025370
+Leica CM3050 S Cryostat | Leica Biosystems | RRID:SCR_016844
+NanoDropTM One/One C Microvolume UV-Vis Spectrophotometer | Thermo Fisher Scientific | RRID:SCR_023005
+DMi8 Inverted Microscope | Leica | RRID:SCR_026672
+2100 Bioanalyzer Instrument | Agilent | RRID:SCR_018043
+Tissue-Tek® Cryomold® | Sakura® Finetek | Cat#4565
+BD Microlance injection needle 23G, 06x25mm | BD | Cat#305145
+PluriStrainer® 70 μm | pluriSelect | Cat#43-50070-51
+Blood Collection tube, BD Vacutainer® (Plastic K2EDTA) | VVR | Cat#BDAM368841
+TC insert, for 24-well plates, PET, translucent, pore size: 5 μm | Starstedt | Cat#83.3932.500
+
+### Experimental model and study participant details
+
+#### Human subjects
+
+          All experimental procedures performed on clinical human tissue samples were in accordance with the ethical standards of the institutional and/or national research committees and with the 1964 Helsinki declaration and its later amendments or comparable ethical standards. Collection of tumor and lymph node tissue was performed at Department of Gynecology and Obstetrics (Würzburg, Germany) and was approved by the ethical committee of the University Würzburg (reference 20201005 02). Tissue samples were collected immediately after surgery, anonymized, and processed as described below. Pathological review of tumor tissues was performed at the Institute of Pathology of the University Würzburg as part of the standard clinical care; all clinical information is provided in Table S1.
+
+#### Mouse models
+
+          Female immune competent BALB/c and C57BL/6 experimental mice (aged 6–8 weeks) were purchased from Envigo laboratory and acclimated to the animal facility for one week prior to initiating experiments. Mice were housed in conventional facilities in individually ventilated cages, under a 12 hour light-dark schedule at 22°C and in the presence of 2-4 cage mates. Standard autoclaved lab diet and water were provided ad libitum.
+
+#### Cell culture
+
+##### Murine
+
+            Murine cell lines including fibroblastic reticular cells (FRCs, isolated from p53ER/ER C57BL/6 mice; gift of Jacqueline Shields) were cultured in RPMI-1640 medium (Sigma Aldrich) supplemented with 10% fetal bovine serum (FBS, Sigma-Aldrich), 100 U/mL penicillin-streptomycin (Gibco), 10 mM HEPES buffer (Thermo Fisher Scientific) and 15 μM β-mercaptoethanol (Thermo Fisher Scientific). Breast cancer cell lines 67NR, 4T1 (gift of Fred Miller), (Ref: 65) and AT3 (ATCC) were cultured in DMEM medium (Gibco) supplemented with 10% FBS and 100 U/mL penicillin-streptomycin, AT3 were also supplemented with 2 mM non-essential amino acids (Thermo Fisher Scientific), 15 mM HEPES and 1xβ-mercaptoethanol.
+
+##### Human
+
+            Human breast cancer cell lines HCC1806 and T47D were cultured in RPMI-1640 medium supplemented with 10% FBS, 100 U/mL penicillin-streptomycin, while MDA-MB-468, Hs578T were cultured in DMEM medium supplemented with 10% FBS and 100 U/mL penicillin-streptomycin, MCF7 were also supplemented with insulin 10 μg/mL (Sigma Aldrich), while MDA-MB-231 (ATCC) were supplemented with 10 mM HEPES.
+            All cells were cultured at 37°C in the presence of 5% CO2. Cultured cells were repeatedly tested for mycoplasma over the course of this study and remained negative for the duration of the study.
+
+### Method details
+
+#### Human sample processing
+
+          Human patient samples of primary tumor, non-metastatic and metastatic lymph nodes (LNs) were obtained after surgery. For further processing for single-cell RNA-sequencing (scRNA-seq) or flow cytometry, tissues were cut into pieces and stored in CryoStor CS10 freezing media (Sigma Aldrich), frozen at -80 °C and stored at -150 °C (as previously described (Ref: 66)). For analysis by IF, tissue samples were cleaned and embedded in molds filled with optimal cutting temperature (OCT, Sakura Finetek USA) compound, snap frozen on dry ice and stored at -80 °C until further processing. Tissues were sectioned at 10μm thickness in a Cryostat (Leica) and transferred to glass slides. Sections were then frozen at -80 °C until usage.
+
+#### Immunofluorescence staining
+
+          10 μm frozen sections were fixed in ice-cold acetone: methanol 1:2 mix for 2 minutes, blocked with 5% goat serum, 2% bovine serum albumin (BSA, Sigma Aldrich) in phosphate buffered saline (PBS, Sigma-Aldrich), and incubated with the primary anti-mouse antibodies at 4 °C overnight (see antibodies details in the key resources table). Alexa Fluor secondary antibodies (Thermo Fisher Scientific) were used at a dilution of 1:300. Sections were mounted in ProLong Gold (Thermo Fisher Scientific) and epifluorescence images were taken using DMi8 Inverted Microscope (Leica) and analyzed using Fiji (NIH).
+
+#### Generation of GFP expressing cell lines
+
+          Episomal GFP construct was a gift from Matthias Bozza. 4T1, 67NR and AT3 cell lines were transfected with the nS/MARt-Luc vector, which was generated by exchanging the reporter gene GFP for luciferase in the SP-nS/MARt vector. (Ref: 67) Cells were transfected with Lipofectamine 3000 (Thermo Fisher Scientific) in OptiMEM (Thermo Fisher Scientific) according to the manufacturer's instructions. Briefly, diluted Lipofectamine 3000 reagent was mixed with diluted DNA (final concentration of 5 μg) at a 1:1 ratio. The mixture was incubated for 15 minutes and added to 4T1, 67NR and AT3 cell lines. Transduced cell lines were selected in puromycin at a concentration of 2 μg/mL for 14 days, followed by fluorescence activated cell sorting (FACS) on a FACSAria II (BD).
+
+#### Tumor mouse models
+
+          To induce mammary tumors, BALB/c or C57BL/6 mice were orthotopically injected bilaterally into the 4th mammary fat pad with GFP-positive (episomal construct) breast cancer cells. Specifically, 5x103 4T1 cells or 1x105 67NR cells were injected into BALB/c mice, while 5x105 AT3 cells were injected into C57BL/6 mice. Injection was performed in a 1:1 mixture of 25 μL PBS and 25 μL Matrigel (Corning) for AT3 and 67NR cells, or 50 μL PBS alone for 4T1 cells. 4T1 and 67NR tumors were allowed to grow for approximately 21 days, while AT3 tumors were allowed to grow for 28 days. Tumor size was monitored throughout the experiment and measured with calipers, volume was calculated using the ellipsoid formula π/6 × (length × width2).
+          In another series of experiments in which the 4T1 cell line was injected into mice to induce mammary tumors, the primary tumor was surgically removed, when the primary tumors reached approximately 500 mm3 in size after 21 days.
+          At endpoint, animals were euthanized, weighed, and tumors, tumor-draining LNs, lungs, blood, bone marrow, and spleen were collected. Animals were excluded from the study if tumors failed to form, tumors were growing in the peritoneum, or if health concerns were reported.
+
+#### Sample preparation for flow cytometry
+
+          Flow cytometry was performed on cells isolated from tissues as previously described for both mouse and human tissue. (Ref: 21) Briefly, axillary, brachial LNs, spleen, blood, bone marrow and primary tumor were collected. Collected tumors were measured using a caliper and weighted to determine the volume and size.
+          LNs were mechanically disrupted using a 23G needle, while spleen, lungs and tumors were cut into small pieces using a scalpel. Tissues were then digested in a 500 μL mixture of 1 mg/mL collagenase A and D (Roche) and 0.4 mg/mL DNase I (Roche) in digestion media (DMEM, 2% FBS and 2 mM HEPES) at 37°C for 60 minutes with 1000 rpm rotation in a thermo-mixer (Eppendorf). Ethylenediaminetetraacetic acid (EDTA, Sigma) at a final concentration of 10 mmol/L was then added and cells were passed through a 70 μm mesh prior to immunostaining. Spleen, lungs and tumor samples were disrupted using a scalpel and further processed like the LN tissues, followed by red blood cell lysis by incubation in Ammonium-Chloride-Potassium (ACK, Thermo Fisher Scientific) buffer for 3 minutes.
+          Whole blood samples were collected into blood collection tubes (EDTA-coated, VWR), followed by red blood cell lysis with ACK buffer. Bone marrow was flushed from both femurs and tibias with PBS using a syringe with a 26G needle, followed by red blood cell lysis with ACK buffer.
+          For flow cytometry staining, 1x106 cells were stained with fixable viability dye live-dead eFluor 780 (eBioscience) or fixable viability dye live/dead violet (Molecular Probes) washed with FACS buffer (0.5% BSA, 2 mM EDTA in PBS) and incubated with Fc receptor blocker for 10 minutes at 4°C, followed by cell surface staining using combinations of fluorescently conjugated antibodies (see antibodies details in the key resources table). For intracellular staining Foxp3/Transcription Factor Fixation/Permeabilization Kit (eBioscience) guidelines were followed. All antibodies were used at a dilution of 1:100 (additional information is listed in the key resources table). The cells were then washed in FACS buffer and resuspended in FACS buffer before analysis on an Attune NxT (Thermo Fisher Scientific) analyzer.
+          Offline analysis was performed using FlowJo software (Treestar, version 10.8.1), and for UMAP plots, data were analyzed using R. Briefly, the runExprsExtract function from the CytoTree R package was used to import the FCS files, followed by log normalization and scaling of the data. Non-linear dimension reduction was performed using the UMAP function in R. Visualization was then performed using the ggplot2 and RColorBrewer R packages.
+
+#### Cytospin and Diff-Quick staining
+
+          Cell sorting was performed using multicolor FACS (BD FACSAria II). Cells were gated on live cells (Zombie) and on CD45+ to obtain lymphocytes, on CD11c CD11b+ to obtain myeloid cells and then on Ly6Chi Ly6G to obtain monocytes or on Ly6Clo Ly6Ghi to obtain neutrophils or on Ly6C Ly6G to obtain macrophages. After sorting, the cells were washed, resuspended in 200 μl phosphate-buffered saline (PBS) and cytocentrifuged onto SuperFrost® Plus slides using a Hettich® Universal 320/320R centrifuge at 600 rpm for 10 minutes. After centrifugation, the slides were stained with Haema-Quick Stain LT-SYS® (Diff-Quick) according to the manufacturer's instructions. Slides were imaged using Zeiss Primo Star HD microscope and images were acquired using 100X oil immersion lens.
+
+#### 3’ single-cell RNA sequencing
+
+          LNs were digested and stained as described above before cell sorting. In addition, during cell surface staining the cells were stained with hash-tagging antibodies for mouse (TotalSeqB#1-4 or for LNs atlas TotalSeqA#1-4 and cite-seq antibodies), and for human (TotalSeqB #1-4) to differentiate amongst the different conditions/patients.
+          Cell sorting was performed using multicolor FACS (BD FACSAria II). For mouse samples, it was gated on live cells (Zombie) and then on CD45+, CD3+, CD4+/CD8+ and CD44hi cells to obtain T cells; for endothelial cells, on CD45, Pdpn/Pdgfra, Cd31+; for FRCs, on CD45, Pdpn/Pdgfra+, CD31 and to obtain myeloid cells, on CD45+, CD3e and CD11b+. For human samples, it was gated on live cells (Zombie) CD19 CD56 cells to discard dead, B and NK cells, then on CD45+CD3e+ to obtain T cells, on CD45EPCAM/ECAD and pan-PDPN/PDGFRA/PDGFRB/CD31/THY1+ to obtain stromal cells, on CD45+CD3eCD11b+ to obtain myeloid cells and on CD45EPCAM/ECAD+ to obtain epithelial cells.
+          Samples were processed using the Chromium Next GEM Single Cell 3’ Reagent Kits v3.1 (Dual Index, 10x Genomics). Libraries were quantified by automated electrophoresis (BioAnalyzer, Agilent) and their quality was assessed on a Fragment Analyzer (Agilent) in the Core Unit for Systems Medicine of the University Hospital Würzburg. Samples were sequenced using an Illumina NextSeq2000.
+          After assessing the quality of sequencing using FASTQC, libraries were processed using cell ranger 7.0.0 where they were mapped to mouse reference GRCm39. Subsequently, demultiplexing was performed for each cell type separately using HOT Demux function from the Seurat package with a positive quantile set to 0.85. Cells with less than 200 genes detected, more than 10% mitochondrial genes, and more than 60% ribosomal genes were considered of bad quality and were removed. Doublet cells were detected using DoubletFinder R package and were removed. Then, the data underwent normalization and scaling while variable feature were determined using vst method in Seurat. The top 2000 variable genes were used to conduct the PCA then 30 PCs were used for further dimensional reduction. Cell types were assigned using canonical markers found in markers for each cluster which were defined by FindAllMarkers function. Cell-cell communication was conducted using CellChat R package following their standard pipeline. Signatures were calculated with the help of AddModuleScore function in Seurat. Visualization was aided by the SCPubr and scCsutomize R packages. Pseudotime trajectories were inferred using Monocle 3. The learn_graph function created a principal graph, and the root node was selected within the Monocytes. (Ref: 55) (Ref: 68) Pseudotime values were assigned with order_cells, and trajectories were visualized on a UMAP calculated in Seurat function.
+          For the human samples, the analysis was identical to that described for the mouse data, but with some deviations. The libraries were mapped to human reference GRCh38. QC parameters were set to exclude cells with less than 200 genes, more than 5500 genes, more than 25% mitochondrial genes as well as more than 45% ribosomal genes. Patient derived batch correction was conducted using Harmony. Furthermore, 35 PCs were used to calculate the UMAP and define neighbors. Cell types were annotated using canonical markers.
+
+#### 5’ single-cell RNA sequencing
+
+          LNs were digested and stained as described above before proceeding to cell sorting. Cell sorting was performed using multicolor FACS (BD FACSAria II). Mouse samples were gated on live cells (Zombie) and then on CD45+, CD3+, CD4+/CD8+ cells to obtain naïve T cells. For CD4+ activated T cells on CD44hi, ICOS+ and PD1+, and for activated CD8+ T cells on CD40L+ and OX40+. Naïve and activated T cells were pooled in a 1:5 ratio.
+          Samples were processed using the GEM-X Universal 5' Gene Expression v3 4-plex, On-chip Multiplexing, with Chromium Single Cell V(D)J Amplification Kits (10 Genomics). Libraries were quantified by automated electrophoresis (BioAnalyzer, Agilent) and their quality was assessed on a Fragment Analyzer (Agilent) in the Core Unit for Systems Medicine of the University Hospital Würzburg. Samples were sequenced using an Illumina Novaseq X plus.
+
+#### Myeloid cells homing
+
+          Control (resting) and 4T1 tumor-bearing mice were sacrificed at the endpoint, spleen and bone marrow were collected and stained for flow cytometry as described above. Cells were then sorted and gated for CD45+, CD11b+ and Ly6Chi to select monocytes. Sorted cells were counted and labeled with CFSE (BioLegend) according to the manufacturer's instructions.
+          3,5-4x104 cells were then injected intravenously into 4T1 tumor-bearing mice (18 or 21 days after primary tumor injection). After 16 hours, the mice were sacrificed, and the LNs were collected to investigate the homing of CFSE-labeled monocytes via flow cytometry.
+
+#### Myeloid cells ex vivo restimulation assay
+
+          LNs were digested as described above to obtain single cell suspensions. Cells were then counted and 2x105 cells were seeded in triplicate into a 96-well plate in R10 medium (RPMI 1640 with 10% FBS, 200 mM L-glutamine, 10 mM sodium pyruvate, and 50 mM β-mercaptoethanol) and stimulated with 0.1 μg/mL Lipopolysaccharides (LPS, Sigma Aldrich) and 100 U/mL interferon-γ (IFN-γ, Immunotools) for 16 hours at 37°C with 5% CO2. Afterwards, the cells were harvested for staining and flow cytometry analysis.
+
+#### In vitro T cell suppression assay
+
+          LNs were collected from mice and digested as described above until a single cell suspension was obtained. Samples were stained and sorted to obtain monocytes (Ly6Chi), neutrophils (Ly6Clo) and double negative/macrophages (Ly6C). T cells were sorted from control LNs only (B220) and then labeled with Tag-it violet proliferation dye (BioLegend) according to the manufacturer's instructions.
+          In a 96-well round bottom suspension plate, 2×104 myeloid cells were added at a 1:1 ratio to the labeled T cells in R10 T cell culture medium (RPMI 1640 with 10% FBS, 200 mM L-glutamine, 10 mM sodium pyruvate, and 50 mM β-mercaptoethanol) in a total volume of 50 μL/well. T cells were stimulated with anti-CD3 (2.5 μg/mL, BioLegend clone 145-2C11) and anti-CD28 (2.5 μg/mL, Biolegend clone E18). Pharmacological inhibitors of the iNOS inhibitory mechanisms NG-Methyl-L-arginine acetate salt (L-NMMA, 500 μM, Sigma Aldrich) were used. Cocultured cells were then kept at 37°C and 5% CO2 for 3 days. On day 3, cells were pooled and stained for flow cytometry (see antibody details in the key resources table). The proliferation of activated CD4+ and CD8+ T cells was analyzed by flow cytometry using Tag-it violet dye.
+
+#### 10x Visium spatial transcriptomics
+
+          This microarray-based technique relies on unique barcoded probes embedded on spots measuring 55 μm in diameter, distributed across a 6.5 mm x 6.5 mm capture area. 10 μm sections of OCT-embedded LNs were placed on 10x Visium Spatial Gene Expression Fresh Frozen Tissue Slides (10x Genomics). LN sections were stained with anti-mouse CD3e, anti-mouse cytokeratin 8/18, and anti-mouse Collagen 1 antibodies and processed according to the manufacturer's protocol (Visium Spatial Gene Expression Reagent Kits, CG000239). Libraries were pooled and sequenced on an Illumina NextSeq2000.
+          The Visium protocol libraries were processed using Space Ranger 1.1.0 from 10x Genomics, utilizing their provided GRCm38 reference genome. Loupe Browser 6 aided in identifying tissue-covered spots on Visium slides using IF images alongside the capture area's fiducial frame. Seurat 4.3.0 were used for subsequent analysis, filtering out spots with less than 300 reads or more than 20% mitochondrial genes. Cell2location was employed to estimate cell type abundances, leveraging a mouse LN scRNA-seq atlas which have been generated from resting, NDLN as well as TDLN of BALB/c mice from control, 4T1 tumor-bearing mice and 67NR tumor-bearing mice. The cell type atlas was used to construct expression signatures using cell2location’s negative binomial regression model with training mini-batch size of 3000 and training duration of 250 epochs. Mitochondrial genes were removed from the Visium data then untransformed and unnormalized mRNA counts of selected genes, which showed expression of more than 0 in 3% of cells or had a mean expression of more than 1.12, were utilized to determine cell abundances setting number of cells per spot to 15 as counted in DAPI staining. To determine tissue regions with similar cell type decomposition, abundance of all cell types for each spot were clustered using the Leiden algorithm. Additionally, non-negative matrix factorization (NMF) was conducted to highlight the co-occurrence of cell types. Visualization was performed using scanpy module in python.
+
+#### Quantitative reverse-transcription PCR (RT-qPCR) on ex vivo sorted FRCs
+
+          LNs were digested and stained as described above before cell sorting. Cells were stained and sorting was performed using a multicolor FACS (BD FACSAria II). To obtain FRCs we gated on live (Zombie), CD45 CD31 and PDPN/Pdgfra+ cells. 1,500-3,000 cells were sorted directly into lysis buffer and processed by using the SuperScript™ IV Single Cell/Low-Input cDNA PreAmp Kit (Thermo Fisher Scientific) according to the manufacturer's protocol. A 1:20 dilution was used as an input for downstream RT-qPCR using TaqMan assays and a StepOne RT-qPCR instrument (Thermo Fisher Scientific). Relative quantification was performed using the 2(-ΔΔCT) method with B2m expression as a housekeeping gene.
+
+#### Conditioned media (CM)
+
+          Conditioned media (CM) were prepared as described previously. (Ref: 22) Briefly, control conditioned media (FRC) and tumor cell conditioned media from either mouse (4T1, 67NR, and AT3) or human (HCC10806, MDA-MB-231, MDA-MB-468, Hs578T, MCF7 and T47D) cell lines were prepared. Cells were seeded into T75 culture flasks (Thermo Fisher Scientific) at a 30% confluency and were cultured in their medium for 24 hours, after which they were washed with PBS and their medium was changed to 10 mL of pure RPMI-1640 medium (T75). After another 24 hours, the medium was retrieved, filtered (pore size 0,22 μm) and frozen at -80°C for long term storage.
+
+#### FRC treatment with CM, TLR4 inhibitor and recombinant proteins
+
+          10,000 (for FRC CCM, 67NR and AT3 TCM treatment) or 15,000 FRCs (for 4T1 TCM treatment) were seeded in duplicate on a 6-well plate in their normal growth medium for 24 hours. The medium was then replaced with 100% CM supplemented with 2% FBS and 100 U/mL penicillin/streptomycin, which was obtained as described above. FRCs were cultured in the CM for 48 hours, after which the media was replaced with fresh supplemented CM. After another 48 hours, cells were collected using RLT lysis buffer provided in the QIAGEN RNeasy Micro Isolation Kit (QIAGEN). Cells were snap frozen on dry ice and stored at -80°C until RNA extraction.
+          For treatment with the TLR4 inhibitor TAK-242 (Sigma Aldrich), 50,000 FRCs were seeded, while for treatment with the Myd88 inhibitor TJ-M2010 (MedChemExpress) 20,000 FRCs were seeded in their normal growth medium in a standard 6-well plate for 24 hours. The medium was then replaced with 100% CM supplemented with 2% FBS and 100 U/mL penicillin/streptomycin, which was obtained as described above. FRCs were treated at a concentration of 9μM TAK-242 for a total of 6 hours or with 5μM and 10μM TJ-M2010 for a total of 48 hours and then retreated for another 6 hours.
+          For treatment with mouse recombinant S100A9 (R&D Systems), 10,000 FRCs were seeded in their normal growth medium in a standard 6-well plate. FRCs were treated with 3 μg/mL in normal growth medium supplemented with 2% FBS and 100 U/mL penicillin/streptomycin for a total of 96 hours.
+          For treatment with mouse recombinant Lipocalin-2 (Biolegend), 20,000 FRCs were seeded in their normal growth medium in a standard 6-well plate for 24 hours. FRCs were treated with 50ng/ml in normal growth medium supplemented with 2% FBS and 100 U/mL penicillin/streptomycin for a total of 48 hours.
+          For treatment with human Apo-SAA1 (Peprotech), mouse recombinant PDGF-BB (Peprotech), human fibronectin (Sigma-Aldrich) and mouse recombinant BGN (Biotechne/RnD) 50,000 FRCs were seeded in their normal growth medium in a standard 6-well plate for 24 hours. FRCs were treated (5μg/ml, SAA1; 50ng/ml PDGF-BB; 50 μg/mL FN; BGN 1μg/mL) in normal growth medium supplemented with 2% FBS and 100 U/mL penicillin/streptomycin for a total of 24 hours.
+          After all treatments cells were collected using RLT lysis buffer provided in the QIAGEN RNeasy Micro Isolation Kit (QIAGEN). Cells were snap frozen on dry ice and stored at -80°C until RNA extraction.
+
+#### RNA extraction and RT-qPCR
+
+          RNA isolation from FRCs previously cultured in conditioned media (CM) or treated was performed using the QIAGEN RNeasy Micro Kit Isolation Kit according to the manufacturer's instructions. The concentration and purity of the isolated RNA was then assessed using a NanoDrop device (Thermo Fisher Scientific).
+          cDNA synthesis was performed by reverse transcription synthesis reaction using the Reverse Transcription Kit (Thermo Fisher Scientific) according to the manufacturer's protocol. For this reaction, 1 μg of RNA was used. The RT-qPCR procedure was performed on a StepOne RT-qPCR instrument using TaqMan Master Mix FAST with the following specific TaqMan assays (see assay details in the key resources table). Relative quantification was performed using the 2(-ΔΔCT) method with Actb expression as a normalization control.
+
+#### Bulk RNA sequencing
+
+          RNA sequencing was performed as previously described. (Ref: 9) Briefly, total RNA was isolated from treated FRCs using the QIAGEN RNeasy Mini Kit. The concentration, integrity, and purity were determined by NanoDrop and BioAnalyzer devices. The NEBNext Poly(A) mRNA Magnetic Isolation Module (New England Biolabs) was used for 500 ng. Thereafter, libraries for RNA sequencing (RNA-seq) were prepared according to the instructions for the NEBNext Ultra II Directional RNA Library Prep Kit for Illumina (New England Biolabs) with 10 PCR cycles for amplification and sequenced on an Illumina NextSeq500 platform. FASTQ generation was carried out using CASAVA.
+          The quality control (QC) of libraries was evaluated using FASTQC. Raw reads were then aligned to the mouse genome GRCm38 using the Rsubreads R package (Version 2.16.1). Subsequently, an expression matrix for detected genes was generated utilizing the featureCounts function. Further analysis was carried out using the DEseq2 R package. For quality control purposes, genes that were detected in fewer than three samples and those with less than 10 reads were excluded. Differentially expressed genes (DEGs) were identified between conditions by applying the DESeq function provided by DESeq2.
+
+#### Interstitial fluid isolation from tissues
+
+          Interstitial fluid was isolated as previously described. (Ref: 69) Briefly, for interstitial fluid isolation of LNs, tumors, and MFPs, tissues were collected from female BALB/c mice and transferred to PBS. The tissues were dried on Whatman paper, weighed, and then applied to 20 μm pore size filters (PluriSelect), 10 μL of PBS was added to the tissues, and they were centrifuged at 150 x g for 10 minutes to isolate the ISF. ISF was then frozen on dry ice and stored at -80 °C until further analysis.
+
+#### Quantification of Ccl2 in media
+
+          To quantify protein levels of Ccl2, media supernatants of FRC co-cultured with 4T1 TCM, as described above, were collected. Samples were then processed using MCP-1 ProQuantum immunoassay kits (Thermofisher Scientific). The assay was performed according to the manufacturer's instructions. The results of the RT-qPCR file were imported using the available ProQuantum cloud-based software, and the data were then analyzed to obtain protein concentration values in pg/mL.
+
+#### Transwell migration assay
+
+          Spleens were digested as previously described to obtain a single cell suspension. Samples were stained and cell sorting was performed using multicolor FACS (BD FACSAria II). To obtain monocytes (Ly6Chi), samples were gated on live cells (Zombie) and then on CD45+CD11b+CD11cLy6C+Ly6G cells.
+          The transwell migration assay was performed using 24-well plates (Sarstedt) with 5 μm pore size TC inserts (Sarstedt). 600 μL of each test medium was added to the bottom chamber of a transwell plate. 3 × 104 monocytes were seeded in 100 μL of R10 medium (RPMI 1640 with 10% FBS, 200 mM L-glutamine, 10 mM sodium pyruvate, and 50 mM β-mercaptoethanol) in the upper chamber, and the plates were incubated at 37°C with 5% CO2 for 90 minutes. The migrated cells were collected from the lower chamber and counted on a flow cytometer, an Attune NxT analyzer (Thermo Fisher Scientific).
+          To evaluate monocyte migration to chemokines, R10 media containing CCL2 (3 ng/mL, Biolegend), CCL7 (3 ng/mL, Biolegend or PBS control was added to the lower chamber.
+          To evaluate migration to FRC CCM, 4T1 TCM, or RPMI control supplemented with 2% FBS and 100 U/mL penicillin/streptomycin, prepared as described above, was added to the lower chamber.
+          To assess monocyte migration to FRCs, 4,000 FRCs were seeded in triplicate in a 24-well plate in their normal growth medium three days prior to monocyte addition and cultured for 24 hours. The medium was then replaced with either FRC CCM, 4T1 TCM, or RPMI control supplemented with 2% FBS and 100 U/mL penicillin/streptomycin. In addition, FRCs were treated with TLR4 inhibitor TAK-242 (Sigma Aldrich) or MYD88 inhibitor TJ-M2010-5 (MedChemExxpress) or DMSO control in CM or RPMI at a concentration of 9μM and 5μM, respectively. FRCs were cultured in CM with or without inhibitors for 48 hours, after which monocytes were added to the upper chamber of a transwell plate and incubated at 37°C with 5% CO2 for 90 minutes.
+
+#### Cytokine array
+
+          A reference sample was prepared by pooling identical volumes of each of the three samples. Each of the three pure samples was first labeled with a fluorescent dye (scioDye2) and the reference sample was mixed with another fluorescent dye (scioDye1) for two hours. The three samples were then analyzed on three antibody microarrays targeting a total of 349 different proteins, of which 120 are cytokines/chemokines and 140 are CD cell surface markers.
+          The arrays were blocked with scioBlock (Sciomics) on a Hybstation 4800 (Tecan, Austria) and then incubated competitively with the reference sample. After incubation for three hours, the microarray slide was washed with 1 x PBSTT and rinsed with 0.1 x PBS and water. The array was then dried under nitrogen. Median signal intensities were measured and analyzed using the linear models for microarray data (LIMMA) package of R-Bioconductor.
+
+#### Proteomics
+
+          Proteins in interstitial fluid samples were reduced and alkylated by adding 10 mM tris(2-carboxy(ethyl)phosphine) (TCEP) and 30 mM 2-chloroacetamide (CAA) together with 100 mM Tris-HCl pH 8.5. The samples were then heated for 10 min at 95 °C, 1000 rpm on a thermoshaker. Afterwards, proteins were digested with 1.5 μg trypsin/ lysC for 16 h at 37 °C, 1000 rpm. Samples were desalted with in-house-made SDB-RPS StageTips, dried in a vacuum concentrator, and resolubilized in 0.1 % formic acid. Peptide concentrations were measured using a NanoDrop spectrophotometer and normalized across samples to ensure equal peptide injection.
+          Peptide samples were analyzed using an Orbitrap Exploris 480 mass spectrometer (Thermo Fisher Scientific) coupled to an EASY-nLC 1200 UHPLC system (Thermo Fisher Scientific). Per sample, 300 ng peptide were injected and separated at a flow rate of 300 nl/ min at 55 °C with an in-house-made 50 cm long, 75 μm inner diameter column, packed with 1.9 μm ReproSil C18 beads (Dr. Maisch GmbH). Peptides were eluted with a binary buffer system (buffer A: 0.1 % formic acid and buffer B: 0.1 % formic acid, 80 % acetonitrile) and a nonlinear gradient starting at 3 % buffer B and increasing to 98 % buffer B over a two-hour time period. Mass spectra were acquired by data-independent acquisition. Full scans ranged from 300 to 1650 m/z (AGC target = 3e6, max IT = 60 ms, resolution = 120,000 at 200 m/z) and were followed by 32 MS/MS scans (nce = 27 %, AGC target = 1e6, max IT = 54 ms, resolution = 30,000 at 200 m/z). Data acquisition was controlled by Xcalibur (Thermo Fisher Scientific, version 4.4.16.14).
+          Raw MS data were processed by DIA-NN (version 1.8). (Ref: 70) FASTA digest for library-free search, and deep learning-based spectra, RTs, and IMs prediction were enabled. Searches were done at a precursor FDR = 1 % and default parameters were used with the following modifications: The precursor and fragment ion range were set to 300 - 1650 m/z and 200 - 1650 m/z respectively. “--relaxed-prot-inf” was enabled through the command line. MBR was enabled, and the quantification strategy was set to “robust LC (high accuracy)”. Spectra were matched against the mouse UniProt FASTA database (55,105 entries, January 2022).
+          Quantified protein groups were filtered for protein groups with at least 70 % valid values in at least one experimental group, and annotated secretion (GOCC = “extracellular matrix”, “extracellular space”, and/or UniProt Keywords = “secreted”), excluding immunoglobulins. Remaining missing values were imputed by random draw from a normal distribution (width of 0.3 and downshift of 1.8 standard deviations of the measured values). Binary comparisons were done using two-tailed t-tests and the Benjamini-Hochberg procedure to account for multiple hypothesis testing. Volcano plots were rendered using the EnhancedVolcano R package. UMAPs were generated using the "UMAP" R package.
+
+#### In vivo neoadjuvant treatment experiments
+
+          αPD-1 treatments: Anti-mouse PD-1 (clone RMP1-14) and the corresponding isotype control (rat IgG2a) were purchased from InVivoMab (BE0146 and BE089). Starting on day 5 after orthotopic tumor injection, mice received either intraperitoneal injections (systemic treatment) or subcutaneous injections (local treatment) of either αPD-1 or the isotype control (IgG) at a concentration of 10 mg/kg twice weekly until primary tumor removal.
+          TLR4 inhibitor treatments: TLR4 inhibitor (TAK-242, Sigma) was prepared according to the manufacturer's instructions. To induce TLR4 inhibition, starting on day 5 after orthotopic tumor injection, mice received either intraperitoneal injections (systemic treatment) or subcutaneous injections (local treatment) of either TLR4i or the respective vehicle control (DMSO) at a concentration of 10 mg/kg daily until primary tumor removal.
+          MYD88 inhibitor treatments: a MyD88 inhibitor (TJ-M2010-5, MedChemExpress) was prepared according to the manufacturer's instructions. Mice received e subcutaneous injections (local treatment) of MYD88i or the respective vehicle control (DMSO) at a concentration of 50 mg/kg daily starting on day 5 after orthotopic tumor injection until primary tumor removal.
+          αCD25 treatments: Anti-mouse CD25 (clone PC61) and the corresponding isotype control (rat IgG2a) were purchased from Biolegend. Starting on day 5 after orthotopic tumor injection, mice received subcutaneous injections (local treatment) of either αCD25 or the isotype control (IgG) at a concentration of 10 mg/kg once a week until primary tumor removal.
+          For combination treatment, mice were given multiple injections sequentially.
+
+#### Detection of lung metastasis
+
+          India ink was used to visualize macroscopic 4T1 lung metastatic nodules as previously described. (Ref: 44) Briefly, 3 mL of India ink (15% black ink in PBS, Angene) was injected into the exposed trachea of sacrificed mice before the lungs were dissected and fixed in de-staining solution (3.7% formaldehyde (Thermo Fisher Scientific), 1.7% acetic acid (Carl Roth) in 70% ethanol (Sigma Aldrich)) overnight. Nodules were counted by two blinded observers and their size categorized as small (<1x1 mm, score 1), intermediate (1x1-2x2 mm, score 2), and large (>2x2 mm, score 3) under a dissecting microscope (Olympus). The metastatic score was calculated as (sum of the individual scores for each nodule)/(the total number of nodules), such that the score for each lung ranged from 1 to 3, depending on the average nodule size.
+
+#### Detection of LN metastasis
+
+          For immunofluorescence analysis, LN were embedded in OCT, snap frozen on dry ice and stored at -80°C. Tissues were then sectioned at 10 μm thickness in the Cryostat machine and transferred to glass slides. Sections were then frozen at -80°C until IF staining. The area of metastatic burden was determined on IF-stained slides using an anti-mouse cytokeratin 8-18 antibody and images were captured using a DMi8 inverted microscope and analyzed using Fiji. Metastatic burden was calculated as the percentage of metastatic area of the total LN area examined.
+
+#### Survival analysis human patients
+
+          Survival analysis of patients with breast cancer was performed using datasets from the GOBO Gene Set Analysis tool. (Ref: 71) The following datasets were used in the KM plot analysis: Chin et al., GSE1456, GSE3494, and GSE7390 for overall survival.
+
+### Quantification and statistical analysis
+
+#### Statistical analysis
+
+          Statistical analyses were performed using GraphPad Prism (version 10, GraphPad Software). Summary data are presented as mean ± standard error of the mean (SEM), as indicated in the corresponding figure legends. For all experiments with two groups, two-tailed unpaired t-tests were used. One-way ANOVA with Fisher’s LSD test was performed for experiments with more than two groups. All p-values<0.05 were considered statistically significant. Mice were randomized before grouping.
+          For scRNA-seq data statistical analysis, p-values were calculated using Wilcoxon rank sum test when using Seurat’s function FindAllMarkers to determine marker genes as well as when comparing gene signature score calculated by AddModuleScore function.
+
+## Supplemental information (3)
+
+      PDF (6.13 MB)Document S1. Figures S1–S7Spreadsheet (11.45 KB)Table S1. Human patients’ clinical information, related to Figures 7 and S7PDF (32.68 MB)Document S2. Article plus supplemental information
+
+## Figures (7)
+ -
+    - 0Citations6Captures5MentionsView detailsopens in a new tab
+
+## Supplemental information (3)
+
+  Document S1. Figures S1–S7
+  Table S1. Human patients’ clinical information, related to Figures 7 and S7
+  Document S2. Article plus supplemental information
+
+## Related Articles
+
+
+================================================================================
+FIGURES
+================================================================================
+
+
+### Figure 1: Monocytes in TNBC-TDLNs express high levels of PD-L1
+
+(A) Experimental design of mouse models.
+
+(B) Total cellularity of live cells of axLN (left) and brachial LN (brLN) (right) in CTRL LNs and TDLNs (4T1, 67NR, and AT3) from BALB/c (BC) and C57BL/6 (B6) mice assessed by flow cytometry (n = 6–8 axLNs or brLNs of 2–3 independent experiments).
+
+(C) UMAP plots of 4T1 TDLNs immune cells assessed by flow cytometry (cells pre-gated on live, CD45+). Scale bar represents scaled mean fluorescence intensity (MFI). (Ref: 23) (Ref: 24)
+
+(D) Flow cytometry gating strategy.
+
+(E and F) PD-L1 MFI histogram (E) and quantification (F) of immune populations in 4T1 TDLNs assessed by flow cytometry (n = 6 axLNs of 2 independent experiments).
+
+(G) Representative images of Diff-Quick-stained cells.
+
+(H and I) Frequency of LN myeloid cells (CD11b+) (H) and monocytes (Ly6ChiLy6G−CD11b+) (I) among CD45+ cells in TDLNs (4T1, 67NR, and AT3) compared with CTRL LNs assessed by flow cytometry (n = 6–8 axLNs of 2–3 independent experiments).
+
+(J) PD-L1 MFI of monocytes (Ly6ChiLy6G−CD11b+CD45+) from CTRL LNs and TDLNs (4T1, 67NR, and AT3) assessed by flow cytometry (n = 5–6 axLNs of 3 independent experiments).
+
+Data are mean with SEM. Significance (∗p < 0.05; ∗∗p < 0.01; ∗∗∗p < 0.001; and ∗∗∗∗p < 0.0001) was determined by one-way ANOVA with Fisher’s least significant difference (LSD) test (F and J) and two-way ANOVA with Tukey post hoc (B, H, and I; displayed are p values for significance against the respective CTRL).
+
+
+### Figure 2: FRCs of TNBC-TDLNs recruit monocytes via CCL2-CCL7
+
+(A) Schematics scRNA-seq experiment including fluorescence-activated cell sorting (FACS) (top). UMAP plots of scRNA-seq, separated by condition (CTRL LNs and TDLNs [4T1 and 67NR]), color coded for annotated cell types (n = 10,932 cells, n = 3) (bottom).
+
+(B) Heatmap of cell-cell communication among annotated cell types, relative interaction strength between CTRL LNs and 4T1 TDLNs.
+
+(C) Violin plots of selected chemokines and their receptors across annotated cell types.
+
+(D) UMAP plot of re-clustered endothelial cells and FRCs, color-coded annotated cell types.
+
+(E) Violin plots of Ccl2, Ccl7, Cxcl1, and Csf1 genes from CTRL LNs and TDLNs (4T1 and 67NR) of scRNA-seq across the subtypes of FRCs and endothelial cells.
+
+(F) RT-qPCR analysis of Ccl2, Ccl7, and Cxcl1 in ex vivo-sorted FRCs (CD45−CD31−PDPN+) of 4T1 TDLNs and CTRL LNs, set as 1 (n = 5 axLNs of 3 independent experiments).
+
+(G) CCR2 MFI histograms (left) and quantification (right) of monocytes (Ly6ChiLy6G−CD11b+CD45+) from different organs of 4T1 tumor-bearing mice, assessed by flow cytometry (n = 3–6).
+
+(H) Schematic of monocyte homing experiment (left). Carboxyfluorescein succinimidyl ester (CFSE)-labeled monocytes (Ly6ChiLy6G−CFSE+CD11b+CD45+) from the spleen of donor mice (CTRL or 4T1) to recipient 4T1 TDLNs assessed by flow cytometry (n = 8 axLNs of 2 independent experiments) (right).
+
+Data are mean with SEM. Significance (∗p < 0.05; ∗∗p < 0.01; ∗∗∗p < 0.001; and ∗∗∗∗p < 0.0001) was determined by one-way ANOVA with Fisher’s LSD test (F and G), unpaired two-tailed t test (H), or Wilcoxon rank test (E).
+
+
+### Figure 3: Monocytes of TNBC-TDLNs are immunosuppressive
+
+(A) UMAP plot of scRNA-seq re-clustered macrophages and monocytes from CTRL LNs and TDLNs (4T1 and 67NR), color coded for annotated cell types (left). Stacked bar graph showing cell type proportions (middle). Dot plot showing the scaled expression of genes (right).
+
+(B) UMAP visualization of pseudotime analysis for macrophages and monocytes from CTRL LNs and TDLNs (4T1 and 67NR).
+
+(C) Violin plot representing the scores of mMDSC signature (Ref: 30) in monocytes depicted in (A) across CTRL LNs and TDLNs (4T1 and 67NR), genes with increased expression (left), and genes with decreased expression (right).
+
+(D) Dot plot representation of scaled expression of the genes with the top 10 increased and top 10 decreased expression in monocytes of 4T1 TDLNs compared with CTRL LNs and 67NR TDLNs.
+
+(E) Schematic of restimulation assay (top). Frequency of iNOS+ monocytes (Ly6ChiLy6G−CD11b+CD45+) in CTRL LNs and TDLNs (4T1 and 67NR) assessed by flow cytometry (n = 6 axLNs of 2 independent experiments) (bottom).
+
+(F and G) Schematic of myeloid-T cell co-culture (top). Representative histograms (left) and heatmap representation (right) of proliferation index of CD4+ and CD8+ T cells co-cultured with either Ly6Chi, Ly6Clo, or Ly6C− cells sorted from 4T1 TDLNs (F) or proliferation index of CD4+ and CD8+ T cells co-cultured with Ly6Chi cells of 4T1 TDLNs and with iNOS inhibitor (L-NMMA) or vehicle CTRL (G). Color scale represents the fraction of cells in indicated cell divisions (n = 7–8 axLNs of 2 independent experiments).
+
+(H) UMAP plot of scRNA-seq representing T cell subtypes annotated on canonical markers (n = 5,618) (left) and stacked bar graphs representing proportions across CTRL LNs and TDLNs (67NR and 4T1) color coded for identified clusters (right).
+
+(I) Ingenuity pathway analysis (IPA) identified canonical pathways with increased (orange) and decreased (black) expression using significantly dysregulated genes of 4T1 TDLN CD4+ effector memory T cell cluster in comparison with the CTRL LN as input. Showing the 10 most significant pathways.
+
+(J and K) Dot plot representing scaled expression of genes found associated to apoptosis (J) and migration (K) by IPA of CD4+ effector memory T cells of 4T1 TDLNs in comparison with CTRL LNs and 67NR TDLNs.
+
+Data are mean with SEM. Significance (∗p < 0.05; ∗∗p < 0.01; ∗∗∗p < 0.001; and ∗∗∗∗p < 0.0001) was determined by Wilcoxon rank test (C and D) and one-way ANOVA with Fisher’s LSD test (E).
+
+
+### Figure 4: Spatial transcriptomics of murine TNBC-TDLNs
+
+(A) IF of CTRL LNs and TDLNs (4T1 and 67NR) used for spatial transcriptomics, stained for matrix (collagen 1, green), T cells (CD3e, blue), and myeloid cells (CD11b, red). Scale bar, 500 μm.
+
+(B) Spatial distribution of Leiden clusters calculated on estimated cell type abundances determined through cell type deconvolution using cell2location of CTRL LNs and TDLNs (4T1 and 67NR).
+
+(C) Heatmap of Z score of cell type enrichment within clusters depicted in (B).
+
+(D) IF as depicted in (A), with the spatial distribution of cell type abundance overlaid. Specifically, areas rich in light-zone germinal center B cells (LZ.GC.B, yellow), T cells (CD4+ naive, orange), and follicular dendritic cells (FDCs, sky blue).
+
+(E) Dot plot showing NMF components corresponding to groups of cell types with similar locations. Color and size represent relative weights, normalized across components for every cell type.
+
+(F) Spatial distribution of cell type abundance within 4T1 TDLNs, highlighting monocytes (yellow), T cell zone reticular cells (TRCs, red), medullary reticular cells (MedRCs, sky blue), and CD4+ effector memory (green).
+
+(G) Representative IF images of 4T1 TDLN sections stained for matrix (collagen 1, green), T cells (CD3e, blue), and monocytes (Ly6C, red). Overview image scale bar, 200 μm (left); inlay scale bar, 50 μm (right).
+
+(H) Visualization of spot-wise enrichment score calculated using monocytes from 4T1 TDLNs genes with increased expression.
+
+
+### Figure 5: TLR4 ligands driven by aggressive TNBC tumors induce FRC Ccl2-Ccl7 expression
+
+(A) Schematics of FRCs treated with CCM and TCM in vitro.
+
+(B and C) RT-qPCR analysis of Ccl2 and Ccl7 in FRCs treated with 67NR and 4T1 (B) or AT3 TCM (C), represented relative to that of CCM, set as 1 (n = 6–8 of 3 independent experiments).
+
+(D) PCA of FRC transcriptomes treated with CCM and TCM (67NR and 4T1) (n = 2 per condition).
+
+(E) IPA predicting upstream regulators using significant DEGs from FRCs treated with 4T1 TCM versus CCM. Depicted are the most significant upstream regulators with positive activation (orange) and negative activation (black).
+
+(F) Schematics of interstitial fluid isolation and proteomics analysis (left). UMAP plot calculated using log-normalized protein abundance, colors represent tissues and models (n = 5 of 3 independent experiments) (right).
+
+(G) Volcano plot showing quantitative comparisons of secreted proteins identified in ISF of 4T1 TDLNs versus CTRL LNs. p values are computed by a two-sided Student’s t test (Benjamini Hochberg [BH] false discovery rate [FDR] = 0.05).
+
+(H) Heatmap representing the abundance of TLR4 ligands across interstitial fluids isolated from MFP, 67NR and 4T1 tumors, and CTRL LNs and TDLNs (67NR and 4T1).
+
+(I) Heatmap of RT-qPCR analysis of Ccl2 and Ccl7 in FRCs treated with recombinant proteins represented, CTRL set as 1 (n = 5 of 3 independent experiments). Scale bar represnts relative mRNA expression (fold).
+
+(J) CCL2 quantification of media supernatant from FRCs cultured with CCM or 4T1 TCM (bottom) (n = 3).
+
+(K) Relative number of migrated monocytes (Ly6ChiLy6G−CD11b+CD45+) stimulated with CCL2 or CCL7, assessed by flow cytometry (n = 3) (bottom).
+
+(L) RT-qPCR analysis of Ccl2 and Ccl7 in FRCs treated with CCM and 4T1 TCM, including a TLR4 inhibitor (TLR4i) (TAK-242) or a vehicle (Veh), CTRL set as 1 (n = 5 of 3 independent experiments) (bottom).
+
+(M) Relative number of migrated monocytes (Ly6ChiLy6G−CD11b+CD45+) co-cultured with FRCs treated with CCM or 4T1 TCM, including a TLR4i or vehicle, assessed by flow cytometry (n = 5 of 3 independent experiments) (bottom).
+
+Data are mean with SEM. Significance (∗p < 0.05; ∗∗p < 0.01; ∗∗∗p < 0.001; and ∗∗∗∗p < 0.0001) was determined by one-way ANOVA with Fisher’s LSD test (B and J–M) or unpaired two-tailed t test (C).
+
+
+### Figure 6: Targeting the monocyte-FRC axis in a mouse model reduces metastasis
+
+(A) Schematics of locoregional administration of TLR4i or MYD88 inhibitor (MYD88i).
+
+(B) Violin plot showing normalized expression of Ccl2 and Ccl7 across FRC subsets, comparing vehicle-treated with TLR4i-treated TDLNs.
+
+(C) Frequency of LN monocytes (Ly6ChiLy6G−CD11b+) among CD11b+ (left) or CD45+ cells (right) in 4T1 TDLNs per indicated treatment and CTRL LNs assessed by flow cytometry (n = 12 axLNs of 2 independent experiments).
+
+(D) CFSE-labeled monocytes (Ly6ChiLy6G−CFSE+CD11b+CD45+) from spleen of 4T1 donor mice to recipient 4T1 TDLNs per indicated treatment assessed by flow cytometry (n = 6 axLNs of 1 independent experiment).
+
+(E) Schematics of locoregional administration of inhibitors followed by primary tumor resection and metastatic endpoint.
+
+(F) Tumor growth curve during locoregional treatment. Vehicle, TLR4i, αPD-1, and αPD-1 combined with TLR4i (n = 5–6 tumors of 2 independent experiments).
+
+(G) Tumor volumes at primary tumor resection time point after locoregional treatment (n = 10–22 tumors of 3 independent experiments).
+
+(H and I) Frequency of monocytes (Ly6ChiLy6G−CD11b+) among CD45+ cells (H) and total cellularity of live cells (I) in pre-metastatic 4T1 TDLNs per indicated treatment, assessed by flow cytometry (n = 5–12 axLNs of 3 independent experiments). Vehicle as in (C).
+
+(J) Frequency of activated T cells (CD44+ICOS+) of CD8+ (left) and CD4+ (right) cells, in pre-metastatic 4T1 TDLNs per indicated treatment, assessed by flow cytometry (n = 3–6 axLNs of 1 independent experiment).
+
+(K and L) UMAP plot of 5 prime scRNA-seq T cells CD8+ (K) and CD4+ (L) from naive LNs and pre-metastatic 4T1 TDLNs per indicated treatment, color coded for annotated cell types (left). Stacked bar graph showing cell type proportions (right).
+
+(M) Representative images (left) and quantification (right) of lung metastatic lesions identified by India ink staining per indicated treatment in metastatic mice (right; n = 5–9 mice [lungs] of 3 independent experiments).
+
+(N and O) Frequency of monocytes (Ly6ChiLy6G−CD11b+) among CD45+ cells (N) and PD-L1 MFI of monocytes (Ly6ChiLy6G−CD11b+CD45+) (O) in 4T1 metastatic TDLNs per indicated treatment, assessed by flow cytometry (n = 10 axLNs of 2–3 independent experiments).
+
+Data are mean with SEM. Significance (∗p < 0.05; ∗∗p < 0.01; ∗∗∗p < 0.001; and ∗∗∗∗p < 0.0001) was determined by one-way ANOVA with Fisher’s LSD test (C, D, G–J, and M–O; displayed are p values for significance against the vehicle) or unpaired two-tailed t test (B).
+
+
+### Figure 7: Monocyte-FRC networks are remodeled in human TNBC
+
+(A) RT-qPCR analysis of Ccl2 and Ccl7 in FRCs treated with CCM of TCM (HCC1806, MDA-MB-231, MDA-MB-468, HS578T, MCF7, and T47D) represented relative to that of CCM, set as 1 (n = 6 of 3 independent experiments).
+
+(B) Schematics representing the BC clinical sample collection and processing.
+
+(C) Frequency of myeloid cells (CD11b+) (left), (HLA-DR+CD11b+) (middle), and conventional monocytes (CD14+HLA-DR+CD11b+) (right) among CD45+ cells in axLNs of BC patients assessed by flow cytometry. axLNs included without (w/o) and with micro-metastasis (<3% EPCAM+ cells of CD45− cells) and macro-metastasis (>3% EPCAM+ cells of CD45− cells) (n = 8–22 axLNs of 29 patients: 19 luminal BC and 10 TNBC).
+
+(D) PD-L1 MFI of myeloid cells (CD11b+) and (HLA-DR+CD11b+), conventional monocytes (CD14+HLA-DR+CD11b+) and tumor cells (EPCAM+) in axLNs and matching tumors of BC patients assessed by flow cytometry (n = 24–36 of 20 patients).
+
+(E) Representative PD-L1 MFI histogram of conventional monocytes (CD14+HLA-DR+CD11b+) and tumor cells (EPCAM+CD45−) assessed by flow cytometry.
+
+(F) UMAP representation of scRNA-seq from patients’ LNs color coded according to the annotated cell types (n = 42,708 cells and n = 8 patients).
+
+(G) UMAP of patient LN scRNA-seq as in (F), cells colored to depict contribution of luminal A and TNBC subtypes, patients with no metastasis (w/o), micro-metastasis, and macro-metastasis.
+
+(H) Density plot of normalized expression of CCL2 and CCR2 of scRNA-seq of all analyzed cells in patients’ LNs.
+
+(I) Bar plot illustrating the proportional distribution of fibroblast subtypes in patient LNs.
+
+(J) Violin plot of CCL2 across FRCs comparing luminal A and TNBC.
+
+(K) Stacked bar graph of patients’ LN monocytes across patients with no metastasis (w/o), micro-metastasis, and macro-metastasis (left). Dot plot of scaled average expression of genes representing mMDSCs phenotype (right).
+
+(L) Violin plot of mMDSCs signature scores, calculated within overall monocytes of LN (this publication) and BM (publicly available). (Ref: 36)
+
+(M) Kaplan-Meier analysis of overall survival of ER− patients with BC stratified according to expression of SAA1, SAA2, FN1, S100A9, and TNC (n = 173 patients).
+
+Data are mean with SEM. Significance (∗p < 0.05; ∗∗p < 0.01; ∗∗∗p < 0.001; and ∗∗∗∗p < 0.0001) was determined by one-way ANOVA with Fisher’s LSD test (A and D), unpaired two-tailed t test (C), Wilcoxon rank test (J and L), or log-rank test (M).
+
+Open table in a new tab
+
+
+================================================================================
+REFERENCES
+================================================================================
+
+1. Nolan, E. ∙ Lindeman, G.J. ∙ Visvader, J.E. Deciphering breast cancer: from biology to the clinic Cell. 2023; 186 :1708-1728
+2. Schmid, P. ∙ Cortes, J. ∙ Dent, R. ... Event-free Survival with Pembrolizumab in Early Triple-Negative Breast Cancer N. Engl. J. Med. 2022; 386 :556-567
+3. Schmid, P. ∙ Cortes, J. ∙ Pusztai, L. ... Pembrolizumab for Early Triple-Negative Breast Cancer N. Engl. J. Med. 2020; 382 :810-821
+4. Mellman, I. ∙ Chen, D.S. ∙ Powles, T. ... The cancer-immunity cycle: Indication, genotype, and immunotype Immunity. 2023; 56 :2188-2205
+5. Prokhnevska, N. ∙ Cardenas, M.A. ∙ Valanparambil, R.M. ... CD8+ T cell activation in cancer comprises an initial activation phase in lymph nodes followed by effector differentiation within the tumor Immunity. 2023; 56 :107-124.e5
+6. Haas, L. ∙ Elewaut, A. ∙ Gerard, C.L. ... Acquired resistance to anti-MAPK targeted therapy confers an immune-evasive tumor microenvironment and cross-resistance to immunotherapy in melanoma Nat. Cancer. 2021; 2 :693-708
+7. He, M. ∙ Roussak, K. ∙ Ma, F. ... CD5 expression by dendritic cells directs T cell immunity and sustains immunotherapy responses Science. 2023; 379, eabg2752
+8. Markowitz, J. ∙ Wang, J. ∙ VanGundy, Z. ... Nitric oxide mediated inhibition of antigen presentation from DCs to CD4+ T cells in cancer and measurement of STAT1 nitration Sci. Rep. 2017; 7, 15424
+9. Veglia, F. ∙ Sanseviero, E. ∙ Gabrilovich, D.I. Myeloid-derived suppressor cells in the era of increasing myeloid cell diversity Nat. Rev. Immunol. 2021; 21 :485-498
+10. Fransen, M.F. ∙ Schoonderwoerd, M. ∙ Knopf, P. ... Tumor-draining lymph nodes are pivotal in PD-1/PD-L1 checkpoint therapy JCI Insight. 2018; 3, e124507
+11. Francis, D.M. ∙ Manspeaker, M.P. ∙ Schudel, A. ... Blockade of immune checkpoints in lymph nodes through locoregional delivery augments cancer immunotherapy Sci. Transl. Med. 2020; 12, eaay3575
+12. Dammeijer, F. ∙ van Gulijk, M. ∙ Mulder, E.E. ... The PD-1/PD-L1-Checkpoint Restrains T cell Immunity in Tumor-Draining Lymph Nodes Cancer Cell. 2020; 38 :685-700.e8
+13. Spitzer, M.H. ∙ Carmi, Y. ∙ Reticker-Flynn, N.E. ... Systemic Immunity Is Required for Effective Cancer Immunotherapy Cell. 2017; 168 :487-502.e15
+14. Carter, C.L. ∙ Allen, C. ∙ Henson, D.E. Relation of tumor size, lymph node status, and survival in 24,740 breast cancer cases Cancer. 1989; 63 :181-187
+15. Houvenaeghel, G. ∙ Sabatier, R. ∙ Reyal, F. ... Axillary lymph node micrometastases decrease triple-negative early breast cancer survival Br. J. Cancer. 2016; 115 :1024-1031
+16. Naxerova, K. ∙ Reiter, J.G. ∙ Brachtel, E. ... Origins of lymphatic and distant metastases in human colorectal cancer Science. 2017; 357 :55-60
+17. Pereira, E.R. ∙ Kedrin, D. ∙ Seano, G. ... Lymph node metastases can invade local blood vessels, exit the node, and colonize distant organs in mice Science. 2018; 359 :1403-1407
+18. Brown, M. ∙ Assen, F.P. ∙ Leithner, A. ... Lymph node blood vessels provide exit routes for metastatic tumor cell dissemination in mice Science. 2018; 359 :1408-1411
+19. Reticker-Flynn, N.E. ∙ Zhang, W. ∙ Belk, J.A. ... Lymph node colonization induces tumor-immune tolerance to promote distant metastasis Cell. 2022; 185 :1924-1942.e23
+20. Du Bois, H. ∙ Heim, T.A. ∙ Lund, A.W. Tumor-draining lymph nodes: At the crossroads of metastasis and immunity Sci. Immunol. 2021; 6, eabg3551
+21. Riedel, A. ∙ Shorthouse, D. ∙ Haas, L. ... Tumor-induced stromal reprogramming drives lymph node transformation Nat. Immunol. 2016; 17 :1118-1127
+22. Riedel, A. ∙ Helal, M. ∙ Pedro, L. ... Tumor-Derived Lactic Acid Modulates Activation and Metabolic Status of Draining Lymph Node Stroma Cancer Immunol. Res. 2022; 10 :482-497
+23. Dasoveanu, D.C. ∙ Park, H.J. ∙ Ly, C.L. ... Lymph node stromal CCL2 limits antibody responses Sci. Immunol. 2020; 5, eaaw0693
+24. D’Rozario, J. ∙ Knoblich, K. ∙ Lütge, M. ... Fibroblastic reticular cells provide a supportive niche for lymph node–resident macrophages Eur. J. Immunol. 2023; 53, e2250355
+25. Jin, S. ∙ Guerrero-Juarez, C.F. ∙ Zhang, L. ... Inference and analysis of cell-cell communication using CellChat Nat. Commun. 2021; 12, 1088
+26. Jin, S. ∙ Plikus, M.V. ∙ Nie, Q. CellChat for systematic analysis of cell-cell communication from single-cell and spatially resolved transcriptomics Nat. Protoc. 2023; 20 :180-219
+27. Rodda, L.B. ∙ Lu, E. ∙ Bennett, M.L. ... Single-Cell RNA Sequencing of Lymph Node Stromal Cells Reveals Niche-Associated Heterogeneity Immunity. 2018; 48 :1014-1028.e6
+28. Abe, Y. ∙ Sakata-Yanagimoto, M. ∙ Fujisawa, M. ... A single-cell atlas of non-haematopoietic cells in human lymph nodes and lymphoma reveals a landscape of stromal remodelling Nat. Cell Biol. 2022; 24 :565-578
+29. Takeda, A. ∙ Salmi, M. ∙ Jalkanen, S. Lymph node lymphatic endothelial cells as multifaceted gatekeepers in the immune system Trends Immunol. 2023; 44 :72-86
+30. Rodriguez, B.L. ∙ Chen, L. ∙ Li, Y. ... Targeting immunosuppressive Ly6C+ classical monocytes reverses anti-PD-1/CTLA-4 immunotherapy resistance Front. Immunol. 2023; 14, 1161869
+31. Qian, B.Z. ∙ Li, J. ∙ Zhang, H. ... CCL2 recruits inflammatory monocytes to facilitate breast-tumour metastasis Nature. 2011; 475 :222-225
+32. Kitamura, T. ∙ Doughty-Shenton, D. ∙ Cassetta, L. ... Monocytes differentiate to immune suppressive precursors of metastasis-associated macrophages in mouse models of metastatic breast cancer Front. Immunol. 2017; 8 :2004
+33. Robinson, A. ∙ Han, C.Z. ∙ Glass, C.K. ... Monocyte Regulation in Homeostasis and Malignancy Trends Immunol. 2021; 42 :104-119
+34. Stuart, T. ∙ Butler, A. ∙ Hoffman, P. ... Comprehensive Integration of Single-Cell Data Cell. 2019; 177 :1888-1902.e21
+35. Kleshchevnikov, V. ∙ Shmatko, A. ∙ Dann, E. ... Cell2location maps fine-grained cell types in spatial transcriptomics Nat. Biotechnol. 2022; 40 :661-671
+36. Alshetaiwi, H. ∙ Pervolarakis, N. ∙ McIntyre, L.L. ... Defining the emergence of myeloid-derived suppressor cells in breast cancer using single-cell transcriptomics Sci. Immunol. 2020; 5, eaay6017
+37. Hao, Y. ∙ Stuart, T. ∙ Kowalski, M.H. ... Dictionary learning for integrative, multimodal and scalable single-cell analysis Nat. Biotechnol. 2024; 42 :293-304
+38. Yu, L. ∙ Wang, L. ∙ Chen, S. Endogenous toll-like receptor ligands and their biological significance J. Cell. Mol. Med. 2010; 14 :2592-2603
+39. Pitorre, M. ∙ Bastiat, G. ∙ Dit Chatel, E.M. ... Passive and specific targeting of lymph nodes: The influence of the administration route Eur. J. Nanomed. 2015; 7 :121-128
+40. Knopf, P. ∙ Stowbur, D. ∙ Hoffmann, S.H.L. ... Preclinical Identification Of Tumor-Draining Lymph Nodes Using a Multimodal Non-invasive In vivo Imaging Approach Mol. Imaging Biol. 2023; 25 :606-618
+41. Jin, X. ∙ Demere, Z. ∙ Nair, K. ... A metastasis map of human cancer cell lines Nature. 2020; 588 :331-336
+42. Zhang, X. ∙ Song, B. ∙ Carlino, M.J. ... An immunophenotype-coupled transcriptomic atlas of human hematopoietic progenitors Nat. Immunol. 2024; 25 :703-715
+43. Pylaeva, E. ∙ Korschunow, G. ∙ Spyra, I. ... During early stages of cancer, neutrophils initiate anti-tumor immune responses in tumor-draining lymph nodes Cell Rep. 2022; 40, 111171
+44. Tacconi, C. ∙ Commerford, C.D. ∙ Dieterich, L.C. ... CD169+ lymph node macrophages have protective functions in mouse breast cancer metastasis Cell Rep. 2021; 35, 108993
+45. Mondor, I. ∙ Baratin, M. ∙ Lagueyrie, M. ... Lymphatic Endothelial Cells Are Essential Components of the Subcapsular Sinus Macrophage Niche Immunity. 2019; 50 :1453-1466.e4
+46. Gong, Z. ∙ Li, Q. ∙ Shi, J. ... Lung fibroblasts facilitate pre-metastatic niche formation by remodeling the local immune microenvironment Immunity. 2022; 55 :1483-1500.e9
+47. Pruenster, M. ∙ Immler, R. ∙ Roth, J. ... E-selectin-mediated rapid NLRP3 inflammasome activation regulates S100A8/S100A9 release from neutrophils via transient gasdermin D pore formation Nat. Immunol. 2023; 24 :2021-2031
+48. Zhang, Y. ∙ Chen, H. ∙ Mo, H. ... Single-cell analyses reveal key immune cell subsets associated with response to PD-L1 blockade in triple-negative breast cancer Cancer Cell. 2021; 39 :1578-1593.e8
+49. Bassez, A. ∙ Vos, H. ∙ Van Dyck, L. ... A single-cell map of intratumoral changes during anti-PD1 treatment of patients with breast cancer Nat. Med. 2021; 27 :820-832
+50. Wang, X.Q. ∙ Danenberg, E. ∙ Huang, C.S. ... Spatial predictors of immunotherapy response in triple-negative breast cancer Nature. 2023; 621 :868-876
+51. van Pul, K.M. ∙ Fransen, M.F. ∙ van de Ven, R. ... Immunotherapy Goes Local: The Central Role of Lymph Nodes in Driving Tumor Infiltration and Efficacy Front. Immunol. 2021; 12, 643291
+52. Wu, T. ∙ Hu, E. ∙ Xu, S. ... clusterProfiler 4.0: A universal enrichment tool for interpreting omics data Innovation (Camb). 2021; 2, 100141
+53. Love, M.I. ∙ Huber, W. ∙ Anders, S. Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2 Genome Biol. 2014; 15 :550
+54. Wilkinson, L. The Grammar of Graphics Springer, 2005
+55. Cao, J. ∙ Spielmann, M. ∙ Qiu, X. ... The single-cell transcriptional landscape of mammalian organogenesis Nature. 2019; 566 :496-502
+56. Liao, Y. ∙ Smyth, G.K. ∙ Shi, W. The R package Rsubread is easier, faster, cheaper and better for alignment and quantification of RNA sequencing reads Nucleic Acids Res. 2019; 47 :e47
+57. Blighe, K., Rana, S., and Lewis, M. (2025). EnhancedVolcano: publication-ready volcano plots with enhanced colouring and labeling. https://bioconductor.org/packages/release/bioc/vignettes/EnhancedVolcano/inst/doc/EnhancedVolcano.html .
+58. McInnes, L. ∙ Healy, J. ∙ Melville, J. UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction J. Open Source Softw. 2018; 3 :861
+59. Dai, Y. (2020). CytoTree Tutorial. https://ytdai.github.io/CytoTree/index.html .
+60. Neuwirth, E. RColorBrewer: ColorBrewer Palettes_. R package version 1.1-3 2022 https://CRAN.R-project.org/package=RColorBrewer
+61. McGinnis, C.S. ∙ Murrow, L.M. ∙ Gartner, Z.J. DoubletFinder: Doublet Detection in Single-Cell RNA Sequencing Data Using Artificial Nearest Neighbors Cell Syst. 2019; 8 :329-337.e4
+62. Blanco-Carmona, E. Generating publication ready visualizations for Single Cell transcriptomics using SCpubr Preprint at bioRxiv. 2022;
+63. Marsh, S., Salmon, M., Hoffman, P., and kew24. (2024). samuel-marsh/scCustomize: Version 3.0.1. https://doi.org/10.5281/ZENODO.14529706 .
+64. Wolf, F.A. ∙ Angerer, P. ∙ Theis, F.J. SCANPY: Large-scale single-cell gene expression data analysis Genome Biol. 2018; 19 :15
+65. Aslakson, C.J. ∙ Miller, F.R. Selective Events in the Metastatic Process Defined by Analysis of the Sequential Dissemination of Subpopulations of a Mouse Mammary Tumor Cancer Res. 1992; 52 :1399-1405
+66. Rao, D.A. ∙ Berthier, C.C. ∙ Arazi, A. ... A protocol for single-cell transcriptomics from cryopreserved renal tissue and urine for the Accelerating Medicine Partnership (AMP) RA/SLE network Preprint at bioRxiv. 2018;
+67. Bozza, M. ∙ De Roia, A. ∙ Correia, M.P. ... A nonviral, nonintegrating DNA nanovector platform for the safe, rapid, and persistent manufacture of recombinant T cells Sci. Adv. 2021; 7, eabf1333
+68. Trapnell, C. ∙ Cacchiarelli, D. ∙ Grimsby, J. ... The dynamics and regulators of cell fate decisions are revealed by pseudotemporal ordering of single cells Nat. Biotechnol. 2014; 32 :381-386
+69. Sullivan, M.R. ∙ Danai, L.V. ∙ Lewis, C.A. ... Quantification of microenvironmental metabolites in murine cancers reveals determinants of tumor nutrient availability eLife. 2019; 8, e44235
+70. Demichev, V. ∙ Messner, C.B. ∙ Vernardis, S.I. ... DIA-NN: neural networks and interference correction enable deep proteome coverage in high throughput Nat. Methods. 2020; 17 :41-44
+71. Ringnér, M. ∙ Fredlund, E. ∙ Häkkinen, J. ... GOBO: Gene expression-based outcome for breast cancer online PLoS One. 2011; 6, e17911
