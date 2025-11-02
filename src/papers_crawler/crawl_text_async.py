@@ -36,8 +36,8 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[str]:
-    """Navigate to full-text HTML page and extract all text content.
+async def extract_fulltext_as_json(page: Page, fulltext_url: str) -> Optional[Dict]:
+    """Navigate to full-text HTML page and extract all text content as JSON.
     
     Extracts all content from the article including:
     - Header section (title, authors, affiliations, dates)
@@ -54,7 +54,7 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
         fulltext_url: URL of the full-text HTML page
         
     Returns:
-        str: Concatenated plain text content with section headers, or None if extraction fails
+        Dict: JSON structure with sections as keys and content as values, or None if extraction fails
     """
     try:
         logger.info(f"📖 Navigating to full-text page: {fulltext_url}")
@@ -76,7 +76,13 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             for elem in soup.find_all(class_=lambda x: x and ui_class in x.lower()):
                 elem.decompose()
         
-        text_parts = []
+        # JSON structure to store sections
+        json_data = {}
+        current_section = "header"  # Start with header
+        current_section_parts = []
+        section_stack = [(current_section, current_section_parts)]  # Stack for nested sections
+        
+        text_parts = []  # Keep for compatibility with existing functions
         recent_lines = deque(maxlen=60)
 
         references_section = soup.find("section", id="references")
@@ -446,7 +452,7 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             text_parts.append("\n")
 
         def append_line(text: str, indent: int = 0, allow_repeat: bool = False) -> None:
-            nonlocal pending_bullet_prefix
+            nonlocal pending_bullet_prefix, current_section_parts
             cleaned = clean_text(text)
             if not cleaned:
                 return
@@ -470,14 +476,34 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             if not allow_repeat and dedup_key in recent_lines:
                 return
             recent_lines.append(dedup_key)
+            
+            # Add to current section
+            current_section_parts.append(f"{cleaned}\n")
             text_parts.append(f"{cleaned}\n")
 
         def append_heading(level: int, text: str) -> None:
+            nonlocal current_section, current_section_parts, section_stack
             heading_text = clean_text(text)
             if should_skip_text(heading_text):
                 return
             level = max(1, min(level, 6))
             ensure_paragraph_break()
+            
+            # For top-level headings (h1, h2), start a new section
+            if level <= 2:
+                # Save current section
+                if current_section_parts:
+                    section_content = "".join(current_section_parts).strip()
+                    if section_content:
+                        json_data[current_section] = section_content
+                
+                # Start new section
+                current_section = heading_text.lower().replace(" ", "_").replace("★", "")
+                current_section_parts = []
+            else:
+                # For subsections, append as part of current section with markdown
+                current_section_parts.append(f"{'#' * level} {heading_text}\n\n")
+            
             text_parts.append(f"{'#' * level} {heading_text}\n")
             text_parts.append("\n")
 
@@ -515,6 +541,7 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             ensure_paragraph_break()
 
         def append_table(table_tag: Tag, indent: int) -> None:
+            nonlocal current_section_parts
             rows = []
             for tr in table_tag.find_all("tr"):
                 cells = []
@@ -532,9 +559,11 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
             if not rows:
                 return
 
-            # Add table marker
+            # Add table marker to both text_parts and current_section_parts
             text_parts.append("\n")
             text_parts.append("[Table]\n")
+            current_section_parts.append("\n")
+            current_section_parts.append("[Table]\n")
             
             # Output each row on its own line
             for row in rows:
@@ -542,8 +571,10 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                 line = " | ".join(row)
                 if line.strip():
                     text_parts.append(line + "\n")
+                    current_section_parts.append(line + "\n")
             
             text_parts.append("\n")
+            current_section_parts.append("\n")
 
         def append_content(node, indent: int = 0) -> None:
             if isinstance(node, NavigableString):
@@ -806,6 +837,7 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
         
         # Extract figure captions (from anywhere in the page)
         figures = soup.find_all("figure")
+        figures_text = []  # Collect figures for JSON
         if figures:
             text_parts.append("\n" + "=" * 80 + "\n")
             text_parts.append("FIGURES\n")
@@ -829,6 +861,9 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                     fig_label = caption.find("span", class_="label")
                     fig_title = caption.find("span", class_="figure__title__text")
                     
+                    # Collect figure caption parts for both text_parts and JSON
+                    figure_caption_parts = []
+                    
                     if fig_label or fig_title:
                         if fig_label:
                             label_parts = extract_text_with_refs(fig_label)
@@ -845,6 +880,9 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                         text_parts.append(f"\n### {label_text}")
                         if title_text:
                             text_parts.append(f": {title_text}")
+                            figure_caption_parts.append(f"{label_text}: {title_text}")
+                        else:
+                            figure_caption_parts.append(label_text)
                         text_parts.append("\n\n")
                     
                     # Extract all caption content, including accordion/hidden content
@@ -875,6 +913,7 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                                 # Remove button text like "Hide caption" or "Figure viewer"
                                 if para_text not in ['Hide caption', 'Figure viewer', 'Show caption', 'Collapse', 'Expand']:
                                     text_parts.append(f"{para_text}\n\n")
+                                    figure_caption_parts.append(para_text)
                     else:
                         # Fallback: get all text from caption
                         caption_parts = extract_text_with_refs(caption)
@@ -888,20 +927,44 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
                             caption_text = ' '.join(caption_text.split())  # Normalize whitespace
                             if caption_text:
                                 text_parts.append(f"{caption_text}\n\n")
+                                figure_caption_parts.append(caption_text)
+                    
+                    # Add this figure to the figures collection for JSON
+                    if figure_caption_parts:
+                        figures_text.append("\n".join(figure_caption_parts))
         
+        # Add figures to JSON if any were collected
+        if figures_text:
+            json_data["figures"] = "\n\n".join(figures_text)
+        
+        # Save the last section before adding references
+        if current_section_parts:
+            section_content = "".join(current_section_parts).strip()
+            if section_content:
+                json_data[current_section] = section_content
+        
+        # Add references as a separate section in JSON
         reference_entries = get_reference_entries()
         if reference_entries and "REFERENCES" not in "\n".join(text_parts):
             text_parts.append("\n" + "=" * 80 + "\n")
             text_parts.append("REFERENCES\n")
             text_parts.append("=" * 80 + "\n\n")
+            
+            # Build references string for JSON
+            references_text = []
             for idx, entry in enumerate(reference_entries, 1):
+                references_text.append(f"{idx}. {entry}")
                 text_parts.append(f"{idx}. {entry}\n")
+            
+            # Add references to JSON structure
+            if references_text:
+                json_data["references"] = "\n".join(references_text)
         
         full_text = "".join(text_parts)
         
-        if full_text.strip():
-            logger.info(f"✅ Successfully extracted {len(full_text)} characters of text")
-            return full_text
+        if json_data or full_text.strip():
+            logger.info(f"✅ Successfully extracted {len(json_data)} sections with {len(full_text)} characters total")
+            return json_data
         else:
             logger.warning("⚠️ No text content extracted from page")
             return None
@@ -912,11 +975,11 @@ async def extract_fulltext_as_text(page: Page, fulltext_url: str) -> Optional[st
         return None
 
 
-async def save_text_to_file(text_content: str, file_path: str) -> bool:
-    """Save extracted text content to a .txt file.
+async def save_json_to_file(json_content: Dict, file_path: str) -> bool:
+    """Save extracted content to a .json file.
     
     Args:
-        text_content: The text content to save
+        json_content: The JSON content to save (dict with sections as keys)
         file_path: Absolute path where the file should be saved
         
     Returns:
@@ -924,11 +987,11 @@ async def save_text_to_file(text_content: str, file_path: str) -> bool:
     """
     try:
         with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(text_content)
-        logger.info(f"💾 Saved text to: {file_path}")
+            json.dump(json_content, f, ensure_ascii=False, indent=2)
+        logger.info(f"💾 Saved JSON to: {file_path}")
         return True
     except Exception as e:
-        logger.error(f"❌ Failed to save text file: {e}")
+        logger.error(f"❌ Failed to save JSON file: {e}")
         return False
 
 
@@ -953,7 +1016,7 @@ async def crawl_text_async(
         keywords: Search keywords (currently unused, reserved for future)
         year_from: Start year for article filtering
         year_to: End year for article filtering
-        out_folder: Output folder for text files
+        out_folder: Output folder for JSON files
         headless: Run browser in headless mode
         limit: Maximum number of articles to extract per journal
         journal_slugs: List of journal slugs to crawl
@@ -1084,7 +1147,7 @@ async def crawl_text_async(
             try:
                 safe_title = "".join(c for c in article_title if c.isalnum() or c in (' ', '-', '_')).strip()
                 safe_title = safe_title[:100]
-                filename = f"{safe_title}.txt"
+                filename = f"{safe_title}.json"
                 dest_path = os.path.join(journal_folder, filename)
                 
                 if os.path.exists(dest_path) and os.path.getsize(dest_path) > 100:
@@ -1102,14 +1165,14 @@ async def crawl_text_async(
                 
                 print(f"🔗 Navigating to full-text: {fulltext_link[:80]}...", flush=True)
                 
-                # Extract text from full-text page
-                text_content = await extract_fulltext_as_text(page, fulltext_link)
+                # Extract JSON from full-text page
+                json_content = await extract_fulltext_as_json(page, fulltext_link)
                 
-                print(f"✅ Extraction completed. Content length: {len(text_content) if text_content else 0} characters", flush=True)
+                print(f"✅ Extraction completed. Sections: {len(json_content) if json_content else 0}", flush=True)
                 
-                if text_content and len(text_content) > 100:
-                    # Save to file
-                    success = await save_text_to_file(text_content, dest_path)
+                if json_content:
+                    # Save to JSON file
+                    success = await save_json_to_file(json_content, dest_path)
                     
                     extract_time = time.time() - extract_start_time
                     
@@ -1139,9 +1202,9 @@ async def crawl_text_async(
                         elif cli_progress:
                             cli_progress.update(found_count, found_count, f"✅ {article_title[:30]}...", file_size, speed_kbps, "completed")
                     else:
-                        print(f"❌ Failed to save text file: {dest_path}", flush=True)
+                        print(f"❌ Failed to save JSON file: {dest_path}", flush=True)
                 else:
-                    print(f"❌ Extracted text is too small or empty. Length: {len(text_content) if text_content else 0}", flush=True)
+                    print(f"❌ Extracted JSON is empty or invalid", flush=True)
                     
             except Exception as e:
                 print(f"❌ Failed to extract text for '{article_title[:50]}': {e}", flush=True)
@@ -1281,7 +1344,7 @@ async def crawl_text_async(
                     try:
                         safe_title = "".join(c for c in article_title if c.isalnum() or c in (' ', '-', '_')).strip()
                         safe_title = safe_title[:100]
-                        filename = f"{safe_title}.txt"
+                        filename = f"{safe_title}.json"
                         dest_path = os.path.join(journal_folder, filename)
                         
                         if os.path.exists(dest_path) and os.path.getsize(dest_path) > 100:
@@ -1299,10 +1362,11 @@ async def crawl_text_async(
                         
                         print(f"🔗 Navigating to full-text: {fulltext_link[:80]}...", flush=True)
                         
-                        text_content = await extract_fulltext_as_text(page, fulltext_link)
+                        json_content = await extract_fulltext_as_json(page, fulltext_link)
                         
-                        if text_content and len(text_content) > 100:
-                            success = await save_text_to_file(text_content, dest_path)
+                        if json_content:
+                            # Save to JSON file
+                            success = await save_json_to_file(json_content, dest_path)
                             
                             extract_time = time.time() - extract_start_time
                             
@@ -1465,7 +1529,7 @@ async def crawl_text_async(
     if cli_progress:
         cli_progress.close()
     
-    print(f"\n🎉 Extracted {found_count} text files to {out_folder}")
+    print(f"\n🎉 Extracted {found_count} JSON files to {out_folder}")
     
     # Create CSV file with extraction summary
     if saved_files:
@@ -1491,9 +1555,9 @@ async def crawl_text_async(
     
     # Zip all journal subfolders into one archive
     if saved_files:
-        print(f"\n📦 Creating ZIP archive with all extracted text files...")
+        print(f"\n📦 Creating ZIP archive with all extracted JSON files...")
         
-        zip_filename = f"all_journals_text_{timestamp}.zip"
+        zip_filename = f"all_journals_json_{timestamp}.zip"
         zip_path = os.path.join(out_folder, zip_filename)
         
         try:
@@ -1507,7 +1571,7 @@ async def crawl_text_async(
             
             zip_size_mb = os.path.getsize(zip_path) / (1024 * 1024)
             logger.info(f"✅ Created ZIP archive: {zip_filename} ({zip_size_mb:.1f} MB)")
-            logger.info(f"📦 Archive contains {len(saved_files)} text files from {len(set(os.path.dirname(f) for f in saved_files))} journals")
+            logger.info(f"📦 Archive contains {len(saved_files)} JSON files from {len(set(os.path.dirname(f) for f in saved_files))} journals")
         except Exception as e:
             logger.error(f"❌ Failed to create ZIP archive: {e}")
     
