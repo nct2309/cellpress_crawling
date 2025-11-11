@@ -1451,6 +1451,35 @@ async def crawl_text_async(
                     await archive_page.wait_for_timeout(3000)
                     
                     await handle_cookie_consent(archive_page)
+                    
+                    # Click on volume header links to expand their issue lists
+                    # These are <a> tags with class "list-of-issues__group-expand"
+                    try:
+                        volume_toggles = archive_page.locator('a.list-of-issues__group-expand')
+                        toggle_count = await volume_toggles.count()
+                        print(f"🔧 Found {toggle_count} volume toggles, clicking to reveal issues...", flush=True)
+                        
+                        for i in range(toggle_count):
+                            try:
+                                toggle = volume_toggles.nth(i)
+                                # Get the volume text before clicking
+                                volume_text = await toggle.text_content()
+                                if volume_text:
+                                    # Check if this volume might contain our target years
+                                    # Extract year from text like "Volume 57 (2024)"
+                                    year_match = re.search(r'\((\d{4})\)', volume_text)
+                                    if year_match:
+                                        vol_year = int(year_match.group(1))
+                                        # Click if this volume's year is within our range
+                                        if year_from <= vol_year <= year_to + 1:  # +1 to catch edge cases
+                                            await toggle.click()
+                                            await archive_page.wait_for_timeout(1000)  # Wait for issues to load
+                                            print(f"  ✅ Expanded: {volume_text.strip()}", flush=True)
+                            except Exception as e:
+                                logger.debug(f"Failed to click volume toggle {i}: {e}")
+                                continue
+                    except Exception as e:
+                        print(f"⚠️ Failed to expand volume toggles: {e}", flush=True)
 
                     html = await archive_page.content()
                     soup = BeautifulSoup(html, "html.parser")
