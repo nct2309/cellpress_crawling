@@ -170,6 +170,7 @@ downloaded_files, articles = await crawl_async(...)  # Works!
 !pip install -r requirements.txt --upgrade --no-deps
 !playwright install firefox
 !playwright install --only-shell
+!playwright install-deps
 ```
 
 ### 403 Forbidden Error / Cloudflare Challenges
