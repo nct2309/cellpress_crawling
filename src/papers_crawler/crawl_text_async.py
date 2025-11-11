@@ -1452,32 +1452,75 @@ async def crawl_text_async(
                     
                     await handle_cookie_consent(archive_page)
                     
-                    # Click on volume header links to expand their issue lists
+                    # STEP 1: Expand outer accordion sections (year ranges like "2010-2019")
+                    # These are collapsed by default and contain volumes inside
+                    try:
+                        outer_accordions = archive_page.locator('a.accordion__control')
+                        accordion_count = await outer_accordions.count()
+                        print(f"🔧 Found {accordion_count} year range sections, expanding all...", flush=True)
+                        
+                        for i in range(accordion_count):
+                            try:
+                                accordion = outer_accordions.nth(i)
+                                # Check if it's expanded (aria-expanded="true")
+                                is_expanded = await accordion.get_attribute('aria-expanded')
+                                if is_expanded != 'true':
+                                    accordion_text = await accordion.text_content()
+                                    await accordion.click()
+                                    await archive_page.wait_for_timeout(800)
+                                    print(f"  ✅ Expanded section: {accordion_text.strip()}", flush=True)
+                            except Exception as e:
+                                logger.debug(f"Failed to expand accordion {i}: {e}")
+                        
+                        # Wait for all accordion content to load
+                        await archive_page.wait_for_timeout(1500)
+                    except Exception as e:
+                        print(f"⚠️ Failed to expand year range sections: {e}", flush=True)
+                    
+                    # STEP 2: Expand individual volume toggles for target years
                     # These are <a> tags with class "list-of-issues__group-expand"
+                    volumes_to_expand = []
                     try:
                         volume_toggles = archive_page.locator('a.list-of-issues__group-expand')
                         toggle_count = await volume_toggles.count()
-                        print(f"🔧 Found {toggle_count} volume toggles, clicking to reveal issues...", flush=True)
+                        print(f"🔧 Found {toggle_count} volume toggles, identifying target volumes...", flush=True)
                         
+                        # First pass: identify which volumes to expand
                         for i in range(toggle_count):
                             try:
                                 toggle = volume_toggles.nth(i)
-                                # Get the volume text before clicking
                                 volume_text = await toggle.text_content()
                                 if volume_text:
-                                    # Check if this volume might contain our target years
-                                    # Extract year from text like "Volume 57 (2024)"
                                     year_match = re.search(r'\((\d{4})\)', volume_text)
                                     if year_match:
                                         vol_year = int(year_match.group(1))
-                                        # Click if this volume's year is within our range
-                                        if year_from <= vol_year <= year_to + 1:  # +1 to catch edge cases
-                                            await toggle.click()
-                                            await archive_page.wait_for_timeout(1000)  # Wait for issues to load
-                                            print(f"  ✅ Expanded: {volume_text.strip()}", flush=True)
+                                        if year_from <= vol_year <= year_to + 1:
+                                            volumes_to_expand.append((i, volume_text.strip()))
                             except Exception as e:
-                                logger.debug(f"Failed to click volume toggle {i}: {e}")
-                                continue
+                                logger.debug(f"Failed to check volume toggle {i}: {e}")
+                        
+                        # Second pass: click all target volumes
+                        print(f"🔧 Expanding {len(volumes_to_expand)} volumes...", flush=True)
+                        for idx, vol_text in volumes_to_expand:
+                            try:
+                                toggle = volume_toggles.nth(idx)
+                                await toggle.click()
+                                print(f"  ✅ Clicked: {vol_text}", flush=True)
+                                await archive_page.wait_for_timeout(500)
+                            except Exception as e:
+                                logger.debug(f"Failed to click volume {vol_text}: {e}")
+                        
+                        # Wait for all AJAX content to load
+                        if volumes_to_expand:
+                            print(f"⏳ Waiting for issue lists to load...", flush=True)
+                            await archive_page.wait_for_timeout(3000)
+                            
+                            # Wait for issue links to appear in the DOM
+                            try:
+                                await archive_page.wait_for_selector('a[href*="/issue?pii="]', timeout=5000, state='attached')
+                            except:
+                                pass  # Continue even if selector doesn't appear
+                                
                     except Exception as e:
                         print(f"⚠️ Failed to expand volume toggles: {e}", flush=True)
 
