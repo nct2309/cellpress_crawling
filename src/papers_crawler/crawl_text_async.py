@@ -1406,8 +1406,13 @@ async def crawl_text_async(
                     
                     await asyncio.sleep(1)
                 
-                # Crawl issue archives if requested
-                if crawl_archives:
+                # Crawl issue archives if requested —
+                # Also fall back to crawling issue pages when the /newarticles run
+                # produced no saved JSONs for this journal (journal_download_count == 0).
+                # This ensures we don't stop early just because the newarticles page
+                # didn't yield any extractable JSON.
+                should_crawl_archives = crawl_archives or (journal_download_count == 0)
+                if should_crawl_archives:
                     print(f"\n📚 Crawling issue archives for journal: {slug}", flush=True)
                     print(f"🔧 Creating separate context for archive crawling...", flush=True)
                     
