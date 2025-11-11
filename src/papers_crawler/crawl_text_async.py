@@ -1451,39 +1451,6 @@ async def crawl_text_async(
                     await archive_page.wait_for_timeout(3000)
                     
                     await handle_cookie_consent(archive_page)
-                    # Try to expand any collapsed volume/issue groups so that
-                    # older volumes (e.g. Volume 57, 56...) are present in the
-                    # page HTML. Some journal archive pages render older volumes
-                    # collapsed and require a user interaction to reveal issue
-                    # links; clicking common toggle buttons helps BeautifulSoup
-                    # discover those links.
-                    try:
-                        expand_selectors = [
-                            'button.list-of-issues__toggle',
-                            'button:has-text("Show all")',
-                            'button:has-text("Show more")',
-                            '.accordion__toggle',
-                            'button.js-toggle',
-                            '.list-of-issues__volume button',
-                        ]
-                        for sel in expand_selectors:
-                            try:
-                                loc = archive_page.locator(sel)
-                                count = await loc.count()
-                                if count:
-                                    for i in range(count):
-                                        try:
-                                            nth = loc.nth(i)
-                                            if await nth.is_visible():
-                                                await nth.click()
-                                                await archive_page.wait_for_timeout(500)
-                                        except Exception:
-                                            # ignore individual click failures
-                                            continue
-                            except Exception:
-                                continue
-                    except Exception as e:
-                        logger.debug(f"⚠️ Failed while trying to expand archive toggles: {e}")
 
                     html = await archive_page.content()
                     soup = BeautifulSoup(html, "html.parser")
@@ -1495,7 +1462,7 @@ async def crawl_text_async(
                     # Broaden selector to catch multiple issue URL patterns.
                     # Some pages may use different href formats for older issues.
                     all_issue_links = soup.select(
-                        'a[href*="/issue?pii="], a[href*="/issue/"], a[href*="/issue?"]'
+                        'a[href*="/issue?pii="]'
                     )
                     print(f"🔍 Found {len(all_issue_links)} total issue links on page", flush=True)
                     
