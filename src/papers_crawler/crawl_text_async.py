@@ -1512,39 +1512,35 @@ async def crawl_text_async(
                                 in_open_archive = True
                                 print(f"📂 Entered Open Archive section", flush=True)
                         
-                        # Try to extract date from the link text or child elements
-                        link_text = link.get_text(strip=True)
-                        date_text = None
-                        
-                        # First try to find span with date
-                        issue_date_span = link.find("span", string=lambda x: x and any(month in x for month in ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]))
-                        if issue_date_span:
-                            date_text = issue_date_span.get_text(strip=True)
-                        elif link_text:
-                            # Use the entire link text if no specific date span found
-                            date_text = link_text
-                        
-                        if date_text:
-                            # Try to extract year from date
-                            try:
-                                issue_year = None
-                                for y in range(year_from - 1, year_to + 2):
-                                    if str(y) in date_text:
-                                        issue_year = y
-                                        break
-                                
-                                if issue_year and year_from <= issue_year <= year_to:
+                        # Try to extract date/year from the link or its parent <li> text.
+                        # Use a robust regex to find a 4-digit year (e.g., 2024).
+                        try:
+                            link_text = link.get_text(" ", strip=True)
+                            # Prefer the parent <li> text when available (it contains issue spans)
+                            parent_li = link.find_parent("li")
+                            if parent_li:
+                                block_text = parent_li.get_text(" ", strip=True)
+                            else:
+                                block_text = link_text
+
+                            # Normalize whitespace and collapse concatenated tokens
+                            block_text = re.sub(r"\s+", " ", block_text)
+
+                            year_match = re.search(r"\b(19|20)\d{2}\b", block_text)
+                            if year_match:
+                                issue_year = int(year_match.group(0))
+                                date_text = block_text
+                                if year_from <= issue_year <= year_to:
                                     full_url = urljoin("https://www.cell.com", href)
-                                    # Avoid duplicates
                                     if (full_url, in_open_archive, date_text) not in issue_links:
                                         issue_links.append((full_url, in_open_archive, date_text))
                                         logger.debug(f"✅ Found issue: {date_text[:50]} ({'Open Archive' if in_open_archive else 'Regular'})")
                                 else:
                                     logger.debug(f"⏭️  Skipped issue (year {issue_year} not in range): {date_text[:50]}")
-                            except Exception as e:
-                                logger.debug(f"⚠️  Failed to parse date from: {date_text[:50]} - {e}")
-                        else:
-                            logger.debug(f"⚠️  No date text found for link: {href[:50]}")
+                            else:
+                                logger.debug(f"⚠️  No year found in link text for: {href[:50]}")
+                        except Exception as e:
+                            logger.debug(f"⚠️  Failed to parse date from link {href[:50]} - {e}")
                     
                     print(f"📚 Found {len(issue_links)} issues to crawl for {slug} (filtered by year {year_from}-{year_to})", flush=True)
                     
